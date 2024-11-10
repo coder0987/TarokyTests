@@ -1,0 +1,18 @@
+:root {
+    --red: #9D181D;
+}
+
+.tab-content {
+  display: none;
+}
+
+.save-btn {
+    width: 100%;
+    border-radius: 15px;
+    border-width: 0;
+    color: white;
+}
+
+.red {
+    background-color: var(--red);
+}
