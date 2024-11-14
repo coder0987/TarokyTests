@@ -25,6 +25,7 @@ module.exports = {
         whiteHover: "#e2dfdc",
         black: "#342D27",
         tan: "#E3D6B2",
+        blue: "#0d6efd",
         navy: "#1f3855",
         gray: "#777777",
         "red-error": "#7f1d1d",

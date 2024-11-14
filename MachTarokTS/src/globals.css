@@ -29,6 +29,10 @@
     @apply text-[24px] font-bold leading-[140%] tracking-tighter;
   }
 
+  .h3 {
+    @apply text-[24px] leading-[140%] tracking-tighter;
+  }
+
   .h4 {
     @apply text-[18px] leading-[140%] tracking-tighter;
   }
@@ -179,4 +183,15 @@
 
 .toast-neutral {
   @apply bg-toast-neutral text-neutral-text border border-neutral-text;
+}
+
+.red-link {
+  @apply text-red hover:text-blue hover:underline;
+}
+
+.bullet-list {
+  list-style-type: disc;
+}
+.bullet-list li {
+  list-style-type: disc;
 }

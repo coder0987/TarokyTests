@@ -30,7 +30,7 @@ const Donate = () => {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default Donate
