@@ -9,7 +9,7 @@ export const topbarLinks = [
   },
   {
     label: "Tour",
-    route: "/learn",
+    route: "/tour",
   },
   {
     label: "Updates",
