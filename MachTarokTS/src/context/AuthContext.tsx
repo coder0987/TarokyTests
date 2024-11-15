@@ -3,7 +3,8 @@ import { IAccount } from '@/types';
 
 export const INITIAL_ACCOUNT = {
     user: null,
-    authToken: null
+    authToken: null,
+    preferences: {}
 }
 
 const INITIAL_STATE = {
@@ -26,7 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     //define any other global state here
 
     const handleLogin = (username: string, token: string) => {
-        setAccount({ user: username, authToken: token });
+        setAccount({ user: username, authToken: token, preferences: {} });
         document.cookie = `username=${username};secure`;
         document.cookie = `token=${token};secure`;
     };

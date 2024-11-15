@@ -20,7 +20,7 @@ const Play = () => {
             <div className="mt-20 mb-40 w-4/5 xl:w-3/4 flex flex-col items-center">
                 <img
                     src="/assets/logo/logo-full-navy.png"
-                    className='mb-[200px]'
+                    className='mb-[100px] w-full max-w-[600px] h-aut'
                 />
                 <div className="flex flex-col items-center justify-center w-[320px]">
                     <Card className='card min-w-[320px] mb-3 hover:cursor-pointer'>
