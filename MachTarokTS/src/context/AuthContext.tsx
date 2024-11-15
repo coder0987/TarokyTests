@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { IAccount } from '@/types';
 
 export const INITIAL_ACCOUNT = {
-    user: null,
+    user: "Guest",
     authToken: null,
     preferences: {}
 }
