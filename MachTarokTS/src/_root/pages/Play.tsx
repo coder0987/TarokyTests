@@ -26,7 +26,11 @@ const Play = () => {
                     className='mb-[100px] w-full max-w-[600px] h-auto'
                 />
                 <div className="flex flex-col items-center justify-center w-[320px]">
-                    <Card className='card min-w-[320px] mb-3 hover:cursor-pointer'>
+                    <Card
+                        className='card min-w-[320px] mb-3 hover:cursor-pointer'
+                        onClick={() => {
+                            navigate("/ranked");
+                        }}>
                         <CardContent className="pt-2 text-center text-3xl">Ranked</CardContent>
                     </Card>
                     <div className="flex flex-row gap-3 items-center justify-center w-full mb-3">
