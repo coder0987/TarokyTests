@@ -8,7 +8,7 @@ const Home = () => {
     return (
         <div className='flex flex-col justify-start w-full h-full'>
             <img src="/assets/tarok-cards.jpg" className="m-0"></img>
-            <div className="flex flex-col justify-start mt-20 mb-40 w-full m:w-4/5 xl:w-3/4">
+            <div className="flex flex-col justify-start mt-20 mb-40 w-full md:w-4/5 xl:w-3/4">
                 <img
                     src="/assets/logo/logo-full-navy.png"
                     className='mb-60'
