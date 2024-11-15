@@ -1,8 +1,17 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { useRef } from 'react';
 
 const Play = () => {
+
+    const roomCodeInput = useRef(null);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const filteredValue = e.target.value.replace(/[^A-Za-z]/g, '').toUpperCase();
+        e.target.value = filteredValue;  // Update the input field's value directly
+    };
+
     return (
         <div className='flex justify-center w-full h-full'>
             <div className="mt-20 mb-40 w-4/5 xl:w-3/4 flex flex-col items-center">
@@ -24,16 +33,18 @@ const Play = () => {
                     </div>
                     <div className="flex flex-row w-full">
                         <Input
+                            ref={roomCodeInput}
                             type="text"
                             placeholder='Room Code'
                             className='text-navy bg-white mr-1'
                             autoComplete='off'
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                // do something with input
-                            }}
+                            onChange={handleInputChange}
                         />
-                        <Button className='button-red'>Join</Button>
+                        <Button
+                            className='button-red'
+                            onClick={() => {
+                                // join room by code
+                            }}>Join</Button>
                     </div>
                 </div>
 
