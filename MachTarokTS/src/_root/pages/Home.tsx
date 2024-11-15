@@ -23,9 +23,6 @@ const Home = () => {
                 </div>
                 <h1 className="flex h1-bold w-full text-center">Welcome to Mach Tarok</h1>
                 <h2 className="flex h2-bold w-full text-center">play Tarok online</h2>
-                <div className="w-40 h-12 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 ease-in-out flex items-center justify-center">
-                    <p className="m-0">Play</p>
-                </div>
 
             </div>
         </div>
