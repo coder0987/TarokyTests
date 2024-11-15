@@ -26,7 +26,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const checkAuthUser = async () => {
             setIsLoading(true);
             // check if user signed in or guest, use setAccount
-            window.addEventListener
             setIsLoading(false);
         };
         checkAuthUser();

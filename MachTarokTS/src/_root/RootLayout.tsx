@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { Topbar } from '@/components/shared';
+import { Bottombar, Topbar } from '@/components/shared';
 
 const RootLayout = () => {
     return (
@@ -8,6 +8,7 @@ const RootLayout = () => {
             <section className="flex flex-1 h-full overflow-auto">
                 <Outlet />
             </section>
+            <Bottombar />
 
         </div>
     );
