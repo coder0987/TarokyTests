@@ -203,3 +203,80 @@
 .bullet-list li {
   list-style-type: disc;
 }
+
+/* User Preferences Page */
+
+.avatar-container {
+  @apply bg-navy rounded-xl p-2 pt-4 md:p-6 flex flex-wrap justify-center items-center gap-1;
+}
+
+.avatar {
+  @apply bg-white rounded-lg inline-block;
+}
+
+.avatar img {
+  @apply w-[64px] h-[64px] md:w-[128px] md:h-[128px] rounded-lg;
+}
+
+.avatar :hover {
+  @apply bg-red;
+}
+
+.selected-avatar {
+  @apply bg-blue;
+}
+
+.selected-avatar :hover {
+  @apply bg-blue;
+}
+
+.deck-container {
+  @apply bg-navy rounded-xl p-2 pt-4 md:p-6 flex flex-wrap justify-center items-center gap-1;
+}
+
+.deck {
+  @apply bg-white rounded-lg inline-block w-[256px];
+}
+
+.deck-internal {
+  @apply flex flex-col justify-center items-center gap-1 p-2 rounded-lg;
+}
+
+.deck img {
+  @apply w-[64px] h-[128px] md:w-[128px] md:h-[256px] rounded-lg;
+}
+
+.deck :hover {
+  @apply bg-red;
+}
+
+.selected-deck {
+  @apply bg-blue;
+}
+
+.selected-deck :hover {
+  @apply bg-blue;
+}
+
+.deck-text {
+  @apply text-center h-[3rem];
+}
+
+/*  MachTarok custom styles  */
+.paragraph-container {
+  @apply flex px-8;
+}
+
+.paragraph {
+  @apply flex text-[19px] text-navy text-justify;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header-container {
+  @apply flex items-center justify-center md:justify-start px-8 py-8;
+}
+
+.page-header {
+  @apply text-5xl text-navy text-center md:text-start w-full;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
