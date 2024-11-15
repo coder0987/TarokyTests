@@ -116,6 +116,10 @@
     @apply sticky top-0 z-50 bg-navy w-full hidden md:flex;
   }
 
+  .mobile-topbar {
+    @apply sticky top-0 z-50 bg-navy w-full md:hidden;
+  }
+
   .bottombar {
     @apply z-50 flex-between w-full fixed bottom-0 bg-navy px-5 py-4 md:hidden;
   }
