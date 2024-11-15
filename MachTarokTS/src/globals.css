@@ -317,3 +317,7 @@
   z-index: 1000;
   @apply bg-white;
 }
+
+.copy-text {
+  @apply hover:underline hover:cursor-copy hover:text-blue;
+}

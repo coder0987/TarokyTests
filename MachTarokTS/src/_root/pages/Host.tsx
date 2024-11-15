@@ -45,7 +45,7 @@ const Host = () => {
                 <div className="mt-10 mb-40 w-4/5 xl:w-3/4 flex flex-col items-center">
                     <div className="text-3xl">{gameType}</div>
                     <Separator className='my-4 bg-gray' />
-                    <div className="text-xl flex flex-row justify-between w-full"><span>Room {roomNumeral}</span> <span>Code: <span className='hover:underline hover:cursor-copy' onClick={() => copyRoomCode()}> {joinCode}</span></span></div>
+                    <div className="text-xl flex flex-row justify-between w-full"><span>Room {roomNumeral}</span> <span>Code: <span className='copy-text' onClick={() => copyRoomCode()}> {joinCode}</span></span></div>
                     <div className="flex flex-row w-full mt-8">
                         <div className='flex flex-col justify-start gap-1 w-1/2'>
                             <div className="w-[150px] border-navy bg-white text-navy rounded-md border px-3 py-2 hover:cursor-not-allowed">{account.user} (you)</div>
@@ -62,7 +62,7 @@ const Host = () => {
                 </div>
 
             </div>
-            <InviteDialog isOpen={isInviteDialogOpen} onClose={() => setIsInviteDialogOpen(false)} />
+            <InviteDialog isOpen={isInviteDialogOpen} onClose={() => setIsInviteDialogOpen(false)} roomCode={joinCode} />
         </>
     )
 }
