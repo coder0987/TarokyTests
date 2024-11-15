@@ -284,3 +284,8 @@
   @apply text-5xl text-navy text-center md:text-start w-full;
   font-family: Georgia, 'Times New Roman', Times, serif;
 }
+
+.nav-header {
+  @apply text-white text-3xl;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}

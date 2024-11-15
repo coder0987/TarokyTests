@@ -33,7 +33,7 @@ const SignIn = () => {
     };
     
     return (
-        <div className='w-full'>
+        <div className='w-full h-full pb-[90px] md:py-0'>
             {isAuthenticated &&
                 <div className='w-full h-screen pb-[90px] md:pb-0 overflow-hidden'>
                     <div className='flex flex-col justify-start h-full overflow-y-auto'>
@@ -74,13 +74,13 @@ const SignIn = () => {
                 </div>
             }
             {isAuthenticated ||
-                <div className='w-full h-screen pb-[90px] md:pb-0'>
-                    <div className='paragraph-container flex flex-col justify-center h-full'>
+                <div className='w-full h-full'>
+                    <div className='paragraph-container flex flex-col justify-center items-center md:justify-start h-full overflow-hidden'>
                         <div className='header-container'>
                             <h2 className='page-header'>Sign In</h2>
                         </div>
                         <Button
-                            className="flex big-play-button w-full py-8 text-xl md:text-2xl"
+                            className="flex big-play-button w-full max-w-[320px] py-8 text-xl md:text-2xl"
                             onClick={handleSignIn}
                         >
                             <div className="w-[32px] h-[32px] bg-white rounded-full flex items-center justify-center">
