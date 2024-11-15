@@ -30,10 +30,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setAccount({ user: username, authToken: token, preferences: {} });
         document.cookie = `username=${username};secure`;
         document.cookie = `token=${token};secure`;
+        setIsAuthenticated(true);
     };
 
     const handleLogout = () => {
         setAccount(INITIAL_ACCOUNT);
+        setIsAuthenticated(false);
     };
 
     useEffect(() => {
