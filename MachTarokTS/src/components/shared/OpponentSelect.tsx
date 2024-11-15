@@ -1,7 +1,7 @@
 const OpponentSelect = () => {
     return (
         <>
-            Opponent Select
+            Opponent Selector
         </>
     )
 }
