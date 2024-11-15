@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import '@/globals.css'
 
 import RootLayout from '@/_root/RootLayout'
-import { Browse, Custom, Donate, Home, Host, Learn, NotFound, Play, Ranked, SignIn, Updates } from '@/_root/pages'
+import { Browse, Custom, Daily, Donate, Home, Host, Learn, NotFound, Play, Ranked, SignIn, Updates } from '@/_root/pages'
 import { ToastContextProvider } from '@/context/ToastContext';
 
 const App = () => {
@@ -12,6 +12,7 @@ const App = () => {
         <Routes>
           <Route path="/browse" element={<Browse />} />
           <Route path="/custom" element={<Custom />} />
+          <Route path="/daily" element={<Daily />} />
           <Route index element={<Home />} />
           <Route path="/host" element={<Host />} />
           <Route path="/ranked" element={<Ranked />} />

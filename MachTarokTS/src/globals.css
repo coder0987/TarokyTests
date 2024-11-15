@@ -196,6 +196,10 @@
     @apply bg-navy text-white border-black rounded-lg;
     border: 0px solid rgb(9 9 10 / var(--tw-bg-opacity));
   }
+
+  .invite-card {
+    @apply bg-white text-navy border border-navy rounded-lg h-4/5;
+  }
 }
 
 .tabs-trigger[data-state="active"] {

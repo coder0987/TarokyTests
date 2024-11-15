@@ -1,6 +1,7 @@
 export { default as Browse } from "./Browse";
 export { default as Custom } from "./Custom";
 export { default as Donate } from "./Donate";
+export { default as Daily } from "./Daily";
 export { default as Home } from "./Home";
 export { default as Host } from "./Host";
 export { default as Learn } from "./Learn";
