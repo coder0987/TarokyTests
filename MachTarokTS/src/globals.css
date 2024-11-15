@@ -113,7 +113,11 @@
   }
 
   .topbar {
-    @apply sticky top-0 z-50 bg-navy w-full;
+    @apply sticky top-0 z-50 bg-navy w-full hidden md:flex;
+  }
+
+  .bottombar {
+    @apply z-50 flex-between w-full fixed bottom-0 bg-navy px-5 py-4 md:hidden;
   }
 }
 
@@ -132,6 +136,10 @@
 
   .shad-textarea {
     @apply h-36 bg-dark-4 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-white !important;
+  }
+
+  .big-play-button {
+    @apply bg-navy text-white flex gap-2 w-[200px];
   }
 
   .button-white {

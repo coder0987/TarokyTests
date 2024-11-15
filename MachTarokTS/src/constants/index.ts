@@ -8,10 +8,6 @@ export const topbarLinks = [
     route: "/learn",
   },
   {
-    label: "Tour",
-    route: "/tour",
-  },
-  {
     label: "Updates",
     route: "/updates",
   },
@@ -22,6 +18,34 @@ export const topbarLinks = [
   {
     label: "Sign In",
     route: "/signin",
+  },
+];
+
+export const bottombarLinks = [
+  {
+    label: "Play",
+    route: "/play",
+    imgUrl: "/assets/icons/play.svg",
+  },
+  {
+    label: "Learn",
+    route: "/learn",
+    imgUrl: "/assets/icons/learn.svg",
+  },
+  {
+    label: "Updates",
+    route: "/updates",
+    imgUrl: "/assets/icons/bell.svg",
+  },
+  {
+    label: "Donate",
+    route: "/donate",
+    imgUrl: "/assets/icons/donate.svg",
+  },
+  {
+    label: "Sign In",
+    route: "/signin",
+    imgUrl: "/assets/icons/sign-in.svg",
   },
 ];
 

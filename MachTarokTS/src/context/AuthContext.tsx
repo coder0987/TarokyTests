@@ -22,14 +22,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isLoading, setIsLoading] = useState(false);
     //define any other global state here
 
+    const handleLogin = (username: string, token: string) => {
+        setAccount({ user: username, authToken: token });
+        document.cookie = `username=${username};secure`;
+        document.cookie = `token=${token};secure`;
+    };
+
+    const handleLogout = () => {
+        setAccount(INITIAL_ACCOUNT);
+    };
+
     useEffect(() => {
-        const checkAuthUser = async () => {
-            setIsLoading(true);
-            // check if user signed in or guest, use setAccount
-            window.addEventListener
-            setIsLoading(false);
+        const messageHandler = (event: MessageEvent) => {
+            if (event.origin !== 'https://sso.smach.us' && event.origin !== 'https://sso.samts.us') return;
+
+            const messageData = event.data as string;
+
+            if (messageData === 'signOut') {
+                handleLogout();
+            } else {
+                const [username, token, signUp] = messageData.split(':');
+                if (signUp === 'new') {
+                    //special handling for new user?
+                }
+                handleLogin(username, token);
+            }
         };
-        checkAuthUser();
+
+        window.addEventListener('message', messageHandler);
+
+        return () => {
+            window.removeEventListener('message', messageHandler);
+        };
     }, []);
 
     const value = {
