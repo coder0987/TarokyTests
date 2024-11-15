@@ -162,6 +162,10 @@
     @apply bg-red  text-white flex gap-2 !important;
   }
 
+  .button-navy {
+    @apply bg-navy  text-white flex gap-2 !important;
+  }
+
   .back-button {
     @apply bg-red text-white flex px-2 h-6 !important;
     font-size: 1.25rem;
@@ -195,10 +199,6 @@
   .card {
     @apply bg-navy text-white border-black rounded-lg;
     border: 0px solid rgb(9 9 10 / var(--tw-bg-opacity));
-  }
-
-  .invite-card {
-    @apply bg-white text-navy border border-navy rounded-lg h-4/5;
   }
 }
 
@@ -320,4 +320,24 @@
 
 .copy-text {
   @apply hover:underline hover:cursor-copy hover:text-blue;
+}
+
+.invite-card {
+  @apply bg-white text-navy border border-navy rounded-lg h-4/5;
+}
+
+.online {
+  @apply text-online;
+}
+
+.in-game {
+  @apply text-orange;
+}
+
+.idle {
+  @apply text-yellow;
+}
+
+.offline {
+  @apply text-gray;
 }

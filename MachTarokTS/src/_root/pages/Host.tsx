@@ -26,8 +26,8 @@ const Host = () => {
             console.log('room code copied to clipboard!');
             showToast('Successfully copied room code', 'success');
         } catch (err) {
-            console.error('Failed to copy ${subject}: ', err);
-            showToast('Failed to copy ${subject}', 'error');
+            console.error('Failed to copy room code: ', err);
+            showToast('Failed to copy room code', 'error');
         }
     }
 

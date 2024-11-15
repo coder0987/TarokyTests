@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { IAccount } from '@/types';
+import { Account } from '@/types';
 
 export const INITIAL_ACCOUNT = {
     user: "Guest",
@@ -13,7 +13,7 @@ const INITIAL_STATE = {
 }
 
 type IContextType = {
-    account: IAccount;
+    account: Account;
     isAuthenticated: boolean;
 }
 
@@ -21,7 +21,7 @@ const AuthContext = createContext<IContextType>(INITIAL_STATE);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 
-    const [account, setAccount] = useState<IAccount>(INITIAL_ACCOUNT);
+    const [account, setAccount] = useState<Account>(INITIAL_ACCOUNT);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     //define any other global state here
