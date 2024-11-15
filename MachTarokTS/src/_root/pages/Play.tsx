@@ -3,8 +3,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input'
 import { useUserContext } from '@/context/AuthContext';
 import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Play = () => {
+
+    const navigate = useNavigate();
 
     const { isAuthenticated } = useUserContext();
 
@@ -20,26 +23,42 @@ const Play = () => {
             <div className="mt-20 mb-40 w-4/5 xl:w-3/4 flex flex-col items-center">
                 <img
                     src="/assets/logo/logo-full-navy.png"
-                    className='mb-[100px] w-full max-w-[600px] h-aut'
+                    className='mb-[100px] w-full max-w-[600px] h-auto'
                 />
                 <div className="flex flex-col items-center justify-center w-[320px]">
                     <Card className='card min-w-[320px] mb-3 hover:cursor-pointer'>
                         <CardContent className="pt-2 text-center text-3xl">Ranked</CardContent>
                     </Card>
                     <div className="flex flex-row gap-3 items-center justify-center w-full mb-3">
-                        <Card className='card card flex-1 hover:cursor-pointer'>
+                        <Card
+                            className='card card flex-1 hover:cursor-pointer'
+                            onClick={() => {
+                                navigate("/host");
+                            }}>
                             <CardContent className="pt-2 text-center text-3xl">Host</CardContent>
                         </Card>
-                        <Card className='card card flex-1 hover:cursor-pointer'>
+                        <Card
+                            className='card card flex-1 hover:cursor-pointer'
+                            onClick={() => {
+                                navigate("/custom");
+                            }}>
                             <CardContent className="pt-2 text-center text-3xl">Custom</CardContent>
                         </Card>
                     </div>
                     <div className="flex flex-row gap-3 items-center justify-center w-full mb-3">
-                        <Card className={`card card hover:cursor-pointer ${isAuthenticated ? "flex-1" : "min-w-[320px]"}`}>
+                        <Card
+                            className={`card card hover:cursor-pointer ${isAuthenticated ? "flex-1" : "min-w-[320px]"}`}
+                            onClick={() => {
+                                navigate("/browse");
+                            }}>
                             <CardContent className="pt-2 text-center text-3xl">Browse</CardContent>
                         </Card>
                         {isAuthenticated &&
-                            <Card className='card card flex-1 hover:cursor-pointer'>
+                            <Card
+                                className='card card flex-1 hover:cursor-pointer'
+                                onClick={() => {
+                                    navigate("/daily");
+                                }}>
                                 <CardContent className="pt-2 text-center text-3xl">Daily</CardContent>
                             </Card>}
                     </div>

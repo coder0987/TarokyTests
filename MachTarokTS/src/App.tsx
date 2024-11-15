@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import '@/globals.css'
 
 import RootLayout from '@/_root/RootLayout'
-import { Donate, Home, Learn, NotFound, Play, SignIn, Updates } from '@/_root/pages'
+import { Donate, Home, Host, Learn, NotFound, Play, SignIn, Updates } from '@/_root/pages'
 import { ToastContextProvider } from '@/context/ToastContext';
 
 const App = () => {
@@ -11,6 +11,7 @@ const App = () => {
       <main className="flex h-screen">
         <Routes>
           <Route index element={<Home />} />
+          <Route path="/host" element={<Host />} />
           <Route element={<RootLayout />}>
             <Route path="/donate" element={<Donate />} />
             <Route path="/learn" element={<Learn />} />
