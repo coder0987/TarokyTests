@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useUserContext } from '@/context/AuthContext';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Play = () => {
@@ -13,10 +13,18 @@ const Play = () => {
 
     const roomCodeInput = useRef(null);
 
+    const [roomCode, setRoomCode] = useState<string>("");
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const filteredValue = e.target.value.replace(/[^A-Za-z]/g, '').toUpperCase();
-        e.target.value = filteredValue;  // Update the input field's value directly
+        e.target.value = filteredValue;
+        setRoomCode(filteredValue);
     };
+
+    const handleJoinClicked = () => {
+        // is valid room code?
+        // if so join room
+    }
 
     return (
         <div className='flex justify-center w-full h-full'>
@@ -78,7 +86,7 @@ const Play = () => {
                         <Button
                             className='button-red'
                             onClick={() => {
-                                // join room by code
+                                handleJoinClicked();
                             }}>Join</Button>
                     </div>
                 </div>

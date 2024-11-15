@@ -291,7 +291,7 @@
 
 .paragraph {
   @apply flex text-[19px] text-navy text-justify;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .header-container {
@@ -300,10 +300,16 @@
 
 .page-header {
   @apply text-5xl text-navy text-center md:text-start w-full;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
 }
 
 .nav-header {
   @apply text-white text-3xl;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+.select-content {
+  opacity: 1;
+  z-index: 1000;
+  @apply bg-white;
 }
