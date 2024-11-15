@@ -7,11 +7,13 @@ export const INITIAL_ACCOUNT = {
 }
 
 const INITIAL_STATE = {
-    account: INITIAL_ACCOUNT
+    account: INITIAL_ACCOUNT,
+    isAuthenticated: false
 }
 
 type IContextType = {
     account: IAccount;
+    isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<IContextType>(INITIAL_STATE);
@@ -19,6 +21,7 @@ const AuthContext = createContext<IContextType>(INITIAL_STATE);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const [account, setAccount] = useState<IAccount>(INITIAL_ACCOUNT);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     //define any other global state here
 
@@ -57,7 +60,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const value = {
-        account: account
+        account: account,
+        isAuthenticated: isAuthenticated
     };
 
     return (

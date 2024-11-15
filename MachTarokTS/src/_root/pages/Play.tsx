@@ -1,9 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { useUserContext } from '@/context/AuthContext';
 import { useRef } from 'react';
 
 const Play = () => {
+
+    const { isAuthenticated } = useUserContext();
 
     const roomCodeInput = useRef(null);
 
@@ -30,6 +33,15 @@ const Play = () => {
                         <Card className='card card flex-1 hover:cursor-pointer'>
                             <CardContent className="pt-2 text-center text-3xl">Custom</CardContent>
                         </Card>
+                    </div>
+                    <div className="flex flex-row gap-3 items-center justify-center w-full mb-3">
+                        <Card className={`card card hover:cursor-pointer ${isAuthenticated ? "flex-1" : "min-w-[320px]"}`}>
+                            <CardContent className="pt-2 text-center text-3xl">Browse</CardContent>
+                        </Card>
+                        {isAuthenticated &&
+                            <Card className='card card flex-1 hover:cursor-pointer'>
+                                <CardContent className="pt-2 text-center text-3xl">Daily</CardContent>
+                            </Card>}
                     </div>
                     <div className="flex flex-row w-full">
                         <Input
