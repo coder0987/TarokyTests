@@ -138,6 +138,10 @@
     @apply h-36 bg-dark-4 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-white !important;
   }
 
+  .big-play-button {
+    @apply bg-navy text-white flex gap-2 w-[200px];
+  }
+
   .button-white {
     @apply bg-white hover:bg-whiteHover text-navy flex gap-2 !important;
   }

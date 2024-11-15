@@ -20,7 +20,6 @@ const Bottombar = () => {
                             alt={link.label}
                             width={16}
                             height={16}
-                            className={`${isActive && "invert-white"}`}
                         />
 
                         <p className={`tiny-medium text-white text-center ${isActive && "underline"}`}>{link.label}</p>
