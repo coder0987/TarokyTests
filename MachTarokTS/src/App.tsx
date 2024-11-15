@@ -10,9 +10,9 @@ const App = () => {
     <ToastContextProvider>
       <main className="flex h-screen">
         <Routes>
+          <Route index element={<Home />} />
           <Route element={<RootLayout />}>
             <Route path="/donate" element={<Donate />} />
-            <Route index element={<Home />} />
             <Route path="/learn" element={<Learn />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/play" element={<Play />} />
