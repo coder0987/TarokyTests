@@ -13,6 +13,11 @@ import { Select } from '@radix-ui/react-select';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
+
+const timeoutMin = 15;
+const timeoutDefault = 30;
+const timeoutMax = 90;
+
 const Host = () => {
 
     const navigate = useNavigate();
@@ -26,7 +31,7 @@ const Host = () => {
 
     const [roomVisibility, setRoomVisibility] = useState<"Public" | "Private">("Private");
     const [difficulty, setDifficulty] = useState<Difficulty>(Difficulty.Normal);
-    const [timeout, setTimeout] = useState<number>(30);
+    const [timeout, setTimeout] = useState<number | string>(timeoutDefault);
     const [isAceHigh, setIsAceHigh] = useState(false);
 
     const [isHostReady, setIsHostReady] = useState(false);
@@ -103,8 +108,15 @@ const Host = () => {
                                     className='w-[125px] h-7'
                                     onChange={(e) => {
                                         const newValue = e.target.value;
-                                        if (newValue === '' || (!isNaN(Number(newValue))) && Number(newValue) >= 15 && Number(newValue) <= 90) {
-                                            setTimeout(newValue === '' ? 30 : parseInt(newValue, 10));
+                                        setTimeout(newValue === '' || isNaN(Number(newValue)) ? timeoutDefault : parseInt(newValue, 10));
+                                    }}
+                                    onBlur={() => {
+                                        if (timeout.toString() === '' || isNaN(Number(timeout))) {
+                                            setTimeout(timeoutDefault);
+                                        } else if (Number(timeout) < timeoutMin) {
+                                            setTimeout(timeoutMin);
+                                        } else if (Number(timeout) > timeoutMax) {
+                                            setTimeout(timeoutMax);
                                         }
                                     }}
                                 />
