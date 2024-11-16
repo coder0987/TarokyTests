@@ -15,3 +15,12 @@ export type Player = {
   user: string;
   status: PlayerStatus;
 };
+
+export enum Difficulty {
+  Beginner = "Beginner",
+  Easy = "Easy",
+  Normal = "Normal",
+  Hard = "Hard",
+  Ruthless = "Ruthless",
+  AI = "AI",
+}

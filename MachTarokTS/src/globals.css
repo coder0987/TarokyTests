@@ -341,3 +341,11 @@
 .offline {
   @apply text-gray;
 }
+
+.seperator-fix {
+  height: 0.5px;
+}
+
+.check-box {
+  @apply bg-white text-online border border-navy;
+}
