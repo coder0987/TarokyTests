@@ -14,9 +14,9 @@ const Home = () => {
             <div className="flex flex-col justify-start mt-20 mb-40 w-full md:w-4/5 xl:w-3/4">
                 <img
                     src="/assets/logo/logo-full-navy.png"
-                    className='mb-60'
+                    className='mb-20'
                 />
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center mb-20">
                     <Button
                         className="big-play-button"
                         onClick={() => {
@@ -24,8 +24,8 @@ const Home = () => {
                         }
                         }>Play!</Button>
                 </div>
-                <h1 className="flex h1-bold w-full text-center">Welcome to Mach Tarok</h1>
-                <h2 className="flex h2-bold w-full text-center">play Tarok online</h2>
+                <h1 className="h1-bold w-full text-center">Welcome to Mach Tarok</h1>
+                <h2 className="h2-bold w-full text-center">play Tarok online</h2>
 
             </div>
         </div>
