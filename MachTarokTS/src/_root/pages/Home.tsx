@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { AspectRatio } from "@/components/ui/aspect-ratio"
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -7,7 +8,9 @@ const Home = () => {
     const navigate = useNavigate();
     return (
         <div className='flex flex-col justify-start w-full h-full'>
-            <img src="/assets/tarok-cards.jpg" className="m-0"></img>
+            <AspectRatio ratio={400 / 266} className='w-full p-1'>
+                <img src="/assets/tarok-cards.jpg" className="m-0 w-full" ></img>
+            </AspectRatio>
             <div className="flex flex-col justify-start mt-20 mb-40 w-full md:w-4/5 xl:w-3/4">
                 <img
                     src="/assets/logo/logo-full-navy.png"

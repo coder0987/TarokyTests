@@ -11,7 +11,7 @@ const Ranked = () => {
                 <Button
                     className='back-button m-2'
                     onClick={() => {
-                        // any other handling when leaving custom
+                        // any other handling when leaving ranked
                         navigate("/play");
                     }}>➤</Button>
             </div>
