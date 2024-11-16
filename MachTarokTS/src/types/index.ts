@@ -24,3 +24,10 @@ export enum Difficulty {
   Ruthless = "Ruthless",
   AI = "AI",
 }
+
+export type Room = {
+  numeral: string;
+  numPlayers: number;
+  numComputers: number;
+  availble: number;
+};
