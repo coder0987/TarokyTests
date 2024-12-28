@@ -2,6 +2,16 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
+
+/*
+    TODO: 
+        Make steps draggable between lists
+        Communicate with socketio server on changes - do this in Rules.tsx components
+        Add socketio verifications - rules component
+        Add 'edit' button on each step that brings client to the edit page for that step (Also. add step edit pages.)
+        Make the default a choice rather than a set-in-stone taroky default (should come from socketio server)
+*/
+
 const GamePhases = () => {
   const [phases, setPhases] = useState([
     {
