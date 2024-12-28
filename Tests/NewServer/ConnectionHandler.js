@@ -4,6 +4,7 @@
 */
 
 const Client = require('./Client.js');
+const Logger = require('./Logger.js');
 const AccountHandler = require('./AccountHandler.js');
 
 const SocketTools = {
@@ -16,17 +17,17 @@ const ConnectionHandler = {
     clients: [],
     callbacks: {},
     exists: (socketId) => {
-        return !!clients[socketId];
+        return !!ConnectionHandler.clients[socketId];
     },
     addClient: (socketId, args) => {
-        this.clients[socketId] = new Client(args);
+        ConnectionHandler.clients[socketId] = new Client(args);
     },
     loadData: (args) => {
-        this.clients[args.socketId].userInfo = args.info;
+        ConnectionHandler.clients[args.socketId].userInfo = args.info;
     },
     signInSuccess: (args) => {
-        this.clients[args.socketId].username = args.username;
-        this.clients[args.socketId].username = args.token;
+        ConnectionHandler.clients[args.socketId].username = args.username;
+        ConnectionHandler.clients[args.socketId].username = args.token;
     }
 };
 
@@ -47,7 +48,7 @@ io.on('connection', (socket) => {
         SOCKET_LIST[socketId] = socket;
 
         AccountHandler.signIn({ username: socket.handshake.auth.username, token: socket.handshake.auth.signInToken, id: socketId });
-        Logger.event('join',socketId);
+        Logger.event('join',{socketId: socketId});
     }
 
 });

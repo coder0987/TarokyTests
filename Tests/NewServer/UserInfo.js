@@ -1,9 +1,9 @@
 class UserInfo {
-    constructor(args) {
+    constructor(args = {}) {
         this._avatar = args.avatar || 0;
         this._elo = args.elo || 300;
         this._admin = args.admin || false;
-        this._settings = new UserSettings(args.settings) || [];
+        this._settings = args.settings ? new UserSettings(args.settings) : [];
         this._chat = args.chat || true;
         this._deck = args.deck || 0;
     }

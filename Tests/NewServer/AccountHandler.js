@@ -45,11 +45,12 @@ const AccountHandler = {
             return;
         }
         args.name = username.toLowerCase();
-        if (this.cache[args.name] == token) {
+        if (AccountHandler.cache[args.name] == token) {
             ConnectionHandler.signInSuccess(args);
             Database.loadUser({ username: args.name, socketId: args.socketId });
+        } else {
+            AccountHandlerTools.validate(args);
         }
-        AccountHandlerTools.validate(args);
     }
 }
 

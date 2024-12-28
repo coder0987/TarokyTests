@@ -5,10 +5,10 @@ const Logger = {
     event: (evt, args) => {
         switch (evt) {
             case 'join':
-                this.log('Player joined with socket id ' + args.socketId);
+                Logger.log('Player joined with socket id ' + args.socketId);
                 break;
             default:
-                this.log('Event ' + evt + ' with args ' + JSON.stringify(args));
+                Logger.log('Event ' + evt + ' with args ' + JSON.stringify(args));
         }
     }
 }
