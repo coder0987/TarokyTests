@@ -10,3 +10,4 @@ export { default as Play } from "./Play";
 export { default as Ranked } from "./Ranked";
 export { default as SignIn } from "./SignIn";
 export { default as Updates } from "./Updates";
+export { default as Rules } from "./RulesEditor";
