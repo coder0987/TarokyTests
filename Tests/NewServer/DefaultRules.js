@@ -8,6 +8,7 @@ const { GAME_TYPES, TARGETS, ACTIONS, ITEMS } = require('./Constants.js');
 const Instruction = require('./Instruction.js');
 
 const DefaultRules = {
+    templateList: ['WestfestTaroky'],
     WestfestTaroky: new Rules( {
         basic: {
             deck: Deck.DECK_TYPES.tarok,
@@ -52,3 +53,5 @@ const DefaultRules = {
         }
     } ),
 }
+
+module.exports = DefaultRules;

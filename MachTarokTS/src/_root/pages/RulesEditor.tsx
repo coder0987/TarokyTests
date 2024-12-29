@@ -1,8 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import RulesNav from '@/components/shared/RulesNav';
-import GamePhases from './GamePhases';
+import { General, GamePhases } from './';
 import { useState } from 'react';
+import RulesPhases from './RulesPhases';
 
 /*
     TODO:
@@ -62,7 +63,15 @@ import { useState } from 'react';
 const Rules = () => {
     const navigate = useNavigate();
 
-    const [activeTab, setActiveTab] = useState('general'); // Default active tab
+    const [activeTab, setActiveTab] = useState('general');
+
+    const [phases, setPhases] = useState(['Pre-bid', 'Bid', 'Play', 'End']);
+    const [steps, setSteps] = useState({
+        'Pre-bid': ['Shuffle', 'Cut', 'Deal'],
+        'Bid': ['Bid', 'Draw'],
+        'Play': ['Lead', 'Follow', 'Win'],
+        'End': ['Count', 'Pay', 'Reset']
+    });
 
     const handleTabClick = (tabId : string) => {
         setActiveTab(tabId);
@@ -71,14 +80,20 @@ const Rules = () => {
     return (
         <div className='w-full h-full flex flex-col items-center'>
             <div className='w-full flex flex-row items-start'>
-                <RulesNav activeTab={activeTab} onTabClick={handleTabClick} />
+                <RulesNav activeTab={activeTab} onTabClick={handleTabClick} dynamicTabs={phases} />
             </div>
-            {activeTab === 'general' && <div>Rules Editor Content Here</div>}
+            {activeTab === 'general' && <General />}
             {activeTab === 'order' && <GamePhases />}
-            {activeTab === 'pre-bid' && <div>Pre-Bid Content Here</div>}
-            {activeTab === 'bid' && <div>Bid Content Here</div>}
-            {activeTab === 'play' && <div>Play Content Here</div>}
-            {activeTab === 'end' && <div>End Content Here</div>}
+            {phases.map((value, key) => {
+                if (activeTab === value) {
+                    return (
+                        <RulesPhases key={key} steps={steps[value]} />
+                    );
+                }
+                return (
+                    <></>
+                );
+            })}
         </div>
     )
 }

@@ -40,7 +40,7 @@ class Deck {
     }
 
 
-    DECK_TYPES = {
+    static DECK_TYPES = {
         standard: 0,
         tarok: 1
     }

@@ -3,7 +3,7 @@
 */
 
 class Rules {
-    constructor(args) {
+    constructor(args = {}) {
         
     }
 }

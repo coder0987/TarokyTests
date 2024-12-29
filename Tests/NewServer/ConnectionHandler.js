@@ -6,10 +6,20 @@
 const Client = require('./Client.js');
 const Logger = require('./Logger.js');
 const AccountHandler = require('./AccountHandler.js');
+const DefaultRules = require('./DefaultRules.js');
 
 const SocketTools = {
     verifySocketId: (socketId) => {
         return !(socketId === undefined || isNaN(socketId) || socketId == 0 || socketId == null);
+    },
+    verifyRulesReq: (type, data) => {
+        if (typeof type !== 'string' || typeof data === 'function') {
+            return false;
+        }
+        if (type !== 'get' && type !== 'set' && type !== 'template') {
+            return false;
+        }
+        return true;
     }
 }
 
@@ -28,6 +38,12 @@ const ConnectionHandler = {
     signInSuccess: (args) => {
         ConnectionHandler.clients[args.socketId].username = args.username;
         ConnectionHandler.clients[args.socketId].username = args.token;
+    },
+    sendTemplate: (args) => {
+        SOCKET_LIST[args.socketId].emit('template', args.template);
+    },
+    sendTemplateList: (args) => {
+        SOCKET_LIST[args.socketId].emit('templateList', DefaultRules.templateList);
     }
 };
 
@@ -50,6 +66,13 @@ io.on('connection', (socket) => {
         AccountHandler.signIn({ username: socket.handshake.auth.username, token: socket.handshake.auth.signInToken, id: socketId });
         Logger.event('join',{socketId: socketId});
     }
+
+    socket.on('rules', (type, data) => {
+        if (!SocketTools.verifyRulesReq(type,data)) {
+            return;
+        }
+        RulesHandler.userRequest({rules: ConnectionHandler.clients[socketId].rules, type: type, data: data, socketId: socketId});
+    })
 
 });
 
