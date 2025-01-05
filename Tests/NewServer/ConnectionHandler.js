@@ -6,6 +6,7 @@
 const Client = require('./Client.js');
 const Logger = require('./Logger.js');
 const AccountHandler = require('./AccountHandler.js');
+const RulesHandler = require('./RulesHandler.js');
 const DefaultRules = require('./DefaultRules.js');
 
 const SocketTools = {
@@ -77,7 +78,16 @@ io.on('connection', (socket) => {
     socket.on('getTemplates', (callback) => {
         callback(DefaultRules.templateList);
     });
-    
+
+    socket.on('useTemplate', (template, callback) => {
+        RulesHandler.useTemplate(ConnectionHandler.clients[socketId].rules, template);
+        callback(ConnectionHandler.clients[socketId].rules.phasesList);
+    });
+
+    socket.on('getPhases', (callback) => {
+        callback(ConnectionHandler.clients[socketId].rules.phasesList);
+    });
+
     socket.on('getCustomTemplates', (callback) => {
         callback(ConnectionHandler.clients[socketId].templates);
     });

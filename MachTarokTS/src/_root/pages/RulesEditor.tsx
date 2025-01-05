@@ -72,9 +72,26 @@ const Rules = () => {
     const [customTemplates, setCustomTemplates] = useState(null);
     const [currentRules, setCurrentRules] = useState(null);
 
+    const handleTemplateSelect = (template: string) => {
+        setCurrentStep(1);
+        if (template === 'blank') {
+
+        } else if (template === 'continue') {
+            socket.emit('getPhases', (response : string[]) => {
+                setPhases(response);
+            })
+        } else {
+            socket.emit('useTemplate', template, (response : string[]) => {
+                setPhases(response);
+            });
+        }
+        
+    }
+
     //Step 2: Customize rules
     const [phases, setPhases] = useState(null);
     const [steps, setSteps] = useState(null);
+    const [basic, setBasic] = useState(null);
 
     const handleTabClick = (tabId : string) => {
         setActiveTab(tabId);
@@ -117,7 +134,7 @@ const Rules = () => {
 
     if (currentStep === 0) {
         return (
-            <TemplateSelect templates={templates} saves={customTemplates} />
+            <TemplateSelect templates={templates} saves={customTemplates} handleTemplateSelect={handleTemplateSelect} />
         )
     }
     
@@ -126,12 +143,12 @@ const Rules = () => {
             <div className='w-full flex flex-row items-start'>
                 <RulesNav activeTab={activeTab} onTabClick={handleTabClick} dynamicTabs={phases} />
             </div>
-            {activeTab === 'general' && <General />}
+            {activeTab === 'general' && <General basic={basic} />}
             {activeTab === 'order' && <GamePhases />}
-            {phases.map((value, key) => {
+            {phases && phases.map((value : string, key : string) => {
                 if (activeTab === value) {
                     return (
-                        <RulesPhases key={key} steps={steps[value]} />
+                        <RulesPhases key={key} steps={steps ? steps[value] : []} />
                     );
                 }
                 return (

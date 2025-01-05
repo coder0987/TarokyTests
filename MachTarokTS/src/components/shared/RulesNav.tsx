@@ -39,7 +39,7 @@ const RulesNav: React.FC<RulesNavProps> = ({ activeTab, onTabClick, dynamicTabs 
           </li>
 
           {/* Dynamic tabs */}
-          {dynamicTabs.map((tab) => (
+          {dynamicTabs && dynamicTabs.map((tab) => (
             <li key={tab} className="nav-item">
               <a
                 className={`nav-link tab-link cursor-pointer p-2 rounded-md transition-all ${
