@@ -1,9 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import RulesNav from '@/components/shared/RulesNav';
-import { General, GamePhases } from './';
-import { useState } from 'react';
-import RulesPhases from './RulesPhases';
+import { General, GamePhases, RulesPhases, TemplateSelect } from './';
+import { useEffect, useState } from 'react';
+import { useSocket } from '@/context/SocketContext';
 
 /*
     TODO:
@@ -65,18 +65,62 @@ const Rules = () => {
 
     const [activeTab, setActiveTab] = useState('general');
 
-    const [phases, setPhases] = useState(['Pre-bid', 'Bid', 'Play', 'End']);
-    const [steps, setSteps] = useState({
-        'Pre-bid': ['Shuffle', 'Cut', 'Deal'],
-        'Bid': ['Bid', 'Draw'],
-        'Play': ['Lead', 'Follow', 'Win'],
-        'End': ['Count', 'Pay', 'Reset']
-    });
+    const [currentStep, setCurrentStep] = useState(0); // 0 = template, 1 = rules
+
+    //Step 1: Choose a template
+    const [templates, setTemplates] = useState(null);
+    const [customTemplates, setCustomTemplates] = useState(null);
+    const [currentRules, setCurrentRules] = useState(null);
+
+    //Step 2: Customize rules
+    const [phases, setPhases] = useState(null);
+    const [steps, setSteps] = useState(null);
 
     const handleTabClick = (tabId : string) => {
         setActiveTab(tabId);
     };
+    
+    //Socket
+    const { socket } = useSocket();
 
+    const SocketHandler = {
+        updatePhaseList: (phases) => {
+            setPhases(phases);
+            if (socket) {
+                socket.emit('rules', 'set', phases);
+            }
+        },
+        updatePhaseSteps: (steps) => {
+
+        }
+    }
+
+    useEffect(() => {
+        if (socket) {
+          socket.emit('getTemplates', (response : string[]) => {
+            if (typeof response === 'undefined' || !response) {
+                return;
+            }
+            setTemplates(response);
+          });
+          socket.emit('getCustomTemplates', (response : string[]) => {
+            if (typeof response === 'undefined' || !response) {
+                return;
+            }
+            setCustomTemplates(response);
+          });
+          socket.on('rules', (type, data) => {
+
+          });
+        }
+      }, [socket]);
+
+    if (currentStep === 0) {
+        return (
+            <TemplateSelect templates={templates} saves={customTemplates} />
+        )
+    }
+    
     return (
         <div className='w-full h-full flex flex-col items-center'>
             <div className='w-full flex flex-row items-start'>

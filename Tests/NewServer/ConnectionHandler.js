@@ -74,6 +74,13 @@ io.on('connection', (socket) => {
         RulesHandler.userRequest({rules: ConnectionHandler.clients[socketId].rules, type: type, data: data, socketId: socketId});
     })
 
+    socket.on('getTemplates', (callback) => {
+        callback(DefaultRules.templateList);
+    });
+    
+    socket.on('getCustomTemplates', (callback) => {
+        callback(ConnectionHandler.clients[socketId].templates);
+    });
 });
 
 module.exports = ConnectionHandler;
