@@ -12,6 +12,7 @@ import { Difficulty } from '@/types';
 import { Select } from '@radix-ui/react-select';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import SettingsMenu from '@/components/shared/SettingsMenu';
 
 
 const timeoutMin = 15;
@@ -97,6 +98,8 @@ const Host = () => {
                         <div><Button className="button-red w-[75px]">Start</Button></div>
                     </div>
                     <Separator className='my-4 bg-gray seperator-fix' />
+                    <SettingsMenu />
+                    {/*
                     <div className='flex flex-row justify-between w-full'>
                         <div className="flex flex-col justify-start gap-4 w-1/2">
                             <div className='flex flex-row justify-between'><span>Visibility: </span> <Button className='button-white w-[125px] py-1 h-7 border border-navy' onClick={() => toggleRoomVisibility()}>{roomVisibility}</Button></div>
@@ -126,7 +129,7 @@ const Host = () => {
                         <div className='flex flex-col justify-start gap-1 w-1/2 items-end'>
 
                         </div>
-                    </div>
+                    </div>*/}
 
                 </div>
 
