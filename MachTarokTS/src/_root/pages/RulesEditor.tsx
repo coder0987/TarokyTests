@@ -5,6 +5,8 @@ import { General, GamePhases, RulesPhases, TemplateSelect } from './';
 import { useEffect, useState } from 'react';
 import { useSocket } from '@/context/SocketContext';
 
+import { BasicRules } from "@/types";
+
 /*
     TODO:
         The page should open to a template page. Ex:
@@ -72,17 +74,33 @@ const Rules = () => {
     const [customTemplates, setCustomTemplates] = useState(null);
     const [currentRules, setCurrentRules] = useState(null);
 
+    const fetchSteps = async () => {
+        if (!phases) {return;}
+        
+        if (socket) {
+            socket.emit('getSteps', (response : {[key: string]: any[]}) => {
+                setSteps(response);
+            });
+        }
+    
+        
+    };
+    
+    
+
     const handleTemplateSelect = (template: string) => {
         setCurrentStep(1);
         if (template === 'blank') {
 
         } else if (template === 'continue') {
-            socket.emit('getPhases', (response : string[]) => {
+            socket && socket.emit('getPhases', (response : string[]) => {
                 setPhases(response);
+                fetchSteps();
             })
         } else {
-            socket.emit('useTemplate', template, (response : string[]) => {
+            socket && socket.emit('useTemplate', template, (response : string[]) => {
                 setPhases(response);
+                fetchSteps();
             });
         }
         
@@ -91,7 +109,7 @@ const Rules = () => {
     //Step 2: Customize rules
     const [phases, setPhases] = useState(null);
     const [steps, setSteps] = useState(null);
-    const [basic, setBasic] = useState(null);
+    const [basic, setBasic] = useState<BasicRules | null>(null);
 
     const handleTabClick = (tabId : string) => {
         setActiveTab(tabId);
@@ -151,9 +169,6 @@ const Rules = () => {
                         <RulesPhases key={key} steps={steps ? steps[value] : []} />
                     );
                 }
-                return (
-                    <></>
-                );
             })}
         </div>
     )

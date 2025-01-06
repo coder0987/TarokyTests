@@ -1,17 +1,14 @@
+import { BasicRules } from "@/types";
+
 const DECK_TYPES = {
   standard: 0,
   tarok: 1
 }
+interface GeneralProps {
+  basic: BasicRules;
+}
 
-const General = (basic: {
-  deck: number,
-  numDecks: number,
-  deckScaling: number,
-  playerMin: number,
-  playerMax: number,
-  type: number,
-  start: string
-}) => {
+const General: React.FC<GeneralProps> = ({ basic }) => {
   
 
   return (

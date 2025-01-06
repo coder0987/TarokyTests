@@ -31,3 +31,13 @@ export type Room = {
   numComputers: number;
   availble: number;
 };
+
+export type BasicRules = {
+  deck: number;
+  numDecks: number;
+  deckScaling: number;
+  playerMin: number;
+  playerMax: number;
+  type: number;
+  start: string;
+}

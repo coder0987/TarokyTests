@@ -80,13 +80,20 @@ io.on('connection', (socket) => {
     });
 
     socket.on('useTemplate', (template, callback) => {
+        Logger.log('use template ' + socketId)
         RulesHandler.useTemplate(ConnectionHandler.clients[socketId].rules, template);
         callback(ConnectionHandler.clients[socketId].rules.phasesList);
     });
 
     socket.on('getPhases', (callback) => {
+        Logger.log('get phases ' + socketId)
         callback(ConnectionHandler.clients[socketId].rules.phasesList);
     });
+
+    socket.on('getSteps', (phase, callback) => {
+        Logger.log('get steps ' + socketId)
+        callback(ConnectionHandler.clients[socketId].rules.stepsList);
+    })
 
     socket.on('getCustomTemplates', (callback) => {
         callback(ConnectionHandler.clients[socketId].templates);
