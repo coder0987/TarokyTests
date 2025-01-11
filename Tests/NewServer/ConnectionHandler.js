@@ -135,7 +135,7 @@ io.on("connection", (socket) => {
         ConnectionHandler.clients[socketId].rules.steps = newSteps;
         callback(ConnectionHandler.clients[socketId].rules.stepsList, ConnectionHandler.clients[socketId].rules.phasesList);
     });
-    
+
   socket.on("getPhases", (callback) => {
     Logger.log("get phases " + socketId);
     callback(
@@ -147,6 +147,17 @@ io.on("connection", (socket) => {
   socket.on("getSteps", (callback) => {
     Logger.log("get steps " + socketId);
     callback(ConnectionHandler.clients[socketId].rules.stepsList);
+  });
+
+  socket.on("getBasicRules", (callback) => {
+    Logger.log("get basic " + socketId);
+    callback(ConnectionHandler.clients[socketId].rules.basic);
+  });
+
+  socket.on("setBasicRules", (basic, callback) => {
+    Logger.log("set basic " + socketId);
+    ConnectionHandler.clients[socketId].rules.basic = basic;
+    callback(ConnectionHandler.clients[socketId].rules.basic);
   });
 
   socket.on("getCustomTemplates", (callback) => {

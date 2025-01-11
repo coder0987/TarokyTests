@@ -93,6 +93,20 @@ class Rules {
         }
     }
 
+    set basic(basic) {
+        let {
+            deck = this._basic ? this._basic.deck : undefined,
+            numDecks = this._basic ? this._basic.numDecks : undefined,
+            deckScaling = this._basic ? this._basic.deckScaling : undefined,
+            playerMin = this._basic ? this._basic.playerMin : undefined,
+            playerMax = this._basic ? this._basic.playerMax : undefined,
+            type = this._basic ? this._basic.type : undefined,
+            start = this._basic ? this._basic.start : undefined,
+        } = basic || {};
+    
+        this._basic = { deck, numDecks, deckScaling, playerMin, playerMax, type, start };
+    }
+
     get phases() {
         return this._phases;
     }

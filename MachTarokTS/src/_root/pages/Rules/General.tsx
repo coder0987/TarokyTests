@@ -9,20 +9,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
+
+/*
+export type BasicRules = {
+  deck: DeckType;
+  numDecks: number;
+  deckScaling: number;
+  playerMin: number;
+  playerMax: number;
+  type: number;
+  start: string;
+};
+*/
 
 interface GeneralProps {
   basic: BasicRules;
+  changeBasic: (basic : BasicRules) => void;
 }
 
-const General: React.FC<GeneralProps> = ({ basic }) => {
+const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
 
   const [deckType, setDeckType] = useState<DeckType>(DeckType.Standard);
   const [numDecks, setNumDecks] = useState<number>(1);
   const [deckScaling, setDeckScaling] = useState<number>(0);
   const [minimumPlayers, setMinimumPlayers] = useState<number>(2);
   const [maximumPlayers, setMaximumPlayers] = useState<number>(4);
+
+  useEffect(() => {
+    setDeckType(basic.deck);
+    setNumDecks(basic.numDecks);
+    setDeckScaling(basic.deckScaling);
+    setMinimumPlayers(basic.playerMin);
+    setMaximumPlayers(basic.playerMax);
+  }, [basic])
 
   const handleNumberInputChange = (value: string, min: number, max: number, setter: React.Dispatch<React.SetStateAction<number>>) => {
     // Remove any non-digit characters

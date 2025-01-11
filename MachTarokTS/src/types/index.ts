@@ -33,7 +33,7 @@ export type Room = {
 };
 
 export type BasicRules = {
-  deck: number;
+  deck: DeckType;
   numDecks: number;
   deckScaling: number;
   playerMin: number;

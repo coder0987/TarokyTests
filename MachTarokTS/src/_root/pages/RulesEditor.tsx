@@ -148,6 +148,14 @@ const Rules = () => {
         }
     }
 
+    const changeBasic = (basic : BasicRules) => {
+        if (socket) {
+            socket.emit('setBasicRules', basic, (returnBasic : BasicRules) => {
+                setBasic(returnBasic);
+            })
+        }
+    }
+
     if (currentStep === 0) {
         return (
             <TemplateSelect templates={templates} saves={customTemplates} handleTemplateSelect={handleTemplateSelect} />
@@ -165,7 +173,7 @@ const Rules = () => {
                     })}
                 </TabsList>
                 <TabsContent value="general" key="general-content">
-                    <General basic={basic} />
+                    <General basic={basic} changeBasic={changeBasic} />
                 </TabsContent>
                 <TabsContent value="order" key="order-content">
                     <GamePhases phases={phases} changePhases={changePhases} steps={steps} changeSteps={changeSteps} changeStepsAndPhases={changeStepsAndPhases} />
