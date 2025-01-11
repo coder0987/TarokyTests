@@ -26,7 +26,7 @@ export type BasicRules = {
 
 interface GeneralProps {
   basic: BasicRules;
-  changeBasic: (basic : BasicRules) => void;
+  changeBasic: (basic: BasicRules) => void;
 }
 
 const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
@@ -61,8 +61,36 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
       // Ensure we're setting a whole number by removing any decimals
       setter(Math.floor(numValue));
     }
-  }
+  };
 
+  const handleDeckTypeChange = () => {
+    basic.deck = deckType;
+    changeBasic(basic);
+  };
+
+  const handleDeckNumChange = (value: string) => {
+    handleNumberInputChange(value, 1, 50, setNumDecks);
+    basic.numDecks = numDecks;
+    changeBasic(basic);
+  };
+
+  const handleDeckScalingChange = (value: string) => {
+    handleNumberInputChange(value, 1, 50, setDeckScaling);
+    basic.deckScaling = deckScaling;
+    changeBasic(basic);
+  };
+
+  const handleMinPlayerChange = (value: string) => {
+    handleNumberInputChange(value, 1, 50, setNumDecks);
+    basic.deck = deckType;
+    changeBasic(basic);
+  };
+
+  const handleMaxPlayerChange = (value: string) => {
+    handleNumberInputChange(value, 1, 50, setNumDecks);
+    basic.deck = deckType;
+    changeBasic(basic);
+  };
   return (
     <div className="w-full flex flex-col md:flex-row justify-center gap-3">
       <div className="flex flex-col gap-2 bg-white shadow-lg rounded-lg p-4 min-w-[320px] items-center" id="general-deck-and-players">
@@ -71,7 +99,7 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
           <div>
             <Select>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={deckType} />
+                <SelectValue onChange={handleDeckTypeChange} placeholder={deckType} />
               </SelectTrigger>
               <SelectContent className="selector-content">
                 <SelectItem value={DeckType.Standard}>Standard</SelectItem>
@@ -87,7 +115,7 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
               className="w-[75px]"
               type="number"
               value={numDecks}
-              onChange={(e) => handleNumberInputChange(e.target.value, 1, 50, setNumDecks)}
+              onChange={(e) => handleDeckNumChange(e.target.value)}
               autoComplete="off"
             />
           </div>
@@ -99,7 +127,7 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
               className="w-[75px]"
               type="number"
               value={deckScaling}
-              onChange={(e) => handleNumberInputChange(e.target.value, 0, 50, setDeckScaling)}
+              onChange={(e) => handleDeckScalingChange(e.target.value)}
               autoComplete="off"
             />
           </div>
@@ -111,7 +139,7 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
               className="w-[75px]"
               type="number"
               value={minimumPlayers}
-              onChange={(e) => handleNumberInputChange(e.target.value, 1, 16, setMinimumPlayers)}
+              onChange={(e) => handleMinPlayerChange(e.target.value)}
               autoComplete="off"
             />
           </div>
@@ -123,7 +151,7 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
               className="w-[75px]"
               type="number"
               value={maximumPlayers}
-              onChange={(e) => handleNumberInputChange(e.target.value, 2, 16, setMaximumPlayers)}
+              onChange={(e) => handleMaxPlayerChange(e.target.value)}
               autoComplete="off"
             />
           </div>
