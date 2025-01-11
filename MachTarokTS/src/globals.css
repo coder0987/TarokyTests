@@ -187,24 +187,19 @@
   .selector-content {
     opacity: 1;
     z-index: 1000;
-    @apply bg-dark-2;
+    @apply bg-white;
   }
 
   .tooltip-content {
     opacity: 1;
     z-index: 1000;
-    @apply bg-dark-2;
+    @apply bg-white;
   }
 
   .card {
     @apply bg-navy text-white border-black rounded-lg;
     border: 0px solid rgb(9 9 10 / var(--tw-bg-opacity));
   }
-}
-
-.tabs-trigger[data-state="active"] {
-  background-color: #3b82f6;
-  color: #fff;
 }
 
 .toast-success {

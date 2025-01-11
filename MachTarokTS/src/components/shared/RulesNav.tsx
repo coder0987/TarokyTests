@@ -19,9 +19,8 @@ const RulesNav: React.FC<RulesNavProps> = ({ activeTab, onTabClick, dynamicTabs 
           {/* Fixed tabs */}
           <li className="nav-item">
             <a
-              className={`nav-link tab-link cursor-pointer p-2 rounded-md transition-all ${
-                activeTab === 'general' ? 'bg-blue-500 text-white' : 'text-blue-500 hover:bg-blue-100'
-              }`}
+              className={`nav-link tab-link cursor-pointer p-2 rounded-md transition-all ${activeTab === 'general' ? 'bg-blue-500 text-white' : 'text-blue-500 hover:bg-blue-100'
+                }`}
               onClick={() => handleTabClick('general')}
             >
               General
@@ -29,9 +28,8 @@ const RulesNav: React.FC<RulesNavProps> = ({ activeTab, onTabClick, dynamicTabs 
           </li>
           <li className="nav-item">
             <a
-              className={`nav-link tab-link cursor-pointer p-2 rounded-md transition-all ${
-                activeTab === 'order' ? 'bg-red-500 text-white' : 'text-red-500 hover:bg-red-100'
-              }`}
+              className={`nav-link tab-link cursor-pointer p-2 rounded-md transition-all ${activeTab === 'order' ? 'bg-red-500 text-white' : 'text-red-500 hover:bg-red-100'
+                }`}
               onClick={() => handleTabClick('order')}
             >
               Order
@@ -42,11 +40,10 @@ const RulesNav: React.FC<RulesNavProps> = ({ activeTab, onTabClick, dynamicTabs 
           {dynamicTabs && dynamicTabs.map((tab) => (
             <li key={tab} className="nav-item">
               <a
-                className={`nav-link tab-link cursor-pointer p-2 rounded-md transition-all ${
-                  activeTab === tab
+                className={`nav-link tab-link cursor-pointer p-2 rounded-md transition-all ${activeTab === tab
                     ? 'bg-green-500 text-white'
                     : 'text-green-500 hover:bg-green-100'
-                }`}
+                  }`}
                 onClick={() => handleTabClick(tab)}
               >
                 {tab}

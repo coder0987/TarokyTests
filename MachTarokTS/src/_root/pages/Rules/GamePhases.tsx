@@ -118,8 +118,8 @@ const GamePhases: React.FC<GamePhasesProps> = ({ steps, phases, changeSteps, cha
   };
 
   return (
-    <div className="tab-content container-fluid w-full bg-white shadow-lg rounded-lg p-4" id="order">
-      <div className="row space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="w-full bg-white shadow-lg rounded-lg p-4" id="order">
+      <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         {dragDropList && dragDropList.map((phase) => (
           <div key={phase.id} className="col flex flex-col bg-gray-100 rounded-lg p-4 border border-gray-300 shadow-sm">
             <h2 className="text-2xl font-semibold text-blue-600 mb-4">{phase.name}</h2>

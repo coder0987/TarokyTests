@@ -2,6 +2,12 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import RulesNav from '@/components/shared/RulesNav';
 import { General, GamePhases, RulesPhases, TemplateSelect } from './';
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs";
 import { useEffect, useState } from 'react';
 import { useSocket } from '@/context/SocketContext';
 
@@ -65,8 +71,6 @@ import { BasicRules, StepsList } from "@/types";
 const Rules = () => {
     const navigate = useNavigate();
 
-    const [activeTab, setActiveTab] = useState('general');
-
     const [currentStep, setCurrentStep] = useState(0); // 0 = template, 1 = rules
 
     //Step 1: Choose a template
@@ -89,7 +93,7 @@ const Rules = () => {
                 setSteps(stepsList);
             });
         }
-        
+
     }
 
     //Step 2: Customize rules
@@ -97,10 +101,6 @@ const Rules = () => {
     const [steps, setSteps] = useState<StepsList | null>(null);
     const [basic, setBasic] = useState<BasicRules | null>(null);
 
-    const handleTabClick = (tabId : string) => {
-        setActiveTab(tabId);
-    };
-    
     //Socket
     const { socket } = useSocket();
 
@@ -119,7 +119,7 @@ const Rules = () => {
             setCustomTemplates(response);
           });
         }
-      }, [socket]);
+    }, [socket]);
 
     const changePhases = (newPhases : string[]) => {
         //Send phases to socketio
@@ -153,21 +153,32 @@ const Rules = () => {
             <TemplateSelect templates={templates} saves={customTemplates} handleTemplateSelect={handleTemplateSelect} />
         )
     }
-    
+
     return (
         <div className='w-full h-full flex flex-col items-center'>
-            <div className='w-full flex flex-row items-start'>
-                <RulesNav activeTab={activeTab} onTabClick={handleTabClick} dynamicTabs={phases} />
-            </div>
-            {activeTab === 'general' && <General basic={basic} />}
-            {activeTab === 'order' && <GamePhases phases={phases} changePhases={changePhases} steps={steps} changeSteps={changeSteps} changeStepsAndPhases={changeStepsAndPhases} />}
-            {phases && phases.map((value : string, key : string) => {
-                if (activeTab === value) {
+            <Tabs defaultValue="general" className='w-full'>
+                <TabsList className="w-full" key="tabs-list">
+                    <TabsTrigger className="text-lg font-semibold" value="general" key="general-trigger">General</TabsTrigger>
+                    <TabsTrigger className="text-lg font-semibold" value="order" key="order-trigger">Order</TabsTrigger>
+                    {phases && phases.map((value: string, key: string) => {
+                        return <TabsTrigger className="text-lg" value={value} key={value + "-trigger"}>{value.charAt(0).toUpperCase() + value.slice(1)}</TabsTrigger>;
+                    })}
+                </TabsList>
+                <TabsContent value="general" key="general-content">
+                    <General basic={basic} />
+                </TabsContent>
+                <TabsContent value="order" key="order-content">
+                    <GamePhases phases={phases} changePhases={changePhases} steps={steps} changeSteps={changeSteps} changeStepsAndPhases={changeStepsAndPhases} />
+                </TabsContent>
+                {phases && phases.map((value: string, key: string) => {
                     return (
-                        <RulesPhases key={key} steps={steps ? steps[value] : []} />
+                        <TabsContent value={value} key={value + "-content"}>
+                            <RulesPhases key={key} steps={steps ? steps[value] : []} />
+                        </TabsContent>
                     );
-                }
-            })}
+                })}
+            </Tabs>
+
         </div>
     )
 }
