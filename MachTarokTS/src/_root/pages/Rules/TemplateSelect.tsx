@@ -4,10 +4,11 @@ import TemplateCard from './TemplateCard';
 interface TemplateSelectProps {
   templates: string[];
   saves: string[];
-  handleTemplateSelect: (templateName) => void;
+  handleTemplateSelect: (templateName : string) => void;
+  handleCustomTemplateSelect: (templateName : string) => void;
 }
 
-const TemplateSelect: React.FC<TemplateSelectProps> = ({ templates, saves, handleTemplateSelect }) => {
+const TemplateSelect: React.FC<TemplateSelectProps> = ({ templates, saves, handleTemplateSelect, handleCustomTemplateSelect }) => {
 
     const handleTemplateClick = (key : number) => {
         handleTemplateSelect(templates[key]);
@@ -44,8 +45,8 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ templates, saves, handl
                 {
                     templates.map((value, key) => {
                         return (
-                            <div key={key}>
-                                {value}
+                            <div key={key} className="cursor-pointer" onClick={() => handleCustomTemplateSelect(saves[key])}>
+                                <TemplateCard name={value} />
                             </div>
                         );
                     })

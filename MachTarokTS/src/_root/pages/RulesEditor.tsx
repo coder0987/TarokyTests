@@ -94,13 +94,22 @@ const Rules = () => {
             setPhases(null);
             setSteps(null);
             socket && socket.emit('useTemplate', template, (phasesList: string[], stepsList: StepsList, basic: BasicRules) => {
-
                 setPhases(phasesList);
                 setSteps(stepsList);
                 setBasic(basic);
             });
         }
+    }
 
+    const handleCustomTemplateSelect = (template : string) => {
+        setCurrentStep(1);
+        setPhases(null);
+        setSteps(null);
+        socket && socket.emit('useCustomTemplate', template, (phasesList: string[], stepsList: StepsList, basic: BasicRules) => {
+            setPhases(phasesList);
+            setSteps(stepsList);
+            setBasic(basic);
+        });
     }
 
     //Step 2: Customize rules
@@ -165,7 +174,7 @@ const Rules = () => {
 
     if (currentStep === 0) {
         return (
-            <TemplateSelect templates={templates} saves={customTemplates} handleTemplateSelect={handleTemplateSelect} />
+            <TemplateSelect templates={templates} saves={customTemplates} handleTemplateSelect={handleTemplateSelect} handleCustomTemplateSelect={handleCustomTemplateSelect} />
         )
     }
 
