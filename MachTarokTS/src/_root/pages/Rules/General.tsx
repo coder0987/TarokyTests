@@ -41,7 +41,7 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
 
   const handleNumberInputChange = (value: string, min: number, max: number, setter: React.Dispatch<React.SetStateAction<number>>) => {
     // Remove any non-digit characters
-    const cleanValue = value.replace(/\D/g, '');
+    const cleanValue = value.replace(/[^\d-]/g, '');
 
     // Convert to number, handling empty string case
     const numValue = cleanValue === '' ? 1 : Number(cleanValue);
@@ -77,22 +77,29 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
   };
 
   const handleMinPlayerChange = (value: string) => {
-    handleNumberInputChange(value, 1, 50, setNumDecks);
+    handleNumberInputChange(value, 1, 50, setMinimumPlayers);
     let newBasic = basic;
-    newBasic.deck = deckType;
+    newBasic.playerMin = minimumPlayers;
     changeBasic(newBasic);
   };
 
   const handleMaxPlayerChange = (value: string) => {
     const cleanValue = value.replace(/[^\d-]/g, '');
     const numValue = cleanValue === '' ? 1 : Number(cleanValue);
-    if (isNaN(numValue) || numValue <= 0) {
+    if (isNaN(numValue) || numValue <= -1) {
       setMaximumPlayers(-1);
-    } else {
+    } else if (numValue === 0) {
+      if (maximumPlayers === -1) {
+        setMaximumPlayers(1);
+      } else {
+        setMaximumPlayers(-1);
+      }
+    }
+    else {
       setMaximumPlayers(numValue);
     }
     let newBasic = basic;
-    newBasic.deck = deckType;
+    newBasic.playerMax = maximumPlayers;
     changeBasic(newBasic);
   };
 
