@@ -99,6 +99,10 @@ io.on("connection", (socket) => {
     callback(DefaultRules.templateList);
   });
 
+  socket.on("getCustomTemplates", (callback) => {
+    callback(RulesHandler.getUserTemplates(ConnectionHandler.clients[socketId].username));
+  });
+
   socket.on("useTemplate", (template, callback) => {
     Logger.log("use template " + socketId);
     RulesHandler.useTemplate(
@@ -111,6 +115,10 @@ io.on("connection", (socket) => {
       ConnectionHandler.clients[socketId].rules.stepsList,
       ConnectionHandler.clients[socketId].rules.basic
     );
+  });
+
+  socket.on('saveTemplate', (templateName) => {
+    RulesHandler.saveTemplate(ConnectionHandler.clients[socketId].rules, ConnectionHandler.clients[socketId].username, templateName);
   });
 
     socket.on('setPhases', (newPhases, callback) => {
@@ -159,10 +167,6 @@ io.on("connection", (socket) => {
     Logger.log("set basic " + socketId);
     ConnectionHandler.clients[socketId].rules.basic = basic;
     callback(ConnectionHandler.clients[socketId].rules.basic);
-  });
-
-  socket.on("getCustomTemplates", (callback) => {
-    callback(ConnectionHandler.clients[socketId].templates);
   });
 });
 

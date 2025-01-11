@@ -15,6 +15,14 @@ function getTemplateFiles(dirPath) {
     return txtFiles;
 }
 
+const sanitizeTemplateName = (name) => {
+    const sanitized = name.replace(/[^a-zA-Z0-9-_\.]/g, '').toLowerCase();
+
+    return sanitized.length > MAX_TEMPLATE_NAME_LENGTH
+        ? sanitized.slice(0, MAX_TEMPLATE_NAME_LENGTH)
+        : sanitized;
+};
+
 const RulesHandler = {
     useTemplate: (rules, templateName) => {
         if (!DefaultRules.getTemplate(templateName)) {return;}
@@ -39,6 +47,8 @@ const RulesHandler = {
         username = username.toLowerCase();
         const userTemplatesPath = path.join('./Templates', username);
 
+        templateName = sanitizeTemplateName(templateName);
+
         if (!fs.existsSync(userTemplatesPath)) {
             // Create the directory if it doesn't exist
             fs.mkdirSync(userTemplatesPath, { recursive: true });
@@ -58,6 +68,15 @@ const RulesHandler = {
             Logger.log(error);
             return false;
         }
+    },
+    getUserTemplates: (username) => {
+        if (username === 'Guest') {return [];}
+        username = username.toLowerCase();
+        const userTemplatesPath = path.join('./Templates', username);
+        if (!fs.existsSync(userTemplatesPath)) {
+            return [];
+        }
+        return getTemplateFiles(userTemplatesPath);
     }
 }
 
