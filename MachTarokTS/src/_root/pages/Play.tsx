@@ -74,6 +74,13 @@ const Play = () => {
                                 <CardContent className="pt-2 text-center text-3xl">Daily</CardContent>
                             </Card>}
                     </div>
+                    <Card
+                        className='card min-w-[320px] mb-3 hover:cursor-pointer'
+                        onClick={() => {
+                            navigate("/rules");
+                        }}>
+                        <CardContent className="pt-2 text-center text-3xl">Rules Editor</CardContent>
+                    </Card>
                     <div className="flex flex-row w-full">
                         <Input
                             ref={roomCodeInput}

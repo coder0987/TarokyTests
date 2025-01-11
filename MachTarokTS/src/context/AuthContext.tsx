@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const messageHandler = (event: MessageEvent) => {
-            if (event.origin !== 'https://sso.smach.us' && event.origin !== 'https://sso.samts.us') return;
+            if (event.origin !== 'https://sso.smach.us') return;
 
             const messageData = event.data as string;
 
