@@ -22,18 +22,6 @@ const RulesReader = {
         const key = match[1].trim();
         const value = match[2].trim();
 
-        // Handle phases and steps
-        if (key === 'phase') {
-            currentPhase = value;
-            if (!rules.phases[currentPhase]) {
-                rules.phases[currentPhase] = { steps: {}, order: [] };
-            }
-        } else if (key === 'step' && currentPhase) {
-            currentStep = value;
-            rules.phases[currentPhase].steps[currentStep] = [];
-            rules.phases[currentPhase].order.push(value);
-        }
-
         // Process basic properties
         if (key === "deck") {
           rules.basic.deck = value;
