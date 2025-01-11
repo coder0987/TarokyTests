@@ -83,14 +83,12 @@ const Rules = () => {
         if (template === 'blank') {
 
         } else if (template === 'continue') {
-            socket && socket.emit('getPhases', (phasesList : string[], stepsList : StepsList) => {
+            socket && socket.emit('getPhases', (phasesList: string[], stepsList: StepsList) => {
                 setPhases(phasesList);
                 setSteps(stepsList);
             });
         } else {
-            setPhases(null);
-            setSteps(null);
-            socket && socket.emit('useTemplate', template, (phasesList : string[], stepsList : StepsList) => {
+            socket && socket.emit('useTemplate', template, (phasesList: string[], stepsList: StepsList) => {
                 setPhases(phasesList);
                 setSteps(stepsList);
             });
@@ -108,51 +106,51 @@ const Rules = () => {
 
     useEffect(() => {
         if (socket) {
-          socket.emit('getTemplates', (response : string[]) => {
-            if (typeof response === 'undefined' || !response) {
-                return;
-            }
-            setTemplates(response);
-          });
-          socket.emit('getCustomTemplates', (response : string[]) => {
-            if (typeof response === 'undefined' || !response) {
-                return;
-            }
-            setCustomTemplates(response);
-          });
+            socket.emit('getTemplates', (response: string[]) => {
+                if (typeof response === 'undefined' || !response) {
+                    return;
+                }
+                setTemplates(response);
+            });
+            socket.emit('getCustomTemplates', (response: string[]) => {
+                if (typeof response === 'undefined' || !response) {
+                    return;
+                }
+                setCustomTemplates(response);
+            });
         }
     }, [socket]);
 
-    const changePhases = (newPhases : string[]) => {
+    const changePhases = (newPhases: string[]) => {
         //Send phases to socketio
         if (socket) {
-            socket.emit('setPhases', newPhases, (returnPhases : string[]) => {
+            socket.emit('setPhases', newPhases, (returnPhases: string[]) => {
                 setPhases(returnPhases);
             })
         }
     }
 
-    const changeSteps = (newSteps : StepsList) => {
+    const changeSteps = (newSteps: StepsList) => {
         //Send phases to socketio
         if (socket) {
-            socket.emit('setSteps', newSteps, (returnSteps : StepsList) => {
+            socket.emit('setSteps', newSteps, (returnSteps: StepsList) => {
                 setSteps(returnSteps);
             })
         }
     }
 
-    const changeStepsAndPhases = (newSteps : StepsList, newPhases : string[]) => {
+    const changeStepsAndPhases = (newSteps: StepsList, newPhases: string[]) => {
         if (socket) {
-            socket.emit('setStepsAndPhases', newSteps, newPhases, (returnSteps : StepsList, returnPhases : string[]) => {
+            socket.emit('setStepsAndPhases', newSteps, newPhases, (returnSteps: StepsList, returnPhases: string[]) => {
                 setSteps(returnSteps);
                 setPhases(returnPhases);
             })
         }
     }
 
-    const changeBasic = (basic : BasicRules) => {
+    const changeBasic = (basic: BasicRules) => {
         if (socket) {
-            socket.emit('setBasicRules', basic, (returnBasic : BasicRules) => {
+            socket.emit('setBasicRules', basic, (returnBasic: BasicRules) => {
                 setBasic(returnBasic);
             })
         }
