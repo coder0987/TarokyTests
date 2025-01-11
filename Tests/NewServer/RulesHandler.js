@@ -33,7 +33,10 @@ const RulesHandler = {
         _.merge(rules, _.cloneDeep(template));
     },
     useCustomTemplate: (rules, username, templateName) => {
-        let rule = RulesReader.loadJSON('./Templates/' + username.toLowerCase() + '/' + templateName + '.json');
+        if (typeof templateName !== 'string') {return false;}
+        if (username === 'Guest') {return false;}
+        templateName = sanitizeTemplateName(templateName);
+        let rule = RulesReader.loadJSON(path.join('./Templates', username.toLowerCase(), templateName + '.json'));
         if (!rule) {return;}
         Object.keys(rules).forEach(key => {
             delete rules[key];

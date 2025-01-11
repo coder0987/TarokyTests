@@ -129,7 +129,119 @@ class Rules {
             }
         }
         return stepKeys;
-    }    
+    }
+
+    setInstructions(phase, instructions) {
+        if (typeof phase !== 'string') {
+            return false;
+        }
+    
+        if (!this.phases[phase]) {
+            return false;
+        }
+    
+        // Verify instructions object structure
+        if (typeof instructions !== 'object' || instructions === null) {
+            return false;
+        }
+    
+        // Check if 'order' exists and is an array
+        if (!Array.isArray(instructions.order)) {
+            return false;
+        }
+    
+        // Each step in 'order' must be a key in 'steps'
+        for (let i = 0; i < instructions.order.length; i++) {
+            if (!instructions.steps[instructions.order[i]]) {
+                return false;
+            }
+        }
+    
+        // Each step in 'steps' must be listed in 'order'
+        for (let step in instructions.steps) {
+            if (!instructions.order.includes(step)) {
+                return false;
+            }
+        }
+    
+        // Validate each instruction inside each step
+        for (let step of instructions.order) {
+            const instructionsForStep = instructions.steps[step];
+            if (!Array.isArray(instructionsForStep)) {
+                return false;
+            }
+    
+            for (let instruction of instructionsForStep) {
+                if (typeof instruction !== 'object' || instruction === null) {
+                    return false;
+                }
+    
+                if (!Array.isArray(instruction.targets) || !instruction.action || !instruction.items) {
+                    return false;
+                }
+    
+                // Custom is optional, but it should be an object if it exists
+                if (instruction.custom && typeof instruction.custom !== 'object') {
+                    return false;
+                }
+            }
+        }
+    
+        // No extra properties should exist in the instructions object
+        const allowedProperties = ['order', 'steps'];
+        for (let prop in instructions) {
+            if (!allowedProperties.includes(prop)) {
+                return false;
+            }
+        }
+
+        this._phases[phase] = instructions;
+
+        return true;
+    }
+
+    setStepInstructions(phase, step, instructions) {
+        if (typeof phase !== 'string') {
+            return false;
+        }
+    
+        if (!this.phases[phase]) {
+            return false;
+        }
+
+        if (typeof step !== 'string') {
+            return false;
+        }
+    
+        if (!this.phases[phase].steps[step]) {
+            return false;
+        }
+    
+        // Validate each instruction
+        if (!Array.isArray(instructions)) {
+            return false;
+        }
+
+        for (let instruction of instructions) {
+            if (typeof instruction !== 'object' || instruction === null) {
+                return false;
+            }
+
+            if (!Array.isArray(instruction.targets) || !instruction.action || !instruction.items) {
+                return false;
+            }
+
+            // Custom is optional, but it should be an object if it exists
+            if (instruction.custom && typeof instruction.custom !== 'object') {
+                return false;
+            }
+        }
+    
+        this._phases[phase].steps[step] = instructions;
+        
+        return true;
+    }
+    
 }
 
 

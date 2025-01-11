@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/tabs";
 import { useEffect, useState } from 'react';
 import { useSocket } from '@/context/SocketContext';
+import { useUserContext } from '@/context/AuthContext';
 
 import { BasicRules, StepsList } from "@/types";
 
@@ -78,6 +79,8 @@ const Rules = () => {
     const [customTemplates, setCustomTemplates] = useState(null);
     const [currentRules, setCurrentRules] = useState(null);
 
+    const { account, isAuthenticated } = useUserContext();
+
     const handleTemplateSelect = (template: string) => {
         setCurrentStep(1);
         if (template === 'blank') {
@@ -94,13 +97,22 @@ const Rules = () => {
             setPhases(null);
             setSteps(null);
             socket && socket.emit('useTemplate', template, (phasesList: string[], stepsList: StepsList, basic: BasicRules) => {
-
                 setPhases(phasesList);
                 setSteps(stepsList);
                 setBasic(basic);
             });
         }
+    }
 
+    const handleCustomTemplateSelect = (template : string) => {
+        setCurrentStep(1);
+        setPhases(null);
+        setSteps(null);
+        socket && socket.emit('useCustomTemplate', template, (phasesList: string[], stepsList: StepsList, basic: BasicRules) => {
+            setPhases(phasesList);
+            setSteps(stepsList);
+            setBasic(basic);
+        });
     }
 
     //Step 2: Customize rules
@@ -163,9 +175,27 @@ const Rules = () => {
         }
     }
 
+    const save = () => {
+        if (!isAuthenticated) {
+            //Prompt user to sign in
+            //todo
+            return;
+        }
+        //Prompt for template name
+        //todo
+        let templateName = 'placeholder'
+        if (socket) {
+            socket.emit('saveCustomTemplate', templateName);
+        }
+    }
+
+    const restart = () => {
+        setCurrentStep(0);
+    }
+
     if (currentStep === 0) {
         return (
-            <TemplateSelect templates={templates} saves={customTemplates} handleTemplateSelect={handleTemplateSelect} />
+            <TemplateSelect templates={templates} saves={customTemplates} handleTemplateSelect={handleTemplateSelect} handleCustomTemplateSelect={handleCustomTemplateSelect} />
         )
     }
 
@@ -180,7 +210,7 @@ const Rules = () => {
                     })}
                 </TabsList>
                 <TabsContent value="general" key="general-content">
-                    <General basic={basic} changeBasic={changeBasic} />
+                    <General basic={basic} changeBasic={changeBasic} save={save} restart={restart} />
                 </TabsContent>
                 <TabsContent value="order" key="order-content">
                     <GamePhases phases={phases} changePhases={changePhases} steps={steps} changeSteps={changeSteps} changeStepsAndPhases={changeStepsAndPhases} />
@@ -188,7 +218,7 @@ const Rules = () => {
                 {phases && phases.map((value: string, key: string) => {
                     return (
                         <TabsContent value={value} key={value + "-content"}>
-                            <RulesPhases key={key} steps={steps ? steps[value] : []} />
+                            <RulesPhases key={key} phase={value} />
                         </TabsContent>
                     );
                 })}
