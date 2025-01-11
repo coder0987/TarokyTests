@@ -1,6 +1,15 @@
 const fs = require("fs");
 
 const RulesReader = {
+  loadJSON: (filePath) => {
+    let file = fs.readFileSync(filePath, "utf-8");
+    try {
+        return JSON.parse(file);
+    } catch (error) {
+        Logger.error(error);
+        return null;
+    }
+  },
   parseGameConfig: (rules, filePath) => {
     const content = fs.readFileSync(filePath, "utf-8");
 

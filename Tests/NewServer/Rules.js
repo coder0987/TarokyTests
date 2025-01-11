@@ -8,7 +8,6 @@ const Logger = require('./Logger');
 class Rules {
     constructor(args = {}) {
         if (typeof args.file === 'string') {
-            //Read rules from a file
             RulesReader.parseGameConfig(args, args.file);
         }
         const {basic = {
