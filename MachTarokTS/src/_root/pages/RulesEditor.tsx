@@ -87,6 +87,9 @@ const Rules = () => {
                 setPhases(phasesList);
                 setSteps(stepsList);
             });
+            socket && socket.emit('getBasic', (basic : BasicRules) => {
+                setBasic(basic);
+            });
         } else {
             setPhases(null);
             setSteps(null);
