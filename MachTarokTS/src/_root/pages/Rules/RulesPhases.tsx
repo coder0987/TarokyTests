@@ -18,6 +18,16 @@ const RulesPhases: React.FC<RulesPhasesProps> = ({ phase }) => {
     });
   }, [socket]);
 
+  const onChange = (step : string) => {
+    if (socket) {
+      let instructions = [];
+      //Get instructions from form data
+      socket.emit('setStepInstructions', phase, step, instructions, (instr: { order: string[]; steps: Record<string, any[]> }) => {
+        setSteps(instr);
+      });
+    }
+  }
+
   return (
     <div className="w-full h-full flex flex-col items-center">
       <div className="w-full p-4">

@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { ITEMS, ACTIONS, TARGETS, GAME_TYPE } = require('./Constants');
 
 const RulesReader = {
   loadJSON: (filePath) => {
@@ -32,44 +33,62 @@ const RulesReader = {
         const value = match[2].trim();
 
         // Process basic properties
-        if (key === "deck") {
-          rules.basic.deck = value;
-        } else if (key === "decks") {
-          rules.basic.numDecks = parseInt(value, 10);
-        } else if (key === "deckScaling") {
-          rules.basic.deckScaling = parseInt(value, 10);
-        } else if (key === "playerMin") {
-          rules.basic.playerMin = parseInt(value, 10);
-        } else if (key === "playerMax") {
-          rules.basic.playerMax = parseInt(value, 10);
-        } else if (key === "type") {
-          rules.basic.type = value;
-        } else if (key === "start") {
-          rules.basic.start = value;
-        }
-
-        // Handle player and board objects
-        if (key === "player" || key === "board") {
-          rules[key] = parseObject(value);
-        }
-
-        // Handle phases and steps
-        if (key === "phase") {
-          currentPhase = value;
-          if (!rules.phases[currentPhase]) {
-            rules.phases[currentPhase] = { steps: {}, order: [] };
+        switch (key) {
+            case "deck":
+              rules.basic.deck = value;
+              break;
+            case "decks":
+              rules.basic.numDecks = parseInt(value, 10);
+              break;
+            case "deckScaling":
+              rules.basic.deckScaling = parseInt(value, 10);
+              break;
+            case "playerMin":
+              rules.basic.playerMin = parseInt(value, 10);
+              break;
+            case "playerMax":
+              rules.basic.playerMax = parseInt(value, 10);
+              break;
+            case "type":
+              rules.basic.type = value;
+              break;
+            case "start":
+              rules.basic.start = value;
+              break;
+            case "board":
+                rules.basic.board = parseObject(value);
+                break;
+            case "pointers":
+                rules.basic.pointers = parseObject(value);
+                break;
+            case "initial":
+                rules.basic.initial = parseObject(value);
+                break;
+            case "player":
+                rules.basic.player = parseObject(value);
+                break;
+            case "phase":
+                currentPhase = value;
+                if (!rules.phases[currentPhase]) {
+                    rules.phases[currentPhase] = { steps: {}, order: [] };
+                }
+                break;
+            case "step":
+                if (currentPhase) {
+                    currentStep = value;
+                    rules.phases[currentPhase].steps[currentStep] = [];
+                    rules.phases[currentPhase].order.push(value);
+                }
+                break;
+            case "i":
+                if (currentPhase && currentStep) {
+                    const instruction = parseInstruction(value);
+                    rules.phases[currentPhase].steps[currentStep].push(instruction);
+                }
+                break;
+            default:
+                Logger.log("Unrecognized property " + key + " with value " + value);
           }
-        } else if (key === "step" && currentPhase) {
-          currentStep = value;
-          rules.phases[currentPhase].steps[currentStep] = [];
-          rules.phases[currentPhase].order.push(value);
-        }
-
-        // Handle instruction lines (starting with 'i:')
-        if (key.startsWith("i") && currentPhase && currentStep) {
-          const instruction = parseInstruction(value);
-          rules.phases[currentPhase].steps[currentStep].push(instruction);
-        }
       }
     });
   },
@@ -94,10 +113,22 @@ function parseObject(str) {
 // Function to parse an instruction line into a structured object
 function parseInstruction(instruction) {
   const parts = instruction.split(":");
-  const targets = parts[0].split(",");
-  const action = parts[1];
+  const targets = parts[0].split(",").map((target) => {
+    return TARGETS[target.toUpperCase()] || target;
+  });
+  const action = ACTIONS[parts[1].toUpperCase()] || parts[1];
   let items = parts[2];
   let custom = {};
+
+  if (items) {
+    if (items.startsWith("[") && items.endsWith("]")) {
+      items = items.slice(1, -1).split(",").map((item) => {
+        return ITEMS[item.trim().toUpperCase()] || item.trim();
+      });
+    } else {
+      items = ITEMS[items.trim().toUpperCase()] || items.trim();
+    }
+  }
 
   if (parts.length > 3) {
     const customField = parts.slice(3).join(":");
@@ -106,13 +137,6 @@ function parseInstruction(instruction) {
     } else {
       custom = customField;
     }
-  }
-
-  if (items && items.startsWith("[") && items.endsWith("]")) {
-    items = items
-      .slice(1, -1)
-      .split(",")
-      .map((item) => item.trim());
   }
 
   return {
