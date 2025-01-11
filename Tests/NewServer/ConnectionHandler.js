@@ -82,15 +82,16 @@ io.on('connection', (socket) => {
     socket.on('useTemplate', (template, callback) => {
         Logger.log('use template ' + socketId)
         RulesHandler.useTemplate(ConnectionHandler.clients[socketId].rules, template);
-        callback(ConnectionHandler.clients[socketId].rules.phasesList);
+        Logger.log(JSON.stringify(ConnectionHandler.clients[socketId].rules));
+        callback(ConnectionHandler.clients[socketId].rules.phasesList, ConnectionHandler.clients[socketId].rules.stepsList);
     });
 
     socket.on('getPhases', (callback) => {
         Logger.log('get phases ' + socketId)
-        callback(ConnectionHandler.clients[socketId].rules.phasesList);
+        callback(ConnectionHandler.clients[socketId].rules.phasesList, ConnectionHandler.clients[socketId].rules.stepsList);
     });
 
-    socket.on('getSteps', (phase, callback) => {
+    socket.on('getSteps', (callback) => {
         Logger.log('get steps ' + socketId)
         callback(ConnectionHandler.clients[socketId].rules.stepsList);
     })

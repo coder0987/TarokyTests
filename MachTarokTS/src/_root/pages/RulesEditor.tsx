@@ -74,33 +74,19 @@ const Rules = () => {
     const [customTemplates, setCustomTemplates] = useState(null);
     const [currentRules, setCurrentRules] = useState(null);
 
-    const fetchSteps = async () => {
-        if (!phases) {return;}
-        
-        if (socket) {
-            socket.emit('getSteps', (response : {[key: string]: any[]}) => {
-                setSteps(response);
-            });
-        }
-    
-        
-    };
-    
-    
-
     const handleTemplateSelect = (template: string) => {
         setCurrentStep(1);
         if (template === 'blank') {
 
         } else if (template === 'continue') {
-            socket && socket.emit('getPhases', (response : string[]) => {
-                setPhases(response);
-                fetchSteps();
-            })
+            socket && socket.emit('getPhases', (phasesList : string[], stepsList : string[]) => {
+                setPhases(phasesList);
+                setSteps(stepsList);
+            });
         } else {
-            socket && socket.emit('useTemplate', template, (response : string[]) => {
-                setPhases(response);
-                fetchSteps();
+            socket && socket.emit('useTemplate', template, (phasesList : string[], stepsList : string[]) => {
+                setPhases(phasesList);
+                setSteps(stepsList);
             });
         }
         

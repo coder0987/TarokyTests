@@ -1,0 +1,12 @@
+deck:standard
+decks:1
+deckScaling:0
+playerMin:4
+playerMax:4
+type:turn
+player:{piles:['Hand','Discard'],counters:['Chips'],flags:[]}
+start:setup
+
+phase:setup
+step:setup
+i:

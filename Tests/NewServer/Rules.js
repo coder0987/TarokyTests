@@ -1,18 +1,23 @@
 /*
     This is the rules engine. It handles player's rules, phases, etc. and gives them to the room
 */
-
+const RulesReader = require('./RulesReader')
 
 class Rules {
     constructor(args = {}) {
-        const {basic = {
+        if (typeof args.file === 'string') {
+            //Read rules from a file
+            RulesReader.parseGameConfig(this, args.file);
+        } else {
+            const {basic = {
 
-        }, phases = {
+            }, phases = {
 
-        }} = args;
+            }} = args;
 
-        this.basic = basic;
-        this.phases = phases;
+            this.basic = basic;
+            this.phases = phases;
+        }
     }
 
     get phasesList() {
@@ -24,7 +29,7 @@ class Rules {
         let stepKeys = {};
         for (let i in this.phases) {
             if (this.phases[i] && typeof this.phases[i] === 'object') {
-                stepKeys[i] = Object.keys(this.phases[i]);
+                stepKeys[i] = Object.keys(this.phases[i].steps);
             } else {
                 stepKeys[i] = [];
             }
