@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/tabs";
 import { useEffect, useState } from 'react';
 import { useSocket } from '@/context/SocketContext';
+import { useUserContext } from '@/context/AuthContext';
 
 import { BasicRules, StepsList } from "@/types";
 
@@ -77,6 +78,8 @@ const Rules = () => {
     const [templates, setTemplates] = useState(null);
     const [customTemplates, setCustomTemplates] = useState(null);
     const [currentRules, setCurrentRules] = useState(null);
+
+    const { account, isAuthenticated } = useUserContext();
 
     const handleTemplateSelect = (template: string) => {
         setCurrentStep(1);
@@ -172,6 +175,24 @@ const Rules = () => {
         }
     }
 
+    const save = () => {
+        if (!isAuthenticated) {
+            //Prompt user to sign in
+            //todo
+            return;
+        }
+        //Prompt for template name
+        //todo
+        let templateName = 'placeholder'
+        if (socket) {
+            socket.emit('saveCustomTemplate', templateName);
+        }
+    }
+
+    const restart = () => {
+        setCurrentStep(0);
+    }
+
     if (currentStep === 0) {
         return (
             <TemplateSelect templates={templates} saves={customTemplates} handleTemplateSelect={handleTemplateSelect} handleCustomTemplateSelect={handleCustomTemplateSelect} />
@@ -189,7 +210,7 @@ const Rules = () => {
                     })}
                 </TabsList>
                 <TabsContent value="general" key="general-content">
-                    <General basic={basic} changeBasic={changeBasic} />
+                    <General basic={basic} changeBasic={changeBasic} save={save} restart={restart} />
                 </TabsContent>
                 <TabsContent value="order" key="order-content">
                     <GamePhases phases={phases} changePhases={changePhases} steps={steps} changeSteps={changeSteps} changeStepsAndPhases={changeStepsAndPhases} />

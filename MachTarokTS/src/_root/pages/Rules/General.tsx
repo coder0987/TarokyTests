@@ -28,16 +28,17 @@ export type BasicRules = {
 interface GeneralProps {
   basic: BasicRules;
   changeBasic: (basic: BasicRules) => void;
+  restart: () => void;
+  save: () => void;
 }
 
-const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
+const General: React.FC<GeneralProps> = ({ basic, changeBasic, restart, save }) => {
   if (basic === null) { return; }
   const [deckType, setDeckType] = useState<DeckType>(basic.deck || DeckType.Standard);
   const [numDecks, setNumDecks] = useState<number>(basic.numDecks || 1);
   const [deckScaling, setDeckScaling] = useState<number>(basic.deckScaling || 0);
   const [minimumPlayers, setMinimumPlayers] = useState<number>(basic.playerMin || 2);
   const [maximumPlayers, setMaximumPlayers] = useState<number>(basic.playerMax || -1);
-
 
   const handleNumberInputChange = (value: string, min: number, max: number, setter: React.Dispatch<React.SetStateAction<number>>) => {
     // Remove any non-digit characters
@@ -104,11 +105,11 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
   };
 
   const handleRestartClick = () => {
-
+    restart();
   }
 
   const handleSaveClick = () => {
-
+    save();
   }
 
   return (
