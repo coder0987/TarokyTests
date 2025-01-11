@@ -30,21 +30,13 @@ interface GeneralProps {
 }
 
 const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
+  if (basic === null) { return; }
+  const [deckType, setDeckType] = useState<DeckType>(basic.deck || DeckType.Standard);
+  const [numDecks, setNumDecks] = useState<number>(basic.numDecks || 1);
+  const [deckScaling, setDeckScaling] = useState<number>(basic.deckScaling || 0);
+  const [minimumPlayers, setMinimumPlayers] = useState<number>(basic.playerMin || 2);
+  const [maximumPlayers, setMaximumPlayers] = useState<number>(basic.playerMax || -1);
 
-  const [deckType, setDeckType] = useState<DeckType>(DeckType.Standard);
-  const [numDecks, setNumDecks] = useState<number>(1);
-  const [deckScaling, setDeckScaling] = useState<number>(0);
-  const [minimumPlayers, setMinimumPlayers] = useState<number>(2);
-  const [maximumPlayers, setMaximumPlayers] = useState<number>(4);
-
-  useEffect(() => {
-    if (!basic) { return; }
-    setDeckType(basic.deck);
-    setNumDecks(basic.numDecks);
-    setDeckScaling(basic.deckScaling);
-    setMinimumPlayers(basic.playerMin);
-    setMaximumPlayers(basic.playerMax);
-  }, [basic])
 
   const handleNumberInputChange = (value: string, min: number, max: number, setter: React.Dispatch<React.SetStateAction<number>>) => {
     // Remove any non-digit characters
@@ -71,26 +63,36 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
   const handleDeckNumChange = (value: string) => {
     handleNumberInputChange(value, 1, 50, setNumDecks);
     console.log(basic);
-    basic.numDecks = numDecks;
-    changeBasic(basic);
+    let newBasic = basic;
+    newBasic.numDecks = numDecks;
+    changeBasic(newBasic);
   };
 
   const handleDeckScalingChange = (value: string) => {
-    handleNumberInputChange(value, 1, 50, setDeckScaling);
-    basic.deckScaling = deckScaling;
-    changeBasic(basic);
+    handleNumberInputChange(value, 0, 16, setDeckScaling);
+    let newBasic = basic;
+    newBasic.deckScaling = deckScaling;
+    changeBasic(newBasic);
   };
 
   const handleMinPlayerChange = (value: string) => {
     handleNumberInputChange(value, 1, 50, setNumDecks);
-    basic.deck = deckType;
-    changeBasic(basic);
+    let newBasic = basic;
+    newBasic.deck = deckType;
+    changeBasic(newBasic);
   };
 
   const handleMaxPlayerChange = (value: string) => {
-    handleNumberInputChange(value, 1, 50, setNumDecks);
-    basic.deck = deckType;
-    changeBasic(basic);
+    const cleanValue = value.replace(/\D/g, '');
+    const numValue = cleanValue === '' ? 1 : Number(cleanValue);
+    if (isNaN(numValue) || numValue <= 0) {
+      setMaximumPlayers(-1);
+    } else {
+      setMaximumPlayers(numValue);
+    }
+    let newBasic = basic;
+    newBasic.deck = deckType;
+    changeBasic(newBasic);
   };
   return (
     <div className="w-full flex flex-col md:flex-row justify-center gap-3">
