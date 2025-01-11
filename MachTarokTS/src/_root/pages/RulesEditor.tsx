@@ -218,7 +218,7 @@ const Rules = () => {
                 {phases && phases.map((value: string, key: string) => {
                     return (
                         <TabsContent value={value} key={value + "-content"}>
-                            <RulesPhases key={key} steps={steps ? steps[value] : []} />
+                            <RulesPhases key={key} phase={value} />
                         </TabsContent>
                     );
                 })}

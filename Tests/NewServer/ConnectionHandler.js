@@ -117,6 +117,21 @@ io.on("connection", (socket) => {
     );
   });
 
+  socket.on("useCustomTemplate", (template, callback) => {
+    Logger.log("use custom template " + socketId);
+    RulesHandler.useCustomTemplate(
+        ConnectionHandler.clients[socketId].rules,
+        ConnectionHandler.clients[socketId].username,
+        template
+    );
+    Logger.log(JSON.stringify(ConnectionHandler.clients[socketId].rules));
+    callback(
+      ConnectionHandler.clients[socketId].rules.phasesList,
+      ConnectionHandler.clients[socketId].rules.stepsList,
+      ConnectionHandler.clients[socketId].rules.basic
+    );
+  })
+
   socket.on('saveTemplate', (templateName) => {
     RulesHandler.saveTemplate(ConnectionHandler.clients[socketId].rules, ConnectionHandler.clients[socketId].username, templateName);
   });
@@ -168,6 +183,23 @@ io.on("connection", (socket) => {
     ConnectionHandler.clients[socketId].rules.basic = basic;
     callback(ConnectionHandler.clients[socketId].rules.basic);
   });
+
+  socket.on("getPhaseInstructions", (phase, callback) => {
+    Logger.log("get phase instructions " + socketId);
+    callback(ConnectionHandler.clients[socketId].rules.phases[phase]);
+  });
+
+  socket.on("setPhaseInstructions", (phase, instr, callback) => {
+    Logger.log("set phase instructions " + socketId);
+    ConnectionHandler.clients[socketId].rules.setInstructions(phase, instr);
+    callback(ConnectionHandler.clients[socketId].rules.phases[phase]);
+  })
+
+  socket.on("setStepInstructions", (phase, step, instructions, callback) => {
+    Logger.log("set step instructions " + socketId);
+    ConnectionHandler.clients[socketId].rules.setStepInstructions(phase, step, instructions);
+    callback(ConnectionHandler.clients[socketId].rules.phases[phase]);
+  })
 });
 
 module.exports = ConnectionHandler;
