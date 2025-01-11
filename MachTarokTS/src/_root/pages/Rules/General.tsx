@@ -38,6 +38,7 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
   const [maximumPlayers, setMaximumPlayers] = useState<number>(4);
 
   useEffect(() => {
+    if (!basic) {return;}
     setDeckType(basic.deck);
     setNumDecks(basic.numDecks);
     setDeckScaling(basic.deckScaling);
