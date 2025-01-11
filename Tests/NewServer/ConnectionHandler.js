@@ -108,7 +108,8 @@ io.on("connection", (socket) => {
     Logger.log(JSON.stringify(ConnectionHandler.clients[socketId].rules));
     callback(
       ConnectionHandler.clients[socketId].rules.phasesList,
-      ConnectionHandler.clients[socketId].rules.stepsList
+      ConnectionHandler.clients[socketId].rules.stepsList,
+      ConnectionHandler.clients[socketId].rules.basic
     );
   });
 
