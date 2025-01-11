@@ -56,9 +56,11 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
     }
   };
 
-  const handleDeckTypeChange = () => {
-    basic.deck = deckType;
-    changeBasic(basic);
+  const handleDeckTypeChange = (type: DeckType) => {
+    setDeckType(type);
+    let newBasic = basic
+    newBasic.deck = type;
+    changeBasic(newBasic);
   };
 
   const handleDeckNumChange = (value: string) => {
@@ -118,7 +120,7 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
           <div className="flex flex-row gap-1 w-full items-center justify-between">
             <div>Deck: </div>
             <div>
-              <AOESelector<DeckType> currentSelected={deckType} options={[DeckType.Standard, DeckType.Tarok]} onSelectionChange={setDeckType} />
+              <AOESelector<DeckType> currentSelected={deckType} options={[DeckType.Standard, DeckType.Tarok]} onSelectionChange={(value) => handleDeckTypeChange(value)} />
             </div>
           </div>
           <div className="flex flex-row gap-1 w-full items-center justify-between">
