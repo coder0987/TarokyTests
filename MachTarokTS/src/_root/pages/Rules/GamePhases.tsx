@@ -16,9 +16,9 @@ import { StepsList } from "@/types";
 interface GamePhasesProps {
   steps: StepsList;
   phases: string[];
-  changePhases: (newPhases : string[]) => void;
-  changeSteps: (newSteps : StepsList) => void;
-  changeStepsAndPhases: (newSteps : StepsList, newPhases : string[]) => void;
+  changePhases: (newPhases: string[]) => void;
+  changeSteps: (newSteps: StepsList) => void;
+  changeStepsAndPhases: (newSteps: StepsList, newPhases: string[]) => void;
 }
 
 const GamePhases: React.FC<GamePhasesProps> = ({ steps, phases, changeSteps, changePhases, changeStepsAndPhases }) => {
@@ -36,7 +36,7 @@ const GamePhases: React.FC<GamePhasesProps> = ({ steps, phases, changeSteps, cha
       for (let step of steps[i]) {
         obj.steps.push({ id: uuidv4(), name: step });
       }
-  
+
       list.push(obj);
     }
     console.log(JSON.stringify(list));
@@ -69,7 +69,7 @@ const GamePhases: React.FC<GamePhasesProps> = ({ steps, phases, changeSteps, cha
     }
     changeSteps(newSteps);
   }
-  
+
 
   // Handle drag and drop
   const handleDragEnd = (result) => {
@@ -118,54 +118,56 @@ const GamePhases: React.FC<GamePhasesProps> = ({ steps, phases, changeSteps, cha
   };
 
   return (
-    <div className="w-full bg-white shadow-lg rounded-lg p-4" id="order">
-      <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {dragDropList && dragDropList.map((phase) => (
-          <div key={phase.id} className="col flex flex-col bg-gray-100 rounded-lg p-4 border border-gray-300 shadow-sm">
-            <h2 className="text-2xl font-semibold text-blue-600 mb-4">{phase.name}</h2>
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId={phase.id}>
-                {(provided) => (
-                  <ul
-                    className="list-group space-y-2"
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                  >
-                    {phase.steps.map((step, index) => (
-                      <Draggable key={step.id} draggableId={step.id} index={index}>
-                        {(provided) => (
-                          <li
-                            className="list-group-item bg-white hover:bg-gray-50 border rounded-lg p-2 flex items-center justify-between"
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <span className="text-gray-800">{step.name}</span>
-                            <button
-                              className="ml-2 text-red-500 hover:text-red-700"
-                              onClick={() => deleteStep(phase.id, index)}
-                            >
-                              &times;
-                            </button>
-                          </li>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                    <li
-                      className="list-group-item cursor-pointer bg-green-100 hover:bg-green-200 text-center text-green-600 rounded-lg py-2"
-                      onClick={() => addStep(phase.id)}
+    <div className="w-full flex justify-center items-center p-6">
+      <div className="w-full md:w-4/5 bg-white shadow-lg rounded-lg p-4" id="order">
+        <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {dragDropList && dragDropList.map((phase) => (
+            <div key={phase.id} className="col flex flex-col bg-gray-100 rounded-lg p-4 border border-gray-300 shadow-sm">
+              <h2 className="text-2xl font-semibold text-blue-600 mb-4">{phase.name}</h2>
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId={phase.id}>
+                  {(provided) => (
+                    <ul
+                      className="list-group space-y-2"
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
                     >
-                      + Add
-                    </li>
-                  </ul>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </div>
-        ))}
+                      {phase.steps.map((step, index) => (
+                        <Draggable key={step.id} draggableId={step.id} index={index}>
+                          {(provided) => (
+                            <li
+                              className="list-group-item bg-white hover:bg-gray-50 border rounded-lg p-2 flex items-center justify-between"
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <span className="text-gray-800">{step.name}</span>
+                              <button
+                                className="ml-2 text-red-500 hover:text-red-700"
+                                onClick={() => deleteStep(phase.id, index)}
+                              >
+                                &times;
+                              </button>
+                            </li>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                      <li
+                        className="list-group-item cursor-pointer bg-green-100 hover:bg-green-200 text-center text-green-600 rounded-lg py-2"
+                        onClick={() => addStep(phase.id)}
+                      >
+                        + Add
+                      </li>
+                    </ul>
+                  )}
+                </Droppable>
+              </DragDropContext>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </div >
   );
 };
 
