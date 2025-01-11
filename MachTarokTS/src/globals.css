@@ -187,13 +187,13 @@
   .selector-content {
     opacity: 1;
     z-index: 1000;
-    @apply bg-dark-2;
+    @apply bg-white;
   }
 
   .tooltip-content {
     opacity: 1;
     z-index: 1000;
-    @apply bg-dark-2;
+    @apply bg-white;
   }
 
   .card {

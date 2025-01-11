@@ -71,8 +71,6 @@ import { BasicRules } from "@/types";
 const Rules = () => {
     const navigate = useNavigate();
 
-    const [activeTab, setActiveTab] = useState<string>('general');
-
     const [currentStep, setCurrentStep] = useState(0); // 0 = template, 1 = rules
 
     //Step 1: Choose a template
@@ -102,10 +100,6 @@ const Rules = () => {
     const [phases, setPhases] = useState(null);
     const [steps, setSteps] = useState(null);
     const [basic, setBasic] = useState<BasicRules | null>(null);
-
-    const handleTabClick = (tabId: string) => {
-        setActiveTab(tabId);
-    };
 
     //Socket
     const { socket } = useSocket();
@@ -149,38 +143,24 @@ const Rules = () => {
     }
 
     return (
-        // <div className='w-full h-full flex flex-col items-center'>
-        //     <div className='w-full flex flex-row items-start'>
-        //         <RulesNav activeTab={activeTab} onTabClick={handleTabClick} dynamicTabs={phases} />
-        //     </div>
-        //     {activeTab === 'general' && <General basic={basic} />}
-        //     {activeTab === 'order' && <GamePhases />}
-        //     {phases && phases.map((value: string, key: string) => {
-        //         if (activeTab === value) {
-        //             return (
-        //                 <RulesPhases key={key} steps={steps ? steps[value] : []} />
-        //             );
-        //         }
-        //     })}
-        // </div>
         <div className='w-full h-full flex flex-col items-center'>
             <Tabs defaultValue="general" className='w-full'>
-                <TabsList className="w-full">
-                    <TabsTrigger className="text-lg font-semibold" value="general">General</TabsTrigger>
-                    <TabsTrigger className="text-lg font-semibold" value="order">Order</TabsTrigger>
+                <TabsList className="w-full" key="tabs-list">
+                    <TabsTrigger className="text-lg font-semibold" value="general" key="general-trigger">General</TabsTrigger>
+                    <TabsTrigger className="text-lg font-semibold" value="order" key="order-trigger">Order</TabsTrigger>
                     {phases && phases.map((value: string, key: string) => {
-                        return <TabsTrigger className="text-lg" value={value}>{value.charAt(0).toUpperCase() + value.slice(1)}</TabsTrigger>;
+                        return <TabsTrigger className="text-lg" value={value} key={value + "-trigger"}>{value.charAt(0).toUpperCase() + value.slice(1)}</TabsTrigger>;
                     })}
                 </TabsList>
-                <TabsContent value="general">
+                <TabsContent value="general" key="general-content">
                     <General basic={basic} />
                 </TabsContent>
-                <TabsContent value="order">
+                <TabsContent value="order" key="order-content">
                     <GamePhases />
                 </TabsContent>
                 {phases && phases.map((value: string, key: string) => {
                     return (
-                        <TabsContent value={value}>
+                        <TabsContent value={value} key={value + "-content"}>
                             <RulesPhases key={key} steps={steps ? steps[value] : []} />
                         </TabsContent>
                     );

@@ -40,4 +40,9 @@ export type BasicRules = {
   playerMax: number;
   type: number;
   start: string;
+};
+
+export enum DeckType {
+  Standard = "Standard",
+  Tarok = "Tarok",
 }
