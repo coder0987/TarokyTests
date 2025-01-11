@@ -88,9 +88,13 @@ const Rules = () => {
                 setSteps(stepsList);
             });
         } else {
-            socket && socket.emit('useTemplate', template, (phasesList: string[], stepsList: StepsList) => {
+            setPhases(null);
+            setSteps(null);
+            socket && socket.emit('useTemplate', template, (phasesList: string[], stepsList: StepsList, basic: BasicRules) => {
+
                 setPhases(phasesList);
                 setSteps(stepsList);
+                setBasic(basic);
             });
         }
 
