@@ -202,11 +202,6 @@
   }
 }
 
-.tabs-trigger[data-state="active"] {
-  background-color: #3b82f6;
-  color: #fff;
-}
-
 .toast-success {
   @apply bg-toast-success text-success-text border border-success-text;
 }

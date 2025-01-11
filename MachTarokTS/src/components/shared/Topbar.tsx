@@ -1,5 +1,4 @@
 import { topbarLinks } from '@/constants';
-import React from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom';
 
 const Topbar = () => {
