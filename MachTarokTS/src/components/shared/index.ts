@@ -1,3 +1,4 @@
+export { default as AOESelector } from "./AOESelector";
 export { default as Bottombar } from "./Bottombar";
 export { default as DifficultySelect } from "./DifficultySelect";
 export { default as InviteDialog } from "./InviteDialog";
