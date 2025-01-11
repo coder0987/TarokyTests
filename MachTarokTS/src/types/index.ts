@@ -41,3 +41,7 @@ export type BasicRules = {
   type: number;
   start: string;
 }
+
+export type StepsList = {
+  [phase: string]: string[];
+}

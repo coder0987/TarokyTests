@@ -5,7 +5,7 @@ import { General, GamePhases, RulesPhases, TemplateSelect } from './';
 import { useEffect, useState } from 'react';
 import { useSocket } from '@/context/SocketContext';
 
-import { BasicRules } from "@/types";
+import { BasicRules, StepsList } from "@/types";
 
 /*
     TODO:
@@ -79,12 +79,12 @@ const Rules = () => {
         if (template === 'blank') {
 
         } else if (template === 'continue') {
-            socket && socket.emit('getPhases', (phasesList : string[], stepsList : string[]) => {
+            socket && socket.emit('getPhases', (phasesList : string[], stepsList : StepsList) => {
                 setPhases(phasesList);
                 setSteps(stepsList);
             });
         } else {
-            socket && socket.emit('useTemplate', template, (phasesList : string[], stepsList : string[]) => {
+            socket && socket.emit('useTemplate', template, (phasesList : string[], stepsList : StepsList) => {
                 setPhases(phasesList);
                 setSteps(stepsList);
             });
@@ -94,7 +94,7 @@ const Rules = () => {
 
     //Step 2: Customize rules
     const [phases, setPhases] = useState(null);
-    const [steps, setSteps] = useState(null);
+    const [steps, setSteps] = useState<StepsList | null>(null);
     const [basic, setBasic] = useState<BasicRules | null>(null);
 
     const handleTabClick = (tabId : string) => {
@@ -103,18 +103,6 @@ const Rules = () => {
     
     //Socket
     const { socket } = useSocket();
-
-    const SocketHandler = {
-        updatePhaseList: (phases) => {
-            setPhases(phases);
-            if (socket) {
-                socket.emit('rules', 'set', phases);
-            }
-        },
-        updatePhaseSteps: (steps) => {
-
-        }
-    }
 
     useEffect(() => {
         if (socket) {
@@ -130,11 +118,35 @@ const Rules = () => {
             }
             setCustomTemplates(response);
           });
-          socket.on('rules', (type, data) => {
-
-          });
         }
       }, [socket]);
+
+    const changePhases = (newPhases : string[]) => {
+        //Send phases to socketio
+        if (socket) {
+            socket.emit('setPhases', newPhases, (returnPhases : string[]) => {
+                setPhases(returnPhases);
+            })
+        }
+    }
+
+    const changeSteps = (newSteps : StepsList) => {
+        //Send phases to socketio
+        if (socket) {
+            socket.emit('setSteps', newSteps, (returnSteps : StepsList) => {
+                setSteps(returnSteps);
+            })
+        }
+    }
+
+    const changeStepsAndPhases = (newSteps : StepsList, newPhases : string[]) => {
+        if (socket) {
+            socket.emit('setStepsAndPhases', newSteps, newPhases, (returnSteps : StepsList, returnPhases : string[]) => {
+                setSteps(returnSteps);
+                setPhases(returnPhases);
+            })
+        }
+    }
 
     if (currentStep === 0) {
         return (
@@ -148,7 +160,7 @@ const Rules = () => {
                 <RulesNav activeTab={activeTab} onTabClick={handleTabClick} dynamicTabs={phases} />
             </div>
             {activeTab === 'general' && <General basic={basic} />}
-            {activeTab === 'order' && <GamePhases />}
+            {activeTab === 'order' && <GamePhases phases={phases} changePhases={changePhases} steps={steps} changeSteps={changeSteps} changeStepsAndPhases={changeStepsAndPhases} />}
             {phases && phases.map((value : string, key : string) => {
                 if (activeTab === value) {
                     return (

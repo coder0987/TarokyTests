@@ -45,11 +45,12 @@ const RulesReader = {
                 if (key === 'phase') {
                     currentPhase = value;
                     if (!rules.phases[currentPhase]) {
-                        rules.phases[currentPhase] = { steps: {} };
+                        rules.phases[currentPhase] = { steps: {}, order: [] };
                     }
                 } else if (key === 'step' && currentPhase) {
                     currentStep = value;
                     rules.phases[currentPhase].steps[currentStep] = [];
+                    rules.phases[currentPhase].order.push(value);
                 }
 
                 // Handle instruction lines (starting with 'i:')

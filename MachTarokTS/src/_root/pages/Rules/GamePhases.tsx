@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
+import { StepsList } from "@/types";
 
 
 /*
@@ -11,49 +13,63 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
         Add 'edit' button on each step that brings client to the edit page for that step (Also. add step edit pages.)
         Make the default a choice rather than a set-in-stone taroky default (should come from socketio server)
 */
+interface GamePhasesProps {
+  steps: StepsList;
+  phases: string[];
+  changePhases: (newPhases : string[]) => void;
+  changeSteps: (newSteps : StepsList) => void;
+  changeStepsAndPhases: (newSteps : StepsList, newPhases : string[]) => void;
+}
 
-const GamePhases = () => {
-  const [phases, setPhases] = useState([
-    {
-      id: uuidv4(),
-      name: 'Pre-Bid',
-      steps: [
-        { id: uuidv4(), name: 'Shuffle' },
-        { id: uuidv4(), name: 'Cut' },
-        { id: uuidv4(), name: 'Deal' }
-      ]
-    },
-    {
-      id: uuidv4(),
-      name: 'Bid',
-      steps: [
-        { id: uuidv4(), name: 'Bid' },
-        { id: uuidv4(), name: 'Draw' },
-        { id: uuidv4(), name: 'Point Cards' },
-        { id: uuidv4(), name: 'Valat' },
-        { id: uuidv4(), name: 'Contra' },
-        { id: uuidv4(), name: 'Birds' }
-      ]
-    },
-    {
-      id: uuidv4(),
-      name: 'Play',
-      steps: [
-        { id: uuidv4(), name: 'Lead' },
-        { id: uuidv4(), name: 'Follow' },
-        { id: uuidv4(), name: 'Win' }
-      ]
-    },
-    {
-      id: uuidv4(),
-      name: 'End',
-      steps: [
-        { id: uuidv4(), name: 'Count Points' },
-        { id: uuidv4(), name: 'Pay' },
-        { id: uuidv4(), name: 'Reset Board' }
-      ]
+const GamePhases: React.FC<GamePhasesProps> = ({ steps, phases, changeSteps, changePhases, changeStepsAndPhases }) => {
+  const [dragDropList, setDragDropList] = useState(null);
+
+  useEffect(() => {
+    let list = [];
+    for (let i in steps) {
+      let obj = {
+        id: uuidv4(),
+        name: i,
+        steps: []
+      };
+
+      for (let step of steps[i]) {
+        obj.steps.push({ id: uuidv4(), name: step });
+      }
+  
+      list.push(obj);
     }
-  ]);
+    console.log(JSON.stringify(list));
+    setDragDropList(list);
+  }, [steps, phases]);
+
+
+  const updateDragDropList = (updatedList) => {
+    let newSteps = {};
+    let newPhases = [];
+    for (let i in updatedList) {
+      newPhases.push(updatedList[i].name);
+      let thisPhase = [];
+      for (let j in updatedList[i].steps) {
+        thisPhase.push(updatedList[i].steps[j].name);
+      }
+      newSteps[updatedList[i].name] = thisPhase;
+    }
+    changeStepsAndPhases(newSteps, newPhases);
+  }
+
+  const updateSteps = (updatedList) => {
+    let newSteps = {};
+    for (let i in updatedList) {
+      let thisPhase = [];
+      for (let j in updatedList[i].steps) {
+        thisPhase.push(updatedList[i].steps[j].name);
+      }
+      newSteps[updatedList[i].name] = thisPhase;
+    }
+    changeSteps(newSteps);
+  }
+  
 
   // Handle drag and drop
   const handleDragEnd = (result) => {
@@ -61,52 +77,50 @@ const GamePhases = () => {
 
     if (!destination) return; // If dropped outside
 
-    const updatedPhases = [...phases];
+    const updatedDragDropList = [...dragDropList];
 
     // Handle reordering steps within the same phase
     if (source.droppableId === destination.droppableId) {
-      const phaseIndex = updatedPhases.findIndex((phase) => phase.id === source.droppableId);
-      const phase = updatedPhases[phaseIndex];
+      const phaseIndex = updatedDragDropList.findIndex((phase) => phase.id === source.droppableId);
+      const phase = updatedDragDropList[phaseIndex];
       const [movedStep] = phase.steps.splice(source.index, 1);
       phase.steps.splice(destination.index, 0, movedStep);
     } else {
       // Handle dragging between phases
-      const sourcePhaseIndex = updatedPhases.findIndex((phase) => phase.id === source.droppableId);
-      const destinationPhaseIndex = updatedPhases.findIndex((phase) => phase.id === destination.droppableId);
+      const sourcePhaseIndex = updatedDragDropList.findIndex((phase) => phase.id === source.droppableId);
+      const destinationPhaseIndex = updatedDragDropList.findIndex((phase) => phase.id === destination.droppableId);
 
-      const sourcePhase = updatedPhases[sourcePhaseIndex];
-      const destinationPhase = updatedPhases[destinationPhaseIndex];
+      const sourcePhase = updatedDragDropList[sourcePhaseIndex];
+      const destinationPhase = updatedDragDropList[destinationPhaseIndex];
 
       const [movedStep] = sourcePhase.steps.splice(source.index, 1);
       destinationPhase.steps.splice(destination.index, 0, movedStep);
     }
 
-    setPhases(updatedPhases);
+    updateDragDropList(updatedDragDropList);
   };
 
-  // Add new step
   const addStep = (phaseId) => {
     const stepName = prompt('Enter new step name:');
     if (stepName) {
-      const updatedPhases = [...phases];
-      const phaseIndex = updatedPhases.findIndex((phase) => phase.id === phaseId);
-      updatedPhases[phaseIndex].steps.push({ id: uuidv4(), name: stepName });
-      setPhases(updatedPhases);
+      const updatedDragDropList = [...dragDropList];
+      const phaseIndex = updatedDragDropList.findIndex((phase) => phase.id === phaseId);
+      updatedDragDropList[phaseIndex].steps.push({ id: uuidv4(), name: stepName });
+      updateSteps(updatedDragDropList);
     }
   };
 
-  // Delete step
   const deleteStep = (phaseId, stepIndex) => {
-    const updatedPhases = [...phases];
-    const phaseIndex = updatedPhases.findIndex((phase) => phase.id === phaseId);
-    updatedPhases[phaseIndex].steps.splice(stepIndex, 1);
-    setPhases(updatedPhases);
+    const updatedDragDropList = [...dragDropList];
+    const phaseIndex = updatedDragDropList.findIndex((phase) => phase.id === phaseId);
+    updatedDragDropList[phaseIndex].steps.splice(stepIndex, 1);
+    updateSteps(updatedDragDropList);
   };
 
   return (
     <div className="tab-content container-fluid w-full bg-white shadow-lg rounded-lg p-4" id="order">
       <div className="row space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {phases.map((phase) => (
+        {dragDropList && dragDropList.map((phase) => (
           <div key={phase.id} className="col flex flex-col bg-gray-100 rounded-lg p-4 border border-gray-300 shadow-sm">
             <h2 className="text-2xl font-semibold text-blue-600 mb-4">{phase.name}</h2>
             <DragDropContext onDragEnd={handleDragEnd}>

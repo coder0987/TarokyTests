@@ -91,10 +91,29 @@ io.on('connection', (socket) => {
         callback(ConnectionHandler.clients[socketId].rules.phasesList, ConnectionHandler.clients[socketId].rules.stepsList);
     });
 
+    socket.on('setPhases', (newPhases, callback) => {
+        Logger.log('set phases ' + socketId);
+        ConnectionHandler.clients[socketId].rules.phases = newPhases;
+        callback(ConnectionHandler.clients[socketId].rules.phasesList, ConnectionHandler.clients[socketId].rules.stepsList);
+    });
+
+
     socket.on('getSteps', (callback) => {
         Logger.log('get steps ' + socketId)
         callback(ConnectionHandler.clients[socketId].rules.stepsList);
-    })
+    });
+
+    socket.on('setSteps', (newSteps, callback) => {
+        Logger.log('set steps ' + socketId);
+        ConnectionHandler.clients[socketId].rules.steps = newSteps;
+        callback(ConnectionHandler.clients[socketId].rules.stepsList);
+    });
+
+    socket.on('setStepsAndPhases', (newSteps, newPhases, callback) => {
+        Logger.log('set steps and phases ' + socketId);
+        ConnectionHandler.clients[socketId].rules.steps = newSteps;
+        callback(ConnectionHandler.clients[socketId].rules.stepsList, ConnectionHandler.clients[socketId].rules.phasesList);
+    });
 
     socket.on('getCustomTemplates', (callback) => {
         callback(ConnectionHandler.clients[socketId].templates);

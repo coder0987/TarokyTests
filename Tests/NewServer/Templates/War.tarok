@@ -13,6 +13,7 @@ start:setup
 phase:setup
 step:setup
 i:everyone:shuffle:Hand
+phase:play
 step:play
 i:everyone:deal:[Hand,Play]
 i:system:eval:Play:{"eval":"value:highest","pointer":"Winner"}
