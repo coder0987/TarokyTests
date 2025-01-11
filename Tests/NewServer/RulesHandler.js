@@ -34,7 +34,7 @@ const RulesHandler = {
     },
     useCustomTemplate: (rules, username, templateName) => {
         if (typeof templateName !== 'string') {return false;}
-        if (username === 'Guest') {return false;}
+        if (typeof username !== 'string' || username === 'Guest') {return false;}
         templateName = sanitizeTemplateName(templateName);
         let rule = RulesReader.loadJSON(path.join('./Templates', username.toLowerCase(), templateName + '.json'));
         if (!rule) {return;}
@@ -45,7 +45,7 @@ const RulesHandler = {
     },
     saveTemplate: (rules, username, templateName) => {
         if (!rules || !username || typeof templateName !== 'string') {return false;}
-        if (username === 'Guest') {return false;}
+        if (typeof username !== 'string' || username === 'Guest') {return false;}
 
         username = username.toLowerCase();
         const userTemplatesPath = path.join('./Templates', username);
@@ -73,7 +73,7 @@ const RulesHandler = {
         }
     },
     getUserTemplates: (username) => {
-        if (username === 'Guest') {return [];}
+        if (typeof username !== 'string' || username === 'Guest') {return [];}
         username = username.toLowerCase();
         const userTemplatesPath = path.join('./Templates', username);
         if (!fs.existsSync(userTemplatesPath)) {

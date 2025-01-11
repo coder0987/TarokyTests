@@ -7,7 +7,7 @@ type:turn
 player:{piles:['Hand','Discard','War'],counters:[],flags:[]}
 board:{piles:['Play'],counters:[],flags:[]}
 pointers:{players:['Winner']}
-initial:{decks:'player:hand'}
+initial:{"decks":"player:hand"}
 start:setup
 
 phase:setup
