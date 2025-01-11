@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select"
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
+import { AOESelector } from "@/components/shared";
 
 /*
 export type BasicRules = {
@@ -83,7 +84,7 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
   };
 
   const handleMaxPlayerChange = (value: string) => {
-    const cleanValue = value.replace(/\D/g, '');
+    const cleanValue = value.replace(/[^\d-]/g, '');
     const numValue = cleanValue === '' ? 1 : Number(cleanValue);
     if (isNaN(numValue) || numValue <= 0) {
       setMaximumPlayers(-1);
@@ -110,15 +111,7 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
           <div className="flex flex-row gap-1 w-full items-center justify-between">
             <div>Deck: </div>
             <div>
-              <Select>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue onChange={handleDeckTypeChange} placeholder={deckType} />
-                </SelectTrigger>
-                <SelectContent className="selector-content">
-                  <SelectItem value={DeckType.Standard}>Standard</SelectItem>
-                  <SelectItem value={DeckType.Tarok}>Tarok</SelectItem>
-                </SelectContent>
-              </Select>
+              <AOESelector<DeckType> currentSelected={deckType} options={[DeckType.Standard, DeckType.Tarok]} onSelectionChange={setDeckType} />
             </div>
           </div>
           <div className="flex flex-row gap-1 w-full items-center justify-between">
@@ -192,8 +185,8 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic }) => {
         </div>
       </div>
       <div className="flex flex-row w-full md:w-1/2 gap-2 items-center">
-          <div className="flex w-full cursor-pointer justify-center items-center bg-red p-4 rounded-lg" onClick={handleRestartClick}><span className="text-white">Restart</span></div>
-          <div className="flex w-full cursor-pointer justify-center items-center bg-navy p-4 rounded-lg" onClick={handleSaveClick}>  <span className="text-white">Save</span></div>
+        <div className="flex w-full cursor-pointer justify-center items-center bg-red p-4 rounded-lg" onClick={handleRestartClick}><span className="text-white">Restart</span></div>
+        <div className="flex w-full cursor-pointer justify-center items-center bg-navy p-4 rounded-lg" onClick={handleSaveClick}>  <span className="text-white">Save</span></div>
       </div>
     </div>
   );
