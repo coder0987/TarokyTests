@@ -223,7 +223,11 @@ const Rules = () => {
                     className='back-button m-2'
                     onClick={() => {
                         // any other handling when leaving Rules Editor
-                        navigate("/play");
+                        if (currentStep == 1) {
+                            setCurrentStep(0)
+                        } else {
+                            navigate("/play");
+                        }
                     }}>➤</Button>
             </div>
             <Tabs defaultValue="general" className='w-full'>
@@ -253,4 +257,4 @@ const Rules = () => {
     )
 }
 
-export default Rules
+export default Rules;
