@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const RulesReader = require('./RulesReader');
+const Logger = require('./Logger');
 
 const readStepsFromFile = (fileName) => {
     let rule = {};
@@ -13,6 +14,7 @@ let availableSteps = {};
 
 const DefaultSteps = {
     get: (name) => {
+        name = name.toLowerCase();
         if (availableSteps[name]) {
             if (readSteps[name]) {
                 return readSteps[name];
@@ -29,7 +31,9 @@ const DefaultSteps = {
     const txtFiles = files
         .filter(file => file.endsWith('.step'))
         .map(file => path.basename(file, '.step'));
-    availableSteps = txtFiles;
+    for (let i in txtFiles) {
+        availableSteps[txtFiles[i]] = true;
+    }
 }
 
 module.exports = DefaultSteps;
