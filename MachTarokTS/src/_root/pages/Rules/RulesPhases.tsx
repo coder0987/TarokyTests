@@ -37,7 +37,7 @@ const RulesPhases: React.FC<RulesPhasesProps> = ({ phase }) => {
         obj.instructions.push({ 
           id: uuidv4(),
           action:inst[j].action,
-          target:inst[j].target,
+          targets:inst[j].targets,
           items:inst[j].items,
           custom:inst[j].custom
         });
@@ -79,7 +79,7 @@ const RulesPhases: React.FC<RulesPhasesProps> = ({ phase }) => {
         for (let j in inst) {
           obj.push({
             action:inst[j].action,
-            target:inst[j].target,
+            targets:inst[j].targets,
             items:inst[j].items,
             custom:inst[j].custom
           });
@@ -137,7 +137,7 @@ const RulesPhases: React.FC<RulesPhasesProps> = ({ phase }) => {
     updatedDragDropList[stepIndex].instructions.push({
       id: uuidv4(),
       action: 0,
-      target: 0,
+      targets: 0,
       items: 0,
       custom: null
     });
@@ -184,7 +184,7 @@ const RulesPhases: React.FC<RulesPhasesProps> = ({ phase }) => {
                                 <Instruction
                                     key={index}
                                     action={instruction.action}
-                                    target={instruction.target}
+                                    targets={instruction.targets}
                                     items={instruction.items}
                                     custom={instruction.custom}
                                   />

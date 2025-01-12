@@ -11,6 +11,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useSocket } from '@/context/SocketContext';
 import { useUserContext } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 
 import { BasicRules, StepsList } from "@/types";
 
@@ -73,6 +74,7 @@ const Rules = () => {
     const navigate = useNavigate();
 
     const [currentStep, setCurrentStep] = useState(0); // 0 = template, 1 = rules
+    const { showToast } = useToast();
 
     //Step 1: Choose a template
     const [templates, setTemplates] = useState(null);
@@ -175,10 +177,15 @@ const Rules = () => {
         }
     }
 
+
+    const sendSignInMessage = () => {
+        showToast('You need to sign in to access this feature.', 'error');
+    };
+
     const save = () => {
         if (!isAuthenticated) {
             //Prompt user to sign in
-            //todo
+            sendSignInMessage();
             return;
         }
         //Prompt for template name
