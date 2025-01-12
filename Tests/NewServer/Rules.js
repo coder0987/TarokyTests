@@ -5,6 +5,11 @@ const RulesReader = require('./RulesReader');
 const DefaultSteps = require('./DefaultSteps');
 const Logger = require('./Logger');
 
+function phaseSanitizer(input) {
+    return input.replace(/[^a-zA-Z]/g, '').toLowerCase();
+}
+
+
 class Rules {
     constructor(args = {}) {
         if (typeof args.file === 'string') {
@@ -34,6 +39,10 @@ class Rules {
             const currentStepList = Object.keys(this._phases[i].steps); // ['step', 'step']
             const newStepList = newSteps[i]; // ['step', 'step']
             this._phases[i].order = newStepList;
+
+            for (let i in newStepList) {
+                newStepList[i] = phaseSanitizer(newStepList[i]);
+            }
     
             if (newStepList.length === currentStepList.length) {
                 //Assume the steps are the same. Order was already handled.
@@ -58,6 +67,10 @@ class Rules {
     set phases(newPhases) {
         //Comes in as ['phase','phase']
         if (!newPhases) {return;}
+
+        for (let i in newPhases) {
+            newPhases[i] = phaseSanitizer(newPhases[i]);
+        }
 
         const currentPhases = this.phasesList;
 
@@ -138,6 +151,8 @@ class Rules {
         if (typeof phase !== 'string') {
             return false;
         }
+
+        phase = phaseSanitizer(phase);
     
         if (!this.phases[phase]) {
             return false;
@@ -207,6 +222,8 @@ class Rules {
         if (typeof phase !== 'string') {
             return false;
         }
+
+        phase = phaseSanitizer(phase);
     
         if (!this.phases[phase]) {
             return false;
