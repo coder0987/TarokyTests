@@ -42,6 +42,7 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic, restart, save }) 
 
   const handleNumberInputChange = (value: string, min: number, max: number, setter: React.Dispatch<React.SetStateAction<number>>) => {
     // Remove any non-digit characters
+    let updatedValue: any = value;
     const cleanValue = value.replace(/[^\d-]/g, '');
 
     // Convert to number, handling empty string case
@@ -49,12 +50,16 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic, restart, save }) 
 
     if (isNaN(numValue) || numValue <= min) {
       setter(min);
+      updatedValue = min;
     } else if (numValue >= max) {
       setter(max);
+      updatedValue = max;
     } else {
       // Ensure we're setting a whole number by removing any decimals
       setter(Math.floor(numValue));
+      updatedValue = Math.floor(numValue);
     }
+    return updatedValue;
   };
 
   const handleDeckTypeChange = (type: DeckType) => {
@@ -65,44 +70,45 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic, restart, save }) 
   };
 
   const handleDeckNumChange = (value: string) => {
-    handleNumberInputChange(value, 1, 50, setNumDecks);
-    console.log(basic);
     let newBasic = basic;
-    newBasic.numDecks = numDecks;
+    newBasic.numDecks = handleNumberInputChange(value, 1, 50, setNumDecks);;
     changeBasic(newBasic);
   };
 
   const handleDeckScalingChange = (value: string) => {
-    handleNumberInputChange(value, 0, 16, setDeckScaling);
     let newBasic = basic;
-    newBasic.deckScaling = deckScaling;
+    newBasic.deckScaling = handleNumberInputChange(value, 0, 16, setDeckScaling);;
     changeBasic(newBasic);
   };
 
   const handleMinPlayerChange = (value: string) => {
-    handleNumberInputChange(value, 1, 50, setMinimumPlayers);
     let newBasic = basic;
-    newBasic.playerMin = minimumPlayers;
+    newBasic.playerMin = handleNumberInputChange(value, 1, 50, setMinimumPlayers);;
     changeBasic(newBasic);
   };
 
   const handleMaxPlayerChange = (value: string) => {
     const cleanValue = value.replace(/[^\d-]/g, '');
     const numValue = cleanValue === '' ? 1 : Number(cleanValue);
+    let updatedValue: any = value;
     if (isNaN(numValue) || numValue <= -1) {
       setMaximumPlayers(-1);
+      updatedValue = -1;
     } else if (numValue === 0) {
       if (maximumPlayers === -1) {
         setMaximumPlayers(1);
+        updatedValue = 1;
       } else {
         setMaximumPlayers(-1);
+        updatedValue = -1;
       }
     }
     else {
-      setMaximumPlayers(numValue);
+      setMaximumPlayers(Math.floor(numValue));
+      updatedValue = Math.floor(numValue);
     }
     let newBasic = basic;
-    newBasic.playerMax = maximumPlayers;
+    newBasic.playerMax = updatedValue;
     changeBasic(newBasic);
   };
 
@@ -114,89 +120,94 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic, restart, save }) 
     save();
   }
 
+  useEffect(() => {
+  }, [basic]);
+
   return (
-    <div className="w-full flex flex-col justify-center items-center gap-3">
-      <div className="flex flex-col md:flex-row justify-center gap-3">
-        <div className="flex flex-col gap-2 bg-white shadow-lg rounded-lg p-4 min-w-[320px] items-center" id="general-deck-and-players">
-          <div className="flex flex-row gap-1 w-full items-center justify-between">
-            <div>Deck: </div>
-            <div>
-              <AOESelector<DeckType> currentSelected={deckType} options={[DeckType.Standard, DeckType.Tarok]} onSelectionChange={(value) => handleDeckTypeChange(value)} />
+    <div className="w-full flex justify-center items-center">
+      <div className="flex gap-3 flex-col justify-center items-center">
+        <div className="flex flex-col md:flex-row justify-center gap-3">
+          <div className="flex flex-col gap-2 bg-white shadow-lg rounded-lg p-4 min-w-[320px] items-center" id="general-deck-and-players">
+            <div className="flex flex-row gap-1 w-full items-center justify-between">
+              <div>Deck: </div>
+              <div>
+                <AOESelector<DeckType> currentSelected={deckType} options={[DeckType.Standard, DeckType.Tarok]} onSelectionChange={(value) => handleDeckTypeChange(value)} />
+              </div>
             </div>
-          </div>
-          <div className="flex flex-row gap-1 w-full items-center justify-between">
-            <div>Number of Decks: </div>
-            <div>
-              <Input
-                className="w-[75px]"
-                type="number"
-                value={numDecks}
-                onChange={(e) => handleDeckNumChange(e.target.value)}
-                autoComplete="off"
-              />
+            <div className="flex flex-row gap-1 w-full items-center justify-between">
+              <div>Number of Decks: </div>
+              <div>
+                <Input
+                  className="w-[75px]"
+                  type="number"
+                  value={numDecks}
+                  onChange={(e) => handleDeckNumChange(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex flex-row gap-1 w-full items-center justify-between">
-            <div>Deck Scaling: </div>
-            <div>
-              <Input
-                className="w-[75px]"
-                type="number"
-                value={deckScaling}
-                onChange={(e) => handleDeckScalingChange(e.target.value)}
-                autoComplete="off"
-              />
+            <div className="flex flex-row gap-1 w-full items-center justify-between">
+              <div>Deck Scaling: </div>
+              <div>
+                <Input
+                  className="w-[75px]"
+                  type="number"
+                  value={deckScaling}
+                  onChange={(e) => handleDeckScalingChange(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex flex-row gap-1 w-full items-center justify-between">
-            <div>Minimum Players: </div>
-            <div>
-              <Input
-                className="w-[75px]"
-                type="number"
-                value={minimumPlayers}
-                onChange={(e) => handleMinPlayerChange(e.target.value)}
-                autoComplete="off"
-              />
+            <div className="flex flex-row gap-1 w-full items-center justify-between">
+              <div>Minimum Players: </div>
+              <div>
+                <Input
+                  className="w-[75px]"
+                  type="number"
+                  value={minimumPlayers}
+                  onChange={(e) => handleMinPlayerChange(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex flex-row gap-1 w-full items-center justify-between">
-            <div>Maximum Players: </div>
-            <div>
-              <Input
-                className="w-[75px]"
-                type="number"
-                value={maximumPlayers}
-                onChange={(e) => handleMaxPlayerChange(e.target.value)}
-                autoComplete="off"
-              />
+            <div className="flex flex-row gap-1 w-full items-center justify-between">
+              <div>Maximum Players: </div>
+              <div>
+                <Input
+                  className="w-[75px]"
+                  type="number"
+                  value={maximumPlayers}
+                  onChange={(e) => handleMaxPlayerChange(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
             </div>
-          </div>
-          {/* <div className="flex flex-row gap-1 w-full items-center justify-between">
+            {/* <div className="flex flex-row gap-1 w-full items-center justify-between">
             <div>Progression Type: </div>
           </div> */}
+          </div>
+          <div className="flex flex-col gap-2 bg-white shadow-lg rounded-lg p-4 min-w-[320px] items-center" id="general-game-def">
+            <div className="flex flex-row gap-1 w-full items-center justify-between">
+              <div>Player: </div>
+            </div>
+            <div className="flex flex-row gap-1 w-full items-center justify-between">
+              <div>Board: </div>
+            </div>
+            <div className="flex flex-row gap-1 w-full items-center justify-between">
+              <div>Pointers: </div>
+            </div>
+            <div className="flex flex-row gap-1 w-full items-center justify-between">
+              <div>Initial: </div>
+            </div>
+            <div className="flex flex-row gap-1 w-full items-center justify-between">
+              <div>Start: </div>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-2 bg-white shadow-lg rounded-lg p-4 min-w-[320px] items-center" id="general-game-def">
-          <div className="flex flex-row gap-1 w-full items-center justify-between">
-            <div>Player: </div>
-          </div>
-          <div className="flex flex-row gap-1 w-full items-center justify-between">
-            <div>Board: </div>
-          </div>
-          <div className="flex flex-row gap-1 w-full items-center justify-between">
-            <div>Pointers: </div>
-          </div>
-          <div className="flex flex-row gap-1 w-full items-center justify-between">
-            <div>Initial: </div>
-          </div>
-          <div className="flex flex-row gap-1 w-full items-center justify-between">
-            <div>Start: </div>
-          </div>
+        <div className="flex flex-row w-full gap-2 items-center">
+          <div className="flex flex-1 cursor-pointer justify-center items-center bg-red p-4 rounded-lg" onClick={handleRestartClick}><span className="text-white">Restart</span></div>
+          <div className="flex flex-1 cursor-pointer justify-center items-center bg-navy p-4 rounded-lg" onClick={handleSaveClick}>  <span className="text-white">Save</span></div>
         </div>
-      </div>
-      <div className="flex flex-row w-full md:w-1/2 gap-2 items-center">
-        <div className="flex w-full cursor-pointer justify-center items-center bg-red p-4 rounded-lg" onClick={handleRestartClick}><span className="text-white">Restart</span></div>
-        <div className="flex w-full cursor-pointer justify-center items-center bg-navy p-4 rounded-lg" onClick={handleSaveClick}>  <span className="text-white">Save</span></div>
       </div>
     </div>
   );

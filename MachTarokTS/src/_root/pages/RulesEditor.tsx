@@ -90,7 +90,7 @@ const Rules = () => {
                 setPhases(phasesList);
                 setSteps(stepsList);
             });
-            socket && socket.emit('getBasic', (basic : BasicRules) => {
+            socket && socket.emit('getBasic', (basic: BasicRules) => {
                 setBasic(basic);
             });
         } else {
@@ -104,7 +104,7 @@ const Rules = () => {
         }
     }
 
-    const handleCustomTemplateSelect = (template : string) => {
+    const handleCustomTemplateSelect = (template: string) => {
         setCurrentStep(1);
         setPhases(null);
         setSteps(null);
@@ -195,12 +195,30 @@ const Rules = () => {
 
     if (currentStep === 0) {
         return (
-            <TemplateSelect templates={templates} saves={customTemplates} handleTemplateSelect={handleTemplateSelect} handleCustomTemplateSelect={handleCustomTemplateSelect} />
+            <div className='w-full h-full flex flex-col items-center'>
+                <div className='w-full flex flex-row items-start'>
+                    <Button
+                        className='back-button m-2'
+                        onClick={() => {
+                            // any other handling when leaving Template Select
+                            navigate("/play");
+                        }}>➤</Button>
+                </div>
+                <TemplateSelect templates={templates} saves={customTemplates} handleTemplateSelect={handleTemplateSelect} handleCustomTemplateSelect={handleCustomTemplateSelect} />
+            </div>
         )
     }
 
     return (
         <div className='w-full h-full flex flex-col items-center'>
+            <div className='w-full flex flex-row items-start'>
+                <Button
+                    className='back-button m-2'
+                    onClick={() => {
+                        // any other handling when leaving Rules Editor
+                        navigate("/play");
+                    }}>➤</Button>
+            </div>
             <Tabs defaultValue="general" className='w-full'>
                 <TabsList className="w-full" key="tabs-list">
                     <TabsTrigger className="text-lg font-semibold" value="general" key="general-trigger">General</TabsTrigger>
