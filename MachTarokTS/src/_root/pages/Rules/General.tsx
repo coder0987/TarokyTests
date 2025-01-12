@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select"
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { AOESelector } from "@/components/shared";
+import { AOESelector, PilesCreator } from "@/components/shared";
 
 /*
 export type BasicRules = {
@@ -187,11 +187,34 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic, restart, save }) 
           </div> */}
           </div>
           <div className="flex flex-col gap-2 bg-white shadow-lg rounded-lg p-4 min-w-[320px] items-center" id="general-game-def">
-            <div className="flex flex-row gap-1 w-full items-center justify-between">
-              <div>Player: </div>
+            <div className="w-full text-left">Player: </div>
+            <div className="flex flex-col gap-1 w-full items-start justify-between pl-2 text-sm">
+              <div className="flex flex-col gap-0">
+                <div className="flex flex-row">
+                  <div>Piles: </div>
+                </div>
+                <div className="flex flex-row">
+                  <div>Counters: </div>
+                </div>
+                <div className="flex flex-row">
+                  <div>Flags: </div>
+                </div>
+              </div>
             </div>
-            <div className="flex flex-row gap-1 w-full items-center justify-between">
-              <div>Board: </div>
+            <div className="w-full text-left">Board: </div>
+            <div className="flex flex-col gap-1 w-full items-start justify-between pl-2 text-sm">
+              <div className="flex flex-col gap-0">
+                <div className="flex flex-row">
+                  <div>Piles: </div>
+                  <PilesCreator />
+                </div>
+                <div className="flex flex-row">
+                  <div>Counters: </div>
+                </div>
+                <div className="flex flex-row">
+                  <div>Flags: </div>
+                </div>
+              </div>
             </div>
             <div className="flex flex-row gap-1 w-full items-center justify-between">
               <div>Pointers: </div>
@@ -199,9 +222,9 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic, restart, save }) 
             <div className="flex flex-row gap-1 w-full items-center justify-between">
               <div>Initial: </div>
             </div>
-            <div className="flex flex-row gap-1 w-full items-center justify-between">
+            {/* <div className="flex flex-row gap-1 w-full items-center justify-between">
               <div>Start: </div>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="flex flex-row w-full gap-2 items-center">
