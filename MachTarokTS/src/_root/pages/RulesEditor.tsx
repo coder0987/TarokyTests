@@ -189,10 +189,17 @@ const Rules = () => {
             return;
         }
         //Prompt for template name
-        //todo
-        let templateName = 'placeholder'
+        let templateName = prompt('Please give your template a name');
         if (socket) {
-            socket.emit('saveCustomTemplate', templateName);
+            socket.emit('saveTemplate', templateName, (success) => {
+                success ? showToast('Success!', 'success') : showToast('Oops! Try again', 'error');
+                socket.emit('getCustomTemplates', (response: string[]) => {
+                    if (typeof response === 'undefined' || !response) {
+                        return;
+                    }
+                    setCustomTemplates(response);
+                });
+            });
         }
     }
 

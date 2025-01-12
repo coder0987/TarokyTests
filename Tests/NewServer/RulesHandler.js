@@ -5,6 +5,8 @@ const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
 
+const MAX_TEMPLATE_NAME_LENGTH = 20;
+
 function getTemplateFiles(dirPath) {
     const files = fs.readdirSync(dirPath);
     
@@ -16,7 +18,7 @@ function getTemplateFiles(dirPath) {
 }
 
 const sanitizeTemplateName = (name) => {
-    const sanitized = name.replace(/[^a-zA-Z0-9-_\.]/g, '').toLowerCase();
+    const sanitized = name.replace(/[^a-zA-Z0-9-_\.]/g, '');
 
     return sanitized.length > MAX_TEMPLATE_NAME_LENGTH
         ? sanitized.slice(0, MAX_TEMPLATE_NAME_LENGTH)
@@ -36,6 +38,9 @@ const RulesHandler = {
         if (typeof templateName !== 'string') {return false;}
         if (typeof username !== 'string' || username === 'Guest') {return false;}
         templateName = sanitizeTemplateName(templateName);
+
+        if (templateName.length === 0) {return false;}
+
         let rule = RulesReader.loadJSON(path.join('./Templates', username.toLowerCase(), templateName + '.json'));
         if (!rule) {return;}
         Object.keys(rules).forEach(key => {
@@ -44,6 +49,7 @@ const RulesHandler = {
         _.merge(rules, rule);
     },
     saveTemplate: (rules, username, templateName) => {
+        Logger.log('Save template attempt: ' + rules + username + templateName);
         if (!rules || !username || typeof templateName !== 'string') {return false;}
         if (typeof username !== 'string' || username === 'Guest') {return false;}
 

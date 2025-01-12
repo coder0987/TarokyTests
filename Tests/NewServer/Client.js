@@ -19,6 +19,12 @@ class Client {
     get rules() {
         return this._rules;
     }
+    get username() {
+        return this._username;
+    }
+    get token() {
+        return this._token;
+    }
     set userInfo(info) {
         this._userInfo = new UserInfo(info);
     }

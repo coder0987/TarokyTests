@@ -40,10 +40,11 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ templates, saves, handl
             </div>
             {saves && saves.length > 0 &&
                 (
-                    <div className="w-full p-4">
-                        <h2>Custom Templates</h2>
+                    <div className="w-full p-4 flex flex-col items-start">
+                        <h2 className='h2 mx-auto mb-6'>Custom Templates</h2>
+                        <div className="flex flex-col md:flex-row items-center justify-center gap-4 mx-auto">
                         {
-                            templates.map((value, key) => {
+                            saves.map((value, key) => {
                                 return (
                                     <div key={key} className="cursor-pointer" onClick={() => handleCustomTemplateSelect(saves[key])}>
                                         <TemplateCard name={value} />
@@ -51,12 +52,9 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ templates, saves, handl
                                 );
                             })
                         }
+                        </div>
                     </div>
                 )}
-            <div className="w-full p-4">
-                <h2>Import</h2>
-                <p>Input box (coming soon)</p>
-            </div>
         </div>
     );
 };

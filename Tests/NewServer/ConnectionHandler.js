@@ -43,7 +43,7 @@ const ConnectionHandler = {
   },
   signInSuccess: (args) => {
     ConnectionHandler.clients[args.socketId].username = args.username;
-    ConnectionHandler.clients[args.socketId].username = args.token;
+    ConnectionHandler.clients[args.socketId].token = args.token;
   },
   sendTemplate: (args) => {
     SOCKET_LIST[args.socketId].emit("template", args.template);
@@ -80,6 +80,13 @@ io.on("connection", (socket) => {
       token: socket.handshake.auth.signInToken,
       id: socketId,
     });
+
+    //!! REMOVE IN PRODUCTION. FOR TESTING PURPOSES ONLY !!
+    Logger.error('AUTO SIGN-IN! REMOVE IN PRODUCTION!');
+    ConnectionHandler.signInSuccess({ username: 'Test', token: 'tOkEn', socketId: socketId });
+    Logger.log('Client name: ' + ConnectionHandler.clients[socketId].username);
+
+
     Logger.event("join", { socketId: socketId });
   }
 
@@ -132,8 +139,9 @@ io.on("connection", (socket) => {
     );
   })
 
-  socket.on('saveTemplate', (templateName) => {
-    RulesHandler.saveTemplate(ConnectionHandler.clients[socketId].rules, ConnectionHandler.clients[socketId].username, templateName);
+  socket.on('saveTemplate', (templateName, callback) => {
+    Logger.log('save template ' + socketId);
+    callback(RulesHandler.saveTemplate(ConnectionHandler.clients[socketId].rules, ConnectionHandler.clients[socketId].username, templateName));
   });
 
     socket.on('setPhases', (newPhases, callback) => {

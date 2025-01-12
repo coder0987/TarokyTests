@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const [account, setAccount] = useState<Account>(INITIAL_ACCOUNT);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     //define any other global state here
 
     const handleLogin = (username: string, token: string) => {
@@ -37,6 +37,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setAccount(INITIAL_ACCOUNT);
         setIsAuthenticated(false);
     };
+
+    const getCookie = (name: string): string | null => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(';').shift() ?? null;
+        return null;
+    };
+
+    useEffect(() => {
+        const username = getCookie("username");
+        const token = getCookie("token");
+
+        if (username && token) {
+            handleLogin(username, token);
+        } else {
+            setIsAuthenticated(false);
+        }
+
+        //REMOVE FOR PRODUCTION
+        handleLogin('Test', 'tOkEn');
+
+        setIsLoading(false);
+    }, []);
 
     useEffect(() => {
         const messageHandler = (event: MessageEvent) => {
@@ -73,6 +96,5 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         </AuthContext.Provider>
     );
 }
-
 
 export const useUserContext = () => useContext(AuthContext);
