@@ -48,7 +48,7 @@ const PilesCreator = ({ initialPiles = [] }) => {
 
     return (
         <div className="p-4">
-            <div className="flex flex-col gap-1">
+            <div className="space-y-2">
                 {piles.length === 0 && !isAdding && (
                     <div className="text-gray-400">[empty]</div>
                 )}

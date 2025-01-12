@@ -190,15 +190,15 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic, restart, save }) 
                 <AccordionTrigger>Player</AccordionTrigger>
                 <AccordionContent>
                   <div className="flex flex-col gap-0">
-                    <div className="flex flex-row">
+                    <div className="flex flex-col">
                       <div>Piles: </div>
                       <PilesCreator initialPiles={[]} />
                     </div>
-                    <div className="flex flex-row">
+                    <div className="flex flex-col">
                       <div>Counters: </div>
                       <CountersCreator initialCounters={[]} />
                     </div>
-                    <div className="flex flex-row">
+                    <div className="flex flex-col">
                       <div>Flags: </div>
                       <FlagsCreator initialFlags={[]} />
                     </div>
@@ -211,15 +211,15 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic, restart, save }) 
                 <AccordionTrigger>Board</AccordionTrigger>
                 <AccordionContent>
                   <div className="flex flex-col gap-0">
-                    <div className="flex flex-row">
+                    <div className="flex flex-col">
                       <div>Piles: </div>
                       <PilesCreator initialPiles={[]} />
                     </div>
-                    <div className="flex flex-row">
+                    <div className="flex flex-col">
                       <div>Counters: </div>
                       <CountersCreator initialCounters={[]} />
                     </div>
-                    <div className="flex flex-row">
+                    <div className="flex flex-col">
                       <div>Flags: </div>
                       <FlagsCreator initialFlags={[]} />
                     </div>
