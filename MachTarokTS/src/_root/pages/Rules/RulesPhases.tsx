@@ -9,6 +9,11 @@ interface RulesPhasesProps {
   phase : string;
 }
 
+/**
+ * This page is currently broken
+ * TODO: fix all buttons
+ */
+
 const RulesPhases: React.FC<RulesPhasesProps> = ({ phase }) => {
   const [steps, setSteps] = useState<{ order: string[]; steps: any[] } | null>(null);
   /**
