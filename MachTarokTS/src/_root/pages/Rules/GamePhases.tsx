@@ -122,6 +122,7 @@ const GamePhases: React.FC<GamePhasesProps> = ({ steps, phases, changeSteps, cha
     if (phaseName) {
       let updatedPhases = [...phases];
       updatedPhases.push(phaseName);
+      console.log(phases);
       console.log(updatedPhases);
       changePhases(updatedPhases);
     }

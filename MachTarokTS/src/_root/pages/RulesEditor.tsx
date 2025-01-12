@@ -84,6 +84,7 @@ const Rules = () => {
     const { account, isAuthenticated } = useUserContext();
 
     const handleTemplateSelect = (template: string) => {
+        console.log(template + ' template selected');
         setCurrentStep(1);
         if (template === 'continue') {
             socket && socket.emit('getPhases', (phasesList: string[], stepsList: StepsList) => {
