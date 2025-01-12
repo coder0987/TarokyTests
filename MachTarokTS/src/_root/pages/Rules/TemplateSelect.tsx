@@ -11,7 +11,13 @@ interface TemplateSelectProps {
 const TemplateSelect: React.FC<TemplateSelectProps> = ({ templates, saves, handleTemplateSelect, handleCustomTemplateSelect }) => {
 
     const handleTemplateClick = (key: number) => {
-        handleTemplateSelect(templates[key]);
+        if (key === -2) {
+            handleTemplateSelect('blank');
+        } else if (key === -1) {
+            handleTemplateSelect('custom');
+        } else {
+            handleTemplateSelect(templates[key]);
+        }
     }
 
     return (

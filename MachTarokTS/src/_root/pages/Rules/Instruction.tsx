@@ -11,7 +11,7 @@ const Instruction: React.FC<InstructionProps> = ({ action, targets, items, custo
     return (
         <div className="py-4">
             <p>Action: {ACTIONS_REVERSE[action] || action}</p>
-            <p>Target: {targets.map((target, index) => {
+            <p>Target: {targets && targets.map((target, index) => {
                 return (
                     <span key={index}>{TARGETS_REVERSE[target] || target}</span>
                 )

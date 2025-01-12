@@ -27,6 +27,13 @@ const sanitizeTemplateName = (name) => {
 
 const RulesHandler = {
     useTemplate: (rules, templateName) => {
+        if (typeof tempalteName === 'string' && templateName === 'blank') {
+            Object.keys(rules).forEach(key => {
+                delete rules[key];
+            });
+            rules.basic = {};
+            rules.phases = {steps: {}, order: []};
+        }
         if (!DefaultRules.getTemplate(templateName)) {return;}
         Object.keys(rules).forEach(key => {
             delete rules[key];

@@ -85,9 +85,7 @@ const Rules = () => {
 
     const handleTemplateSelect = (template: string) => {
         setCurrentStep(1);
-        if (template === 'blank') {
-
-        } else if (template === 'continue') {
+        if (template === 'continue') {
             socket && socket.emit('getPhases', (phasesList: string[], stepsList: StepsList) => {
                 setPhases(phasesList);
                 setSteps(stepsList);
@@ -96,6 +94,7 @@ const Rules = () => {
                 setBasic(basic);
             });
         } else {
+            //If template is blank is included here as well
             setPhases(null);
             setSteps(null);
             socket && socket.emit('useTemplate', template, (phasesList: string[], stepsList: StepsList, basic: BasicRules) => {
