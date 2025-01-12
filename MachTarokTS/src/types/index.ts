@@ -32,6 +32,18 @@ export type Room = {
   availble: number;
 };
 
+export type PlayerDefinition = {
+  piles: string[];
+  counters: string[];
+  flags: string[];
+};
+
+export type BoardDefinition = {
+  piles: string[];
+  counters: string[];
+  flags: string[];
+};
+
 export type BasicRules = {
   deck: DeckType;
   numDecks: number;
@@ -40,6 +52,8 @@ export type BasicRules = {
   playerMax: number;
   type: number;
   start: string;
+  playerDef: PlayerDefinition;
+  boardDef: BoardDefinition;
 };
 
 export enum DeckType {
@@ -49,4 +63,4 @@ export enum DeckType {
 
 export type StepsList = {
   [phase: string]: string[];
-}
+};
