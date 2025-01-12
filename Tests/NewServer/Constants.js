@@ -4,7 +4,7 @@ const GAME_TYPES = {
 }
 
 const TARGETS = {
-    HOST: 0,
+    NONE: 0,
     PREVIOUS: 1,
     NEXT: 2,
     SPLIT: 3,
@@ -12,25 +12,28 @@ const TARGETS = {
     OFFSET: 5,
     SYSTEM: 6,
     EVERYONE: 7,
+    HOST: 8,
 }
 
 const ACTIONS = {
-    SHUFFLE: 0,
+    NOOP: 0,
     CHOOSE: 1,
     NEXT: 2,
     EVAL: 3,
     PAY: 4,
     DEAL: 5,
     CUT: 6,
+    SHUFFLE: 7,
 }
 
 const ITEMS = {
-    DECK: 0,
+    NONE: 0,
     CUSTOM_LIST: 1,
     STEPS: 2,
     TARGET_HAND: 3,
     PILE: 4,
     POINTS: 5,
+    DECK: 6,
 }
 
 const SUIT = { 0: 'Spade', 1: 'Club', 2: 'Heart', 3: 'Diamond', 4: 'Trump' };
