@@ -70,21 +70,21 @@ const PilesCreator = ({ initialPiles = [] }) => {
 
                 {isAdding ? (
                     <div className="flex flex-row gap-1">
-                        <div className="flex gap-2">
+                        <div className="flex gap-1">
                             <Input
                                 type="text"
                                 value={newPile}
                                 onChange={(e) => setNewPile(e.target.value)}
                                 onKeyDown={handleKeyPress}
                                 placeholder="New pile name"
-                                className="border border-gray-300 rounded px-3 py-2 flex-grow max-w-[125px]"
+                                className="border border-gray-300 rounded px-2 py-2 flex-grow max-w-[125px]"
                                 autoFocus
                             />
                         </div>
                         <div className="flex flex-row gap-1">
                             <button
                                 onClick={handleAddPile}
-                                className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
+                                className="bg-blue-500 px-2 py-2 rounded hover:bg-blue-600"
                             >
                                 ✓
                             </button>
@@ -93,7 +93,7 @@ const PilesCreator = ({ initialPiles = [] }) => {
                                     setIsAdding(false);
                                     setNewPile('');
                                 }}
-                                className="text-gray-500 hover:text-gray-600 px-4 py-2"
+                                className="text-gray-500 hover:text-gray-600 px-2 py-2"
                             >
                                 ×
                             </button>

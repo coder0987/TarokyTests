@@ -1,17 +1,15 @@
 import { BasicRules, DeckType } from "@/types";
 
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { AOESelector, PilesCreator } from "@/components/shared";
+import { AOESelector, CountersCreator, FlagsCreator, PilesCreator } from "@/components/shared";
 
 /*
 export type BasicRules = {
@@ -187,35 +185,48 @@ const General: React.FC<GeneralProps> = ({ basic, changeBasic, restart, save }) 
           </div> */}
           </div>
           <div className="flex flex-col gap-2 bg-white shadow-lg rounded-lg p-4 min-w-[320px] items-center" id="general-game-def">
-            <div className="w-full text-left">Player: </div>
-            <div className="flex flex-col gap-1 w-full items-start justify-between pl-2 text-sm">
-              <div className="flex flex-col gap-0">
-                <div className="flex flex-row">
-                  <div>Piles: </div>
-                </div>
-                <div className="flex flex-row">
-                  <div>Counters: </div>
-                </div>
-                <div className="flex flex-row">
-                  <div>Flags: </div>
-                </div>
-              </div>
-            </div>
-            <div className="w-full text-left">Board: </div>
-            <div className="flex flex-col gap-1 w-full items-start justify-between pl-2 text-sm">
-              <div className="flex flex-col gap-0">
-                <div className="flex flex-row">
-                  <div>Piles: </div>
-                  <PilesCreator />
-                </div>
-                <div className="flex flex-row">
-                  <div>Counters: </div>
-                </div>
-                <div className="flex flex-row">
-                  <div>Flags: </div>
-                </div>
-              </div>
-            </div>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>Player</AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-col gap-0">
+                    <div className="flex flex-row">
+                      <div>Piles: </div>
+                      <PilesCreator initialPiles={[]} />
+                    </div>
+                    <div className="flex flex-row">
+                      <div>Counters: </div>
+                      <CountersCreator initialCounters={[]} />
+                    </div>
+                    <div className="flex flex-row">
+                      <div>Flags: </div>
+                      <FlagsCreator initialFlags={[]} />
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-2">
+                <AccordionTrigger>Board</AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-col gap-0">
+                    <div className="flex flex-row">
+                      <div>Piles: </div>
+                      <PilesCreator initialPiles={[]} />
+                    </div>
+                    <div className="flex flex-row">
+                      <div>Counters: </div>
+                      <CountersCreator initialCounters={[]} />
+                    </div>
+                    <div className="flex flex-row">
+                      <div>Flags: </div>
+                      <FlagsCreator initialFlags={[]} />
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
             <div className="flex flex-row gap-1 w-full items-center justify-between">
               <div>Pointers: </div>
             </div>
