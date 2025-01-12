@@ -243,7 +243,7 @@ const Rules = () => {
                     <TabsTrigger className="text-lg font-semibold" value="general" key="general-trigger">General</TabsTrigger>
                     <TabsTrigger className="text-lg font-semibold" value="order" key="order-trigger">Order</TabsTrigger>
                     {phases && phases.map((value: string, key: string) => {
-                        return <TabsTrigger className="text-lg" value={value} key={value + "-trigger"}>{value.charAt(0).toUpperCase() + value.slice(1)}</TabsTrigger>;
+                        return <TabsTrigger className="text-lg" value={value + "-phase"} key={value + "-phase-trigger"}>{value.charAt(0).toUpperCase() + value.slice(1)}</TabsTrigger>;
                     })}
                 </TabsList>
                 <TabsContent value="general" key="general-content">
@@ -254,8 +254,8 @@ const Rules = () => {
                 </TabsContent>
                 {phases && phases.map((value: string, key: string) => {
                     return (
-                        <TabsContent value={value} key={value + "-content"}>
-                            <RulesPhases key={key} phase={value} />
+                        <TabsContent value={value + '-phase'} key={value + "-phase-content"}>
+                            <RulesPhases key={key + '-phase'} phase={value} />
                         </TabsContent>
                     );
                 })}
