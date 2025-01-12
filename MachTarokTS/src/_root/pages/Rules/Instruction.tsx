@@ -1,12 +1,18 @@
 interface InstructionProps {
     action;
     target;
-    custom;
+    items;
+    custom : any;
   }
 
-const Instruction: React.FC<InstructionProps> = ({ action, target, custom }) => {
+const Instruction: React.FC<InstructionProps> = ({ action, target, items, custom }) => {
     return (
-        <>{action}</>
+        <div className="py-4">
+            <p>Action: {action}</p>
+            <p>Target: {target}</p>
+            <p>Items: {items}</p>
+            <p>Custom: coming soon</p>
+        </div>
     )
 }
 
