@@ -117,6 +117,16 @@ const GamePhases: React.FC<GamePhasesProps> = ({ steps, phases, changeSteps, cha
     updateSteps(updatedDragDropList);
   };
 
+  const addPhase = () => {
+    let phaseName = prompt('Phase name');
+    if (phaseName) {
+      let updatedPhases = [...phases];
+      updatedPhases.push(phaseName);
+      console.log(updatedPhases);
+      changePhases(updatedPhases);
+    }
+  }
+
   return (
     <div className="w-full flex justify-center items-center p-6">
       <div className="w-full md:w-4/5 bg-white shadow-lg rounded-lg p-4" id="order">
@@ -165,6 +175,10 @@ const GamePhases: React.FC<GamePhasesProps> = ({ steps, phases, changeSteps, cha
               </DragDropContext>
             </div>
           ))}
+          <div className='flex w-full bg-navy rounded-lg cursor-pointer text-center p-4 text-white justify-center items-center'
+            onClick={addPhase}>
+            + Add phase
+          </div>
         </div>
       </div>
     </div >

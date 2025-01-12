@@ -158,11 +158,11 @@ const RulesPhases: React.FC<RulesPhasesProps> = ({ phase }) => {
 
   return (
     <div className="w-full h-full flex flex-col items-center">
-      <div className="w-full p-4">
+      <div className="w-full p-4 rounded-lg w-full bg-white p-4 gap-4">
         {dragDropList ? (
           // Iterate over the phase order and display the steps and instructions
           dragDropList.map((step, stepIndex) => (
-            <div key={step.id} className="flex flex-col rounded-lg w-full bg-white p-4">
+            <div key={step.id} className="flex flex-col gap-4">
               <h3>Step: {step.name}</h3>
               <DragDropContext onDragEnd={handleDragEnd}>
                   <Droppable droppableId={step.id}>
@@ -209,17 +209,19 @@ const RulesPhases: React.FC<RulesPhasesProps> = ({ phase }) => {
                     )}
                   </Droppable>
                 </DragDropContext>
-              <div
-                      className=" cursor-pointer bg-green-100 hover:bg-green-200 text-center text-green-600 rounded-lg py-2"
-                      onClick={() => addStep()}
-                    >
-                      + Add Step
-                    </div>
+              
             </div>
           ))
         ) : (
           <p>Loading steps...</p>
         )}
+        
+        <div
+          className=" cursor-pointer bg-green-100 hover:bg-green-200 text-center text-green-600 rounded-lg py-2"
+          onClick={() => addStep()}
+        >
+          + Add Step
+        </div>
       </div>
     </div>
   );

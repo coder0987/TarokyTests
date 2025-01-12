@@ -144,8 +144,9 @@ const Rules = () => {
     const changePhases = (newPhases: string[]) => {
         //Send phases to socketio
         if (socket) {
-            socket.emit('setPhases', newPhases, (returnPhases: string[]) => {
+            socket.emit('setPhases', newPhases, (returnPhases: string[], returnSteps) => {
                 setPhases(returnPhases);
+                setSteps(returnSteps);
             })
         }
     }

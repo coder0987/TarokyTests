@@ -75,12 +75,15 @@ class Rules {
             }
         } else if (newPhases.length > currentPhases.length) {
             //Insert new blank phase
+            
             const newPhaseNames = newPhases.filter(phase => !currentPhases.includes(phase));
 
             newPhaseNames.forEach(phase => {
                 this._phases[phase] = {
-                    steps: {}
+                    steps: {},
+                    order: []
                 };
+                Logger.log('New phase ' + phase)
             });
         } else {
             //Delete one or more phases

@@ -33,6 +33,7 @@ const RulesHandler = {
             });
             rules.basic = {};
             rules.phases = {steps: {}, order: []};
+            return;
         }
         if (!DefaultRules.getTemplate(templateName)) {return;}
         Object.keys(rules).forEach(key => {
