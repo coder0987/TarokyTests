@@ -46,15 +46,15 @@ const InviteDialog: React.FC<InviteDialogProps> = ({ isOpen, onClose, roomCode }
                 <DialogDescription>Click the link below to copy it and send it to your friends:</DialogDescription>
                 <span className='copy-text text-sm font-bold' onClick={() => copyJoinLink()}>{joinLink}</span>
                 <h4 className='h4-bold'>Online Players:</h4>
-                <Table className='w-full'>
+                <Table className='w-full overflow-hidden'>
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[150px] text-left">Username</TableHead>
                             <TableHead className="text-center">Status</TableHead>
-                            <TableHead className='text-right'>Invite</TableHead>
+                            <TableHead className='mr-2 text-right'>Invite</TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody>
+                    <TableBody className='overflow-visible'>
                         {[{ user: "user1", status: PlayerStatus.Online }, { user: "user2", status: PlayerStatus.InGame }, { user: "user3", status: PlayerStatus.Idle }].map((player: Player) => {
                             const textColorClass = getStatusColorClass(player.status);
                             return (
@@ -69,9 +69,9 @@ const InviteDialog: React.FC<InviteDialogProps> = ({ isOpen, onClose, roomCode }
                                             {player.status.toString()}
                                         </div>
                                     </TableCell>
-                                    <TableCell className='px-0 py-2'>
+                                    <TableCell className='px-2 py-2'>
                                         <div className="flex flex-row items-end justify-end">
-                                            <Button className='button-navy py-1 text-xs h-8'>Invite</Button>
+                                            <Button className='button-navy py-1 text-xs h-8 transition-all transform hover:scale-105'>Invite</Button>
                                         </div>
                                     </TableCell>
                                 </TableRow>
