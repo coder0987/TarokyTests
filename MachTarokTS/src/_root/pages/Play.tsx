@@ -1,18 +1,14 @@
+import React, { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { useUserContext } from '@/context/AuthContext';
-import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Play = () => {
-
     const navigate = useNavigate();
-
     const { isAuthenticated } = useUserContext();
-
     const roomCodeInput = useRef(null);
-
     const [roomCode, setRoomCode] = useState<string>("");
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,81 +23,101 @@ const Play = () => {
     }
 
     return (
-        <div className='flex justify-center w-full h-full'>
-            <div className="mt-20 mb-40 w-4/5 xl:w-3/4 flex flex-col items-center">
-                <img
-                    src="/assets/logo/logo-full-navy.png"
-                    className='mb-[100px] w-full max-w-[600px] h-auto'
-                />
-                <div className="flex flex-col items-center justify-center w-[320px]">
-                    <Card
-                        className='card min-w-[320px] mb-3 hover:cursor-pointer'
-                        onClick={() => {
-                            navigate("/ranked");
-                        }}>
-                        <CardContent className="pt-2 text-center text-3xl">Ranked</CardContent>
-                    </Card>
-                    <div className="flex flex-row gap-3 items-center justify-center w-full mb-3">
-                        <Card
-                            className='card card flex-1 hover:cursor-pointer'
-                            onClick={() => {
-                                navigate("/host");
-                            }}>
-                            <CardContent className="pt-2 text-center text-3xl">Host</CardContent>
-                        </Card>
-                        <Card
-                            className='card card flex-1 hover:cursor-pointer'
-                            onClick={() => {
-                                navigate("/custom");
-                            }}>
-                            <CardContent className="pt-2 text-center text-3xl">Custom</CardContent>
-                        </Card>
-                    </div>
-                    <div className="flex flex-row gap-3 items-center justify-center w-full mb-3">
-                        <Card
-                            className={`card card hover:cursor-pointer ${isAuthenticated ? "flex-1" : "min-w-[320px]"}`}
-                            onClick={() => {
-                                navigate("/browse");
-                            }}>
-                            <CardContent className="pt-2 text-center text-3xl">Browse</CardContent>
-                        </Card>
-                        {isAuthenticated &&
+        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white w-full">
+            <div className="container mx-auto px-4 py-8">
+                <div className="flex flex-col items-center justify-center py-8 md:py-12">
+                    <img
+                        src="/assets/logo/logo-full-navy.png"
+                        alt="Mach Tarok Logo"
+                        className="mb-8 w-64 md:w-96 max-w-full h-auto"
+                    />
+
+                    <div className="w-full max-w-md">
+                        {/* Game Mode Cards */}
+                        <div className="grid grid-cols-1 gap-4 mb-6">
                             <Card
-                                className='card card flex-1 hover:cursor-pointer'
-                                onClick={() => {
-                                    navigate("/daily");
-                                }}>
-                                <CardContent className="pt-2 text-center text-3xl">Daily</CardContent>
-                            </Card>}
-                    </div>
-                    <Card
-                        className='card min-w-[320px] mb-3 hover:cursor-pointer'
-                        onClick={() => {
-                            navigate("/rules");
-                        }}>
-                        <CardContent className="pt-2 text-center text-3xl">Rules Editor</CardContent>
-                    </Card>
-                    <div className="flex flex-row w-full">
-                        <Input
-                            ref={roomCodeInput}
-                            type="text"
-                            placeholder='Room Code'
-                            className='text-navy bg-white mr-1'
-                            autoComplete='off'
-                            onChange={handleInputChange}
-                        />
-                        <Button
-                            className='button-red'
-                            onClick={() => {
-                                handleJoinClicked();
-                            }}>Join</Button>
+                                className="bg-navy hover:bg-blue-800 text-white transition-all transform hover:scale-105 shadow-md hover:shadow-lg cursor-pointer"
+                                onClick={() => navigate("/ranked")}
+                            >
+                                <CardContent className="flex justify-center items-center py-6">
+                                    <span className="text-2xl font-semibold">Ranked</span>
+                                </CardContent>
+                            </Card>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <Card
+                                    className="bg-navy hover:bg-blue-800 text-white transition-all transform hover:scale-105 shadow-md hover:shadow-lg cursor-pointer"
+                                    onClick={() => navigate("/host")}
+                                >
+                                    <CardContent className="flex justify-center items-center py-5">
+                                        <span className="text-xl font-semibold">Host</span>
+                                    </CardContent>
+                                </Card>
+
+                                <Card
+                                    className="bg-navy hover:bg-blue-800 text-white transition-all transform hover:scale-105 shadow-md hover:shadow-lg cursor-pointer"
+                                    onClick={() => navigate("/custom")}
+                                >
+                                    <CardContent className="flex justify-center items-center py-5">
+                                        <span className="text-xl font-semibold">Custom</span>
+                                    </CardContent>
+                                </Card>
+                            </div>
+
+                            <div className={`grid ${isAuthenticated ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
+                                <Card
+                                    className="bg-navy hover:bg-blue-800 text-white transition-all transform hover:scale-105 shadow-md hover:shadow-lg cursor-pointer"
+                                    onClick={() => navigate("/browse")}
+                                >
+                                    <CardContent className="flex justify-center items-center py-5">
+                                        <span className="text-xl font-semibold">Browse</span>
+                                    </CardContent>
+                                </Card>
+
+                                {isAuthenticated && (
+                                    <Card
+                                        className="bg-navy hover:bg-blue-800 text-white transition-all transform hover:scale-105 shadow-md hover:shadow-lg cursor-pointer"
+                                        onClick={() => navigate("/daily")}
+                                    >
+                                        <CardContent className="flex justify-center items-center py-5">
+                                            <span className="text-xl font-semibold">Daily</span>
+                                        </CardContent>
+                                    </Card>
+                                )}
+                            </div>
+
+                            <Card
+                                className="bg-navy hover:bg-blue-800 text-white transition-all transform hover:scale-105 shadow-md hover:shadow-lg cursor-pointer"
+                                onClick={() => navigate("/rules")}
+                            >
+                                <CardContent className="flex justify-center items-center py-6">
+                                    <span className="text-2xl font-semibold">Rules Editor</span>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        {/* Room Code Input */}
+                        <div className="flex flex-row gap-2 mt-6">
+                            <Input
+                                ref={roomCodeInput}
+                                type="text"
+                                placeholder="Room Code"
+                                className="flex-1 text-navy bg-white border border-gray-200 shadow-sm h-12"
+                                autoComplete="off"
+                                onChange={handleInputChange}
+                            />
+                            <Button
+                                className="bg-red hover:bg-red-600 text-white font-semibold px-6 shadow-sm h-12 transition-all transform hover:scale-105"
+                                onClick={handleJoinClicked}
+                            >
+                                Join
+                            </Button>
+                        </div>
                     </div>
                 </div>
-
-
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Play
+export default Play;
