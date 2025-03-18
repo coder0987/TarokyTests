@@ -28,6 +28,7 @@ const Host = () => {
     const [isAceHigh, setIsAceHigh] = useState(false);
 
     const [isHostReady, setIsHostReady] = useState(false);
+    const [settingsLocked, setSettingsLocked] = useState(false);
     const [readyText, setReadyText] = useState<"Ready" | "Not Ready">("Not Ready");
 
     const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
@@ -49,8 +50,13 @@ const Host = () => {
     }
 
     useEffect(() => {
-        if (isHostReady) setReadyText("Ready");
-        else setReadyText("Not Ready");
+        if (isHostReady) {
+            setReadyText("Ready");
+            setSettingsLocked(true);
+        } else {
+            setReadyText("Not Ready");
+            setSettingsLocked(false);
+        }
     }, [isHostReady]);
 
     return (
@@ -147,7 +153,7 @@ const Host = () => {
                         <div className="bg-white rounded-lg shadow-md p-6 w-full">
                             <h2 className="text-lg font-bold mb-4 text-navy border-b pb-2">Game Settings</h2>
                             <div className="space-y-4 w-full">
-                                <SettingsMenu />
+                                <SettingsMenu locked={settingsLocked} />
                             </div>
                         </div>
                     </div>

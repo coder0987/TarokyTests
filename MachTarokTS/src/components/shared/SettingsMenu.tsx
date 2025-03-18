@@ -1,7 +1,7 @@
 import { SettingsScroller } from '@/components/shared'
 import { Label } from '@/components/ui/label';
 
-const SettingsMenu = () => {
+const SettingsMenu = ({ locked = false }: { locked?: boolean }) => {
     const aceList = ['Ace High', 'Ace Low'];
     const callList = ['XIX', 'XX', 'King'];
     const timeoutList = ['Timed', 'Not timed'];
@@ -13,32 +13,32 @@ const SettingsMenu = () => {
         <div className="w-full space-y-4">
             <div className="setting-group">
                 <Label className="text-sm text-gray-600 block mb-1">Ace Value</Label>
-                <SettingsScroller list={aceList} />
+                <SettingsScroller list={aceList} disabled={locked} />
             </div>
 
             <div className="setting-group">
                 <Label className="text-sm text-gray-600 block mb-1">Call Card</Label>
-                <SettingsScroller list={callList} />
+                <SettingsScroller list={callList} disabled={locked} />
             </div>
 
             <div className="setting-group">
                 <Label className="text-sm text-gray-600 block mb-1">Turn Timeout</Label>
-                <SettingsScroller list={timeoutList} />
+                <SettingsScroller list={timeoutList} disabled={locked} />
             </div>
 
             <div className="setting-group">
                 <Label className="text-sm text-gray-600 block mb-1">Room Visibility</Label>
-                <SettingsScroller list={publiciseList} />
+                <SettingsScroller list={publiciseList} disabled={locked} />
             </div>
 
             <div className="setting-group">
                 <Label className="text-sm text-gray-600 block mb-1">Blind Stakes</Label>
-                <SettingsScroller list={oneonendList} />
+                <SettingsScroller list={oneonendList} disabled={locked} />
             </div>
 
             <div className="setting-group">
                 <Label className="text-sm text-gray-600 block mb-1">Bot Difficulty</Label>
-                <SettingsScroller list={difficcultyList} />
+                <SettingsScroller list={difficcultyList} disabled={locked} />
             </div>
         </div>
     );
