@@ -1,28 +1,20 @@
-import { DifficultySelect } from '@/components/shared';
-import InviteDialog from '@/components/shared/InviteDialog';
-import OpponentSelect from '@/components/shared/OpponentSelect';
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useUserContext } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { Difficulty } from '@/types';
-import { Select } from '@radix-ui/react-select';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import SettingsMenu from '@/components/shared/SettingsMenu';
-
+import { InviteDialog, OpponentSelect, SettingsMenu } from '@/components/shared';
 
 const timeoutMin = 15;
 const timeoutDefault = 30;
 const timeoutMax = 90;
 
 const Host = () => {
-
     const navigate = useNavigate();
-
     const { account } = useUserContext();
     const { showToast } = useToast();
 
@@ -36,6 +28,7 @@ const Host = () => {
     const [isAceHigh, setIsAceHigh] = useState(false);
 
     const [isHostReady, setIsHostReady] = useState(false);
+    const [settingsLocked, setSettingsLocked] = useState(false);
     const [readyText, setReadyText] = useState<"Ready" | "Not Ready">("Not Ready");
 
     const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
@@ -57,86 +50,124 @@ const Host = () => {
     }
 
     useEffect(() => {
-        if (isHostReady) setReadyText("Ready");
-        else setReadyText("Not Ready");
+        if (isHostReady) {
+            setReadyText("Ready");
+            setSettingsLocked(true);
+        } else {
+            setReadyText("Not Ready");
+            setSettingsLocked(false);
+        }
     }, [isHostReady]);
 
     return (
-        <>
-            <div className='w-full h-full flex flex-col items-center'>
-                <div className='w-full flex flex-row items-start'>
-                    <Button
-                        className='back-button m-2'
-                        onClick={() => {
-                            // any other handling when host leaves game
-                            navigate("/play");
-                        }}>➤</Button>
-                </div>
-                <div className="mt-10 mb-40 w-4/5 xl:w-3/4 flex flex-col items-center">
-                    <div className="text-3xl">{gameType}</div>
-                    <Separator className='my-4 bg-gray seperator-fix' />
-                    <div className="text-xl flex flex-row justify-between w-full"><span>Room {roomNumeral}</span> <span>Code: <span className='copy-text' onClick={() => copyRoomCode()}> {joinCode}</span></span></div>
-                    <div className="flex flex-row w-full mt-8">
-                        <div className='flex flex-col justify-start gap-1 w-1/2'>
-                            <div className="flex flex-row gap-1 items-center text-left justify-start">P1: <div className="w-[150px] border-navy bg-white text-navy rounded-md border px-3 py-2 hover:cursor-not-allowed">{account.user} (you)</div></div>
-                            <div className="flex flex-row gap-1 items-center text-left justify-start">P2: <OpponentSelect /></div>
-                            <div className="flex flex-row gap-1 items-center text-left justify-start">P3: <OpponentSelect /></div>
-                            <div className="flex flex-row gap-1 items-center text-left justify-start">P4: <OpponentSelect /></div>
-                        </div>
-                        <div className='flex flex-col justify-start gap-1 w-1/2 items-end'>
-                            <Button
-                                className="button-white border boder-navy w-[75px]"
-                                onClick={() => setIsInviteDialogOpen(true)}>Invite</Button>
-                        </div>
-                    </div>
-                    <Separator className='my-4 bg-gray seperator-fix' />
-                    <div className='flex flex-row justify-between w-full'>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox checked={isHostReady} className='check-box' id="ready" onClick={() => setIsHostReady(!isHostReady)} />
-                            <Label htmlFor="ready">{readyText}</Label>
-                        </div>
-                        <div><Button className="button-red w-[75px]">Start</Button></div>
-                    </div>
-                    <Separator className='my-4 bg-gray seperator-fix' />
-                    <SettingsMenu />
-                    {/*
-                    <div className='flex flex-row justify-between w-full'>
-                        <div className="flex flex-col justify-start gap-4 w-1/2">
-                            <div className='flex flex-row justify-between'><span>Visibility: </span> <Button className='button-white w-[125px] py-1 h-7 border border-navy' onClick={() => toggleRoomVisibility()}>{roomVisibility}</Button></div>
-                            <div className='flex flex-row justify-between'><span>Difficulty: </span> <DifficultySelect selection={difficulty} setSelection={setDifficulty} /></div>
-                            <div className='flex flex-row justify-between'><span>Timeout: </span>
-                                <Input
-                                    value={timeout}
-                                    type="number"
-                                    className='w-[125px] h-7'
-                                    onChange={(e) => {
-                                        const newValue = e.target.value;
-                                        setTimeout(newValue === '' || isNaN(Number(newValue)) ? timeoutDefault : parseInt(newValue, 10));
-                                    }}
-                                    onBlur={() => {
-                                        if (timeout.toString() === '' || isNaN(Number(timeout))) {
-                                            setTimeout(timeoutDefault);
-                                        } else if (Number(timeout) < timeoutMin) {
-                                            setTimeout(timeoutMin);
-                                        } else if (Number(timeout) > timeoutMax) {
-                                            setTimeout(timeoutMax);
-                                        }
-                                    }}
-                                />
-                            </div>
-                            <div className='flex flex-row justify-between'><span>Ace High: </span><div className="flex w-[125px] items-center justify-center"><Checkbox checked={isAceHigh} className='check-box' id="ace-high" onClick={() => setIsAceHigh(!isAceHigh)} /></div></div>
-                        </div>
-                        <div className='flex flex-col justify-start gap-1 w-1/2 items-end'>
-
-                        </div>
-                    </div>*/}
-
-                </div>
-
+        <div className="bg-gray-100 min-h-screen w-full">
+            {/* Header Bar - Full Width */}
+            <div className="bg-navy text-white p-4 flex items-center justify-center shadow-md w-full relative">
+                <Button
+                    className="absolute left-4 bg-transparent hover:bg-navy/80 text-white"
+                    onClick={() => navigate("/play")}
+                >
+                    ← Back
+                </Button>
+                <h1 className="text-xl font-bold">{gameType} - Game Setup</h1>
             </div>
-            <InviteDialog isOpen={isInviteDialogOpen} onClose={() => setIsInviteDialogOpen(false)} roomCode={joinCode} />
-        </>
-    )
+
+            {/* Main Content - Full Width with Max Width Container */}
+            <div className="w-full px-4 sm:px-6 lg:px-8 max-w-screen-2xl mx-auto">
+                {/* Game Info Banner */}
+                <div className="bg-white rounded-lg shadow-md p-4 my-6 w-full">
+                    <div className="flex justify-between items-center">
+                        <div className="text-xl font-bold">Room {roomNumeral}</div>
+                        <div className="flex items-center">
+                            <span className="mr-2">Join Code:</span>
+                            <span
+                                className="bg-gray-100 px-3 py-1 rounded font-mono text-navy font-bold cursor-copy hover:bg-gray-200 text-2xl"
+                                onClick={copyRoomCode}
+                            >
+                                {joinCode}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Main Content */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full mb-12">
+                    {/* Left Panel - Players */}
+                    <div className="lg:col-span-2 w-full">
+                        <div className="bg-white rounded-lg shadow-md p-6 w-full">
+                            <h2 className="text-lg font-bold mb-4 text-navy border-b pb-2">Players</h2>
+
+                            <div className="space-y-3 mb-6">
+                                {/* Host Player */}
+                                <div className="flex items-center bg-blue-50 p-3 rounded-md border border-blue-200">
+                                    <div className="w-8 h-8 bg-navy rounded-full flex items-center justify-center text-white font-bold">1</div>
+                                    <div className="ml-3 flex-grow">
+                                        <div className="font-medium">{account.user}</div>
+                                        <div className="text-xs text-gray-500">Host</div>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            checked={isHostReady}
+                                            className="data-[state=checked]:bg-green-600"
+                                            id="ready"
+                                            onClick={() => setIsHostReady(!isHostReady)}
+                                        />
+                                        <Label htmlFor="ready" className={isHostReady ? "text-green-600" : "text-gray-500"}>
+                                            {readyText}
+                                        </Label>
+                                    </div>
+                                </div>
+
+                                {/* Player slots */}
+                                {[2, 3, 4].map(player => (
+                                    <div key={player} className="flex items-center bg-gray-50 p-3 rounded-md border border-gray-200">
+                                        <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center font-bold text-gray-600">{player}</div>
+                                        <div className="ml-3 flex-grow">
+                                            <OpponentSelect />
+                                        </div>
+                                        <div className="text-sm text-gray-400">Waiting...</div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Action buttons */}
+                            <div className="flex justify-between pt-4 border-t">
+                                <Button
+                                    className="bg-navy transition-all transform hover:scale-105 text-white"
+                                    onClick={() => setIsInviteDialogOpen(true)}
+                                >
+                                    Invite Players
+                                </Button>
+                                <Button
+                                    className="bg-red transition-all transform hover:scale-105 text-white"
+                                    disabled={!isHostReady}
+                                >
+                                    Start Game
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Panel - Settings */}
+                    <div className="lg:col-span-1 w-full">
+                        <div className="bg-white rounded-lg shadow-md p-6 w-full">
+                            <h2 className="text-lg font-bold mb-4 text-navy border-b pb-2">Game Settings</h2>
+                            <div className="space-y-4 w-full">
+                                <SettingsMenu locked={settingsLocked} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Invite Dialog */}
+            <InviteDialog
+                isOpen={isInviteDialogOpen}
+                onClose={() => setIsInviteDialogOpen(false)}
+                roomCode={joinCode}
+            />
+        </div>
+    );
 }
 
-export default Host
+export default Host;

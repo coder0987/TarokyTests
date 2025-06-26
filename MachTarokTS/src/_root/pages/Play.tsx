@@ -29,6 +29,8 @@ const Play = () => {
                     <img
                         src="/assets/logo/logo-full-navy.png"
                         alt="Mach Tarok Logo"
+                        width={256}
+                        height={70}
                         className="mb-8 w-64 md:w-96 max-w-full h-auto"
                     />
 
