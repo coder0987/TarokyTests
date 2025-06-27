@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Room Test</title>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
     <script src="/client.js"></script>
 </head>
 <body>
@@ -13,5 +13,7 @@
     <div id="join-buttons"></div>
     <span>Current Room: <span id="room-id">None</span></span>
     <div id="chatbox" style="border:1px solid #ccc; height: 200px; overflow-y: scroll;"></div>
+    <input type="text" id="chat" value="" preview="Type your message here">
+    <button id="send">Send Message</button>
 </body>
 </html>

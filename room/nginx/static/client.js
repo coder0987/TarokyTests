@@ -1,51 +1,106 @@
-const socket = io();
-
+let serverSocket = null;
+let roomSocket = null;
 let currentRoomId = null;
 
-socket.on('connect', () => {
-  console.log('Connected to server');
-  socket.emit('getRooms');
-});
+function setupServerSocketHandlers(sock) {
+  sock.on('connect', () => {
+    console.log('Connected to main server');
+    sock.emit('getRooms');
+  });
 
-// Display incoming chat messages
-socket.on('msg', (msg) => {
+  sock.on('msg', (msg) => {
+    appendMessage(msg, 'Server');
+  });
+
+  sock.on('roomList', (rooms) => {
+    renderRoomButtons(rooms);
+  });
+
+  sock.on('roomJoined', ({ roomId }) => {
+    joinRoom(roomId);
+  });
+}
+
+function setupRoomSocketHandlers(sock) {
+  sock.on('connect', () => {
+    console.log(`Connected to room ${currentRoomId}`);
+  });
+
+  sock.on('msg', (msg) => {
+    appendMessage(msg, `Room ${currentRoomId}`);
+  });
+
+  sock.on('disconnect', () => {
+    console.log(`Disconnected from room ${currentRoomId}`);
+    currentRoomId = null;
+    roomSocket = null;
+    document.getElementById('room-id').textContent = 'None';
+  });
+
+  // Add other room-specific event handlers here
+}
+
+function appendMessage(msg, prefix = '') {
   const chatbox = document.getElementById('chatbox');
   const msgElem = document.createElement('div');
-  msgElem.textContent = msg;
+  msgElem.textContent = prefix ? `[${prefix}] ${msg}` : msg;
   chatbox.appendChild(msgElem);
-  chatbox.scrollTop = chatbox.scrollHeight; // auto-scroll down
-});
+  chatbox.scrollTop = chatbox.scrollHeight;
+}
 
-// Render list of rooms as buttons
-socket.on('roomList', (rooms) => {
+function renderRoomButtons(rooms) {
   const container = document.getElementById('join-buttons');
-  container.innerHTML = ''; // clear old buttons
-
+  container.innerHTML = '';
   rooms.forEach(({ roomId, players, audience, status }) => {
     const btn = document.createElement('button');
     btn.textContent = `Room ${roomId} (${players} players, ${audience} audience) [${status}]`;
-    btn.onclick = () => joinRoom(roomId);
+    btn.onclick = () => {
+      if (currentRoomId === roomId) {
+        alert(`Already in room ${roomId}`);
+      } else {
+        serverSocket.emit('joinRoom', { roomId, role: 'player' });
+      }
+    };
     container.appendChild(btn);
+    container.appendChild(document.createElement('br'));
   });
-});
-
-// Handle successful join
-socket.on('roomJoined', ({ roomId }) => {
-  currentRoomId = roomId;
-  document.getElementById('room-id').textContent = roomId;
-  console.log(`Joined room: ${roomId}`);
-});
-
-// Join a room by emitting to server
-function joinRoom(roomId) {
-  if (currentRoomId === roomId) {
-    alert(`Already in room ${roomId}`);
-    return;
-  }
-  socket.emit('joinRoom', { roomId, role: 'player' });
 }
 
-// Optional: join first room automatically on load (comment out if manual join desired)
-// socket.on('roomList', (rooms) => {
-//   if (rooms.length > 0) joinRoom(rooms[0].roomId);
-// });
+function joinRoom(roomId) {
+  // If already connected to a room, disconnect first
+  if (roomSocket) {
+    roomSocket.disconnect();
+    roomSocket = null;
+  }
+
+  currentRoomId = roomId;
+  document.getElementById('room-id').textContent = roomId;
+
+  // Connect new socket specifically for the room namespace
+  roomSocket = io(`/room/${roomId}`);
+  setupRoomSocketHandlers(roomSocket);
+}
+
+window.onload = () => {
+  serverSocket = io(); // connect to main server namespace
+  setupServerSocketHandlers(serverSocket);
+
+  document.getElementById('send').addEventListener('click', () => {
+    const msg = document.getElementById('chat').value;
+    sendMsg(msg);
+  });
+};
+
+function sendMsg(msg) {
+  // Prefer sending to roomSocket if connected, else to serverSocket
+
+  console.log('Sending message ' + msg);
+
+  if (roomSocket && currentRoomId) {
+    roomSocket.emit('msg', msg);
+  } else if (serverSocket) {
+    serverSocket.emit('msg', msg);
+  } else {
+    alert('No active connection to send message');
+  }
+}

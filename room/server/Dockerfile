@@ -8,6 +8,7 @@ COPY package*.json ./
 RUN npm install
 
 COPY server.js .
+COPY room-template.yaml .
 
 ENV PORT=8449
 

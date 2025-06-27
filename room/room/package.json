@@ -1,13 +1,11 @@
 {
   "dependencies": {
-    "@kubernetes/client-node": "^0.19.0",
     "express": "^5.1.0",
     "ioredis": "^5.6.1",
-    "js-yaml": "^4.1.0",
     "socket.io": "^4.8.1",
     "uuid": "^11.1.0"
   },
   "scripts": {
-    "dev": "node server.js"
+    "dev": "node room.js"
   }
 }

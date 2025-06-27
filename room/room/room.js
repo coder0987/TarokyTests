@@ -11,9 +11,13 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const redis = new Redis();
-const pub = new Redis();
-const sub = new Redis();
+const redisHost = process.env.REDIS_HOST || 'redis.taroky-namespace.svc.cluster.local';
+const redisPort = process.env.REDIS_PORT || 6379;
+
+const pub = new Redis({
+  host: redisHost,
+  port: redisPort,
+});
 
 const PORT = process.env.PORT || 3000;
 const ROOM_ID = process.env.ROOM_ID || 'local-test-room';
@@ -58,6 +62,7 @@ io.on('connection', (socket) => {
 
     // Broadcast to all players + audience
     socket.on('msg', (message) => {
+        console.log('Message received: ' + message);
         [...players.values(), ...audience.values()].forEach(s => {
             s.emit('msg', message);
         });

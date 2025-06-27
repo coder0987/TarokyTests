@@ -1,27 +1,27 @@
+# server/room-template.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: room-server
+  name: room-PLACEHOLDER
+  namespace: taroky-namespace
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: room-server
+      app: room-PLACEHOLDER
   template:
     metadata:
       labels:
-        app: room-server
+        app: room-PLACEHOLDER
     spec:
       containers:
         - name: room-server
-          image: yourdockerhub/room-server:latest
+          image: professorninja/taroky-room:latest
           env:
             - name: ROOM_ID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
+              value: "room-PLACEHOLDER"
             - name: REDIS_HOST
-              value: "redis"
+              value: "redis.taroky-namespace.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
           ports:
@@ -30,10 +30,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: room-server
+  name: room-PLACEHOLDER
 spec:
   selector:
-    app: room-server
+    app: room-PLACEHOLDER
   ports:
     - port: 3000
       targetPort: 3000

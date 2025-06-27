@@ -6,7 +6,7 @@ FROM nginx:alpine
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copy static assets (if you have any)
-# COPY static/ /usr/share/nginx/html/
+COPY static/ /usr/share/nginx/html/
 
 EXPOSE 80
 
