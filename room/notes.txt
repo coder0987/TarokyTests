@@ -1,0 +1,90 @@
+Here's the situation:
+
+Build the docker files
+
+deploy the yaml files
+
+most of it works
+
+some doesn't
+
+rooms are created. They can't be connected to.
+
+Redis holds onto nonexistent connections
+
+maybe this is a way of stopping them:
+
+// Keep track of pending joins by socketId
+const pendingJoins = new Map();
+
+socket.on('joinRoom', async ({ roomId, role = 'player' }) => {
+    const roomRaw = await redis.hget(ROOM_HASH, roomId);
+    if (!roomRaw) {
+        return socket.emit('error', { message: `Room ${roomId} not found.` });
+    }
+    const roomData = JSON.parse(roomRaw);
+
+    // Reject immediately if full (for players)
+    if (role === 'player' && roomData.players >= MAX_PLAYERS_PER_ROOM) {
+        return socket.emit('error', { message: `Room ${roomId} is full.` });
+    }
+
+    // Set a timeout to await Redis join confirmation
+    const timeout = setTimeout(() => {
+        // Timeout fired — no Redis join message, cancel join
+        pendingJoins.delete(socket.id);
+        socket.emit('error', { message: 'Join timed out, disconnected.' });
+        // Optionally disconnect socket:
+        // socket.disconnect();
+    }, 15000); // 15 seconds
+
+    // Store pending join info
+    pendingJoins.set(socket.id, { roomId, role, timeout });
+
+    // Now ask the client to connect to the room (or wait for Redis pubsub message)
+    socket.emit('roomJoinRequested', { roomId, role });
+});
+
+// Redis pubsub listener example (assuming you have one)
+redisSubscriber.on('message', (channel, message) => {
+    if (channel !== REDIS_CHANNEL) return;
+
+    const data = JSON.parse(message);
+    if (data.type === 'join') {
+        const pending = pendingJoins.get(data.socketId);
+        if (!pending) {
+            // No pending join for this socket — possibly already timed out or invalid
+            return;
+        }
+
+        // Cancel timeout since player confirmed joining
+        clearTimeout(pending.timeout);
+
+        // Update room counts now that join is confirmed
+        redis.hget(ROOM_HASH, pending.roomId).then((roomRaw) => {
+            if (!roomRaw) return; // room disappeared?
+
+            const roomData = JSON.parse(roomRaw);
+
+            if (pending.role === 'player') {
+                roomData.players++;
+            } else {
+                roomData.audience++;
+            }
+
+            roomData.status = roomData.players >= MAX_PLAYERS_PER_ROOM ? 'full' : 'active';
+
+            redis.hset(ROOM_HASH, pending.roomId, JSON.stringify(roomData));
+            pendingJoins.delete(data.socketId);
+
+            // Optionally emit roomJoined to the socket here
+            const socket = io.sockets.sockets.get(data.socketId);
+            if (socket) {
+                socket.emit('roomJoined', { roomId: pending.roomId, role: pending.role });
+            }
+        });
+    }
+});
+
+
+once we verify that players can connect to rooms, send messages in rooms, and leave rooms (+ rooms get deleted), we can move taroky over
