@@ -207,9 +207,34 @@ sub.on("message", async (channel: string, message: string) => {
   }
 });
 
+sub.subscribe("room_created");
+sub.subscribe("room_deleted");
+
+sub.on("message", (channel: string, message: string) => {
+  if (channel === "room_created") {
+    const { roomId } = JSON.parse(message);
+    // Notify clients as needed, e.g. io.emit("roomCreated", { roomId });
+  } else if (channel === "room_deleted") {
+    const { roomId } = JSON.parse(message);
+    // Notify clients as needed, e.g. io.emit("roomDeleted", { roomId });
+  }
+});
+
 // WebSocket logic
 io.on("connection", (socket) => {
   console.log(`Client connected: ${socket.id}`);
+
+  socket.on("createRoom", async () => {
+    // Ask manager to create a room
+    await redis.publish("room_create", "");
+    // Optionally, wait for "room_created" event to notify client
+  });
+
+  socket.on("deleteRoom", async (roomId: string) => {
+    // Ask manager to delete a room
+    await redis.publish("room_delete", JSON.stringify({ roomId }));
+    // Optionally, wait for "room_deleted" event to notify client
+  });
 
   socket.on("getRooms", async () => {
     try {
