@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: room-server
-          image: professorninja/taroky-room:latest
+          image: ${ROOM_IMAGE}
           env:
             - name: ROOM_ID
               value: "room-PLACEHOLDER"
