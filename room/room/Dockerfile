@@ -6,8 +6,9 @@ WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
+run npm run build
 
-COPY src/* .
+COPY dist/* .
 
 ENV PORT=3000
 ENV ROOM_ID=unknown
