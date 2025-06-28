@@ -233,14 +233,16 @@ io.on("connection", (socket) => {
       const roomRaw = await redis.hget(ROOM_HASH, roomId);
 
       if (!roomRaw) {
-        return socket.emit("error", { message: `Room ${roomId} not found.` });
+        socket.emit("error", { message: `Room ${roomId} not found.` });
+        return;
       }
 
       const roomData: RoomData = JSON.parse(roomRaw);
 
       if (role === "player") {
         if (roomData.players >= MAX_PLAYERS_PER_ROOM) {
-          return socket.emit("error", { message: `Room ${roomId} is full.` });
+          socket.emit("error", { message: `Room ${roomId} is full.` });
+          return;
         }
         roomData.players++;
       } else {
