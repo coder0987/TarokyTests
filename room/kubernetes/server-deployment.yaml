@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: game-server
-        image: jamesqm1/server:latest
+        image: ${SERVER_IMAGE}
         ports:
         - containerPort: 8449
         env:

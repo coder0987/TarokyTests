@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: jamesqm1/nginx:latest
+        image: ${NGINX_IMAGE}
         ports:
         - containerPort: 80
 ---

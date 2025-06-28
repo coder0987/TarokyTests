@@ -8,7 +8,7 @@ COPY package*.json ./
 RUN npm install
 
 COPY dist/ dist/
-COPY room-template.yaml .
+COPY src/room-template.yaml dist/
 
 ENV PORT=8449
 
