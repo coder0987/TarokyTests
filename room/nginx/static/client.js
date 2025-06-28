@@ -81,9 +81,9 @@ function joinRoom(roomId) {
   document.getElementById('room-id').textContent = roomId;
 
   console.log('connecting new socket');
-  console.log(`/room/${roomId}`)
+  console.log(`/room/${roomId}/socket.io/`)
   // Connect new socket specifically for the room namespace
-  roomSocket = io(`/room/${roomId}`);
+  roomSocket = io({ path: `/room/${roomId}/socket.io/` });
   setupRoomSocketHandlers(roomSocket);
 }
 
