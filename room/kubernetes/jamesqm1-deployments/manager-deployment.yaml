@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taroky-manager
+  namespace: taroky-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: taroky-manager
+  template:
+    metadata:
+      labels:
+        app: taroky-manager
+    spec:
+      serviceAccountName: manager-sa
+      containers:
+      - name: taroky-manager
+        image: jamesqm1/manager:latest
+        env:
+        - name: REDIS_HOST
+          value: "redis.taroky-namespace.svc.cluster.local"
+        - name: REDIS_PORT
+          value: "6379"
