@@ -8,7 +8,7 @@ COPY package*.json ./
 RUN npm install
 
 
-COPY dist/ .
+COPY dist .
 
 ENV PORT=3000
 ENV ROOM_ID=unknown

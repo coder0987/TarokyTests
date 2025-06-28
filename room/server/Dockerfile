@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-COPY dist/ .
+COPY dist .
 COPY room-template.yaml .
 
 ENV PORT=8449
