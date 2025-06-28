@@ -1,23 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: game-server
+  name: taroky-manager
   namespace: taroky-namespace
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: game-server
+      app: taroky-manager
   template:
     metadata:
       labels:
-        app: game-server
+        app: taroky-manager
     spec:
+      serviceAccountName: manager-sa
       containers:
-      - name: game-server
-        image: professorninja/taroky-server:latest
-        ports:
-        - containerPort: 8449
+      - name: taroky-manager
+        image: professorninja/taroky-manager:latest
         env:
         - name: REDIS_HOST
           value: "redis.taroky-namespace.svc.cluster.local"
@@ -27,11 +26,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: game-server
+  name: taroky-manager
 spec:
   selector:
-    app: game-server
-  ports:
-  - port: 8449
-    targetPort: 8449
+    app: taroky-manager
   type: ClusterIP
