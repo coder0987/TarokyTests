@@ -13,7 +13,7 @@ if %ERRORLEVEL% EQU 0 (
     echo ✅ Deployment successful!
     echo.
     echo Checking deployment status...
-    kubectl get all -n room
+    kubectl get all -n taroky-namespace
 ) else (
     echo.
     echo ❌ Deployment failed with error code %ERRORLEVEL%
