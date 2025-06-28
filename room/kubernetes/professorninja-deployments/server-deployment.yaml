@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: game-server
-        image: ${SERVER_IMAGE}
+        image: professorninja/taroky-server:latest
         ports:
         - containerPort: 8449
         env:

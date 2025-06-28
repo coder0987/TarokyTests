@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: ${NGINX_IMAGE}
+        image: professorninja/taroky-nginx:latest
         ports:
         - containerPort: 80
 ---
