@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: game-server
+  name: taroky-server
   namespace: taroky-namespace
 spec:
   selector:
-    app: game-server
+    app: taroky-server
   ports:
     - protocol: TCP
-      port: 8449        # Port exposed by the service
-      targetPort: 8449  # Port your game-server container listens on
-  type: ClusterIP       # Internal service (default)
+      port: 8449      
+      targetPort: 8449
+  type: ClusterIP     
