@@ -58,6 +58,7 @@ function renderRoomButtons(rooms) {
       if (currentRoomId === roomId) {
         alert(`Already in room ${roomId}`);
       } else {
+        console.log(`Attempting to join room ${roomId}`);
         serverSocket.emit('joinRoom', { roomId, role: 'player' });
       }
     };

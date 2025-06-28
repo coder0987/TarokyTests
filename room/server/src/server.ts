@@ -138,7 +138,9 @@ io.on("connection", (socket) => {
         roomData.players >= MAX_PLAYERS_PER_ROOM ? "full" : "active";
       await redis.hset(ROOM_HASH, roomId, JSON.stringify(roomData));
 
-      socket.emit("roomJoined", { roomId: roomData.roomId, role });
+      console.log(`Player ${socket.id} joined room ${roomId}`);
+
+      socket.emit("roomJoined", { roomId: roomId, role });
     } catch (error) {
       console.error("[socket] Error joining room:", error);
       socket.emit("error", { message: "Failed to join room" });
