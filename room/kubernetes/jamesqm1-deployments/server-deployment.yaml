@@ -14,8 +14,8 @@ spec:
         app: taroky-server
     spec:
       containers:
-      - name: taroky-server
-        image: jamesqm1/server:latest
+      - name: game-server
+        image: jamesqm1/taroky-server:latest
         ports:
         - containerPort: 8449
         env:

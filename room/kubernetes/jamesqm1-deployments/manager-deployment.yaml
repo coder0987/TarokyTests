@@ -16,7 +16,7 @@ spec:
       serviceAccountName: manager-sa
       containers:
       - name: taroky-manager
-        image: jamesqm1/manager:latest
+        image: jamesqm1/taroky-manager:latest
         env:
         - name: REDIS_HOST
           value: "redis.taroky-namespace.svc.cluster.local"

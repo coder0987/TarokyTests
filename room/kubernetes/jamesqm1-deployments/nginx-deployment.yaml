@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: jamesqm1/nginx:latest
+        image: jamesqm1/taroky-nginx:latest
         ports:
         - containerPort: 80
 
