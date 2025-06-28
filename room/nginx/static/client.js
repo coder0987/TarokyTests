@@ -68,7 +68,10 @@ function renderRoomButtons(rooms) {
 
 function joinRoom(roomId) {
   // If already connected to a room, disconnect first
+  console.log('Connecting socket to room ' + roomId);
+
   if (roomSocket) {
+    console.log('Disconnecting old socket')
     roomSocket.disconnect();
     roomSocket = null;
   }
@@ -76,6 +79,8 @@ function joinRoom(roomId) {
   currentRoomId = roomId;
   document.getElementById('room-id').textContent = roomId;
 
+  console.log('connecting new socket');
+  console.log(`/room/${roomId}`)
   // Connect new socket specifically for the room namespace
   roomSocket = io(`/room/${roomId}`);
   setupRoomSocketHandlers(roomSocket);
