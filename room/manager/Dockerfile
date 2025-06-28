@@ -5,6 +5,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-COPY manager.ts .
+COPY dist/ dist/
 
-CMD ["node", "manager.ts"]
+CMD ["npm", "run", "start"]
