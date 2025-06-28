@@ -1,48 +1,66 @@
 // This is the room file. It will be spawned in by the server and associated with a single room
 // It will be destroyed when the room is closed
-// Many of these will run, and will not communicate with eachother
+// Many of these will run, and will not communicate with each other
 
-const http = require('http');
-const express = require('express');
-const { Server } = require('socket.io');
-const Redis = require('ioredis');
+import http from 'http';
+import express, { Request, Response } from 'express';
+import { Server, Socket } from 'socket.io';
+import Redis from 'ioredis';
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const redisHost = process.env.REDIS_HOST || 'redis.taroky-namespace.svc.cluster.local';
-const redisPort = process.env.REDIS_PORT || 6379;
+const redisHost: string = process.env.REDIS_HOST || 'redis.taroky-namespace.svc.cluster.local';
+const redisPort: number = parseInt(process.env.REDIS_PORT || '6379');
 
 const pub = new Redis({
   host: redisHost,
   port: redisPort,
 });
 
-const PORT = process.env.PORT || 3000;
-const ROOM_ID = process.env.ROOM_ID || 'local-test-room';
+const PORT: number = parseInt(process.env.PORT || '3000');
+const ROOM_ID: string = process.env.ROOM_ID || 'local-test-room';
 const REDIS_CHANNEL = 'room_updates';
 
+// Type definitions
+interface JoinData {
+  role: 'player' | 'audience';
+}
+
+interface RedisMessage {
+  type: 'room_empty' | 'join' | 'leave';
+  roomId: string;
+  socketId?: string;
+  role?: 'player' | 'audience';
+}
+
+interface StatusResponse {
+  roomId: string;
+  players: number;
+  audience: number;
+}
+
 // In-memory tracking of participants
-const players = new Map();   // socket.id -> socket
-const audience = new Map();  // socket.id -> socket
+const players = new Map<string, Socket>();   // socket.id -> socket
+const audience = new Map<string, Socket>();  // socket.id -> socket
 
 // Log & Redis update when room is empty
-function checkIfRoomEmpty() {
+function checkIfRoomEmpty(): void {
     if (players.size === 0 && audience.size === 0) {
         console.log(`[${ROOM_ID}] Room is now empty`);
         pub.publish(REDIS_CHANNEL, JSON.stringify({
             type: 'room_empty',
             roomId: `room-${ROOM_ID}`,
-        }));
+        } as RedisMessage));
     }
 }
 
 // Socket.io logic
-io.on('connection', (socket) => {
+io.on('connection', (socket: Socket) => {
     console.log(`[${ROOM_ID}] Connection: ${socket.id}`);
 
-    socket.on('join', ({ role }) => {
+    socket.on('join', ({ role }: JoinData) => {
         if (role === 'player') {
             players.set(socket.id, socket);
             console.log(`[${ROOM_ID}] Player joined: ${socket.id}`);
@@ -57,13 +75,13 @@ io.on('connection', (socket) => {
             roomId: `room-${ROOM_ID}`,
             socketId: socket.id,
             role,
-        }));
+        } as RedisMessage));
     });
 
     // Broadcast to all players + audience
-    socket.on('msg', (message) => {
+    socket.on('msg', (message: string) => {
         console.log('Message received: ' + message);
-        [...players.values(), ...audience.values()].forEach(s => {
+        [...players.values(), ...audience.values()].forEach((s: Socket) => {
             s.emit('msg', message);
         });
     });
@@ -84,7 +102,7 @@ io.on('connection', (socket) => {
                 type: 'leave',
                 roomId: `room-${ROOM_ID}`,
                 socketId: socket.id,
-            }));
+            } as RedisMessage));
         }
 
         checkIfRoomEmpty();
@@ -92,12 +110,12 @@ io.on('connection', (socket) => {
 });
 
 // Optional: health check
-app.get('/status', (req, res) => {
+app.get('/status', (req: Request, res: Response) => {
     res.json({
         roomId: ROOM_ID,
         players: players.size,
         audience: audience.size,
-    });
+    } as StatusResponse);
 });
 
 server.listen(PORT, () => {

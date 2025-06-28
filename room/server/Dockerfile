@@ -7,11 +7,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-COPY server.js .
+COPY src/* .
 COPY room-template.yaml .
 
 ENV PORT=8449
 
 EXPOSE 8449
 
-CMD ["node", "server.js"]
+CMD ["npm", "run", "start"]

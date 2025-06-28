@@ -7,11 +7,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-COPY room.js .
+COPY src/* .
 
 ENV PORT=3000
 ENV ROOM_ID=unknown
 
 EXPOSE 3000
 
-CMD ["node", "room.js"]
+CMD ["npm", "run", "start"]

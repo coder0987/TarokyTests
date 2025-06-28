@@ -1,0 +1,20 @@
+{
+  "chat.mcp.discovery.enabled": true,
+  "mcp": {
+    "inputs": [],
+    "servers": {
+      "filesystem": {
+        "command": "docker",
+        "args": [
+          "run",
+          "-i",
+          "--rm",
+          "--mount",
+          "type=bind,src=/c/Users/James Mach/Code/Taroky,dst=/workspace",
+          "mcp/filesystem",
+          "/workspace"
+        ]
+      }
+    }
+  }
+}
