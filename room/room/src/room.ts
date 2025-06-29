@@ -55,12 +55,17 @@ const roomSub = new Redis({
   port: redisPort,
 });
 
+const roomPub = new Redis({
+  host: redisHost,
+  port: redisPort,
+});
+
 const PORT: number = parseInt(process.env.PORT || '3000');
 const ROOM_ID: string = process.env.ROOM_ID || 'local-test-room';
 const REDIS_CHANNEL = 'room_updates';
 
 // Let the manager know that the room is ready
-roomSub.publish(ROOM_ID, 'ready');
+roomPub.publish(ROOM_ID, 'ready');
 
 // Type definitions
 interface JoinData {
@@ -89,7 +94,7 @@ function checkIfRoomEmpty(): void {
     if (players.size === 0 && audience.size === 0) {
         console.log(`[${ROOM_ID}] Room is now empty`);
 
-        roomSub.publish(ROOM_ID, 'empty');
+        roomPub.publish(ROOM_ID, 'empty');
 
         pub.publish(REDIS_CHANNEL, JSON.stringify({
             type: 'room_empty',
@@ -135,7 +140,7 @@ io.on('connection', (socket: Socket) => {
 
     socket.on('join', ({ role }: JoinData) => {
         // Inform manager that the room has users
-        roomSub.publish(ROOM_ID, 'running');
+        roomPub.publish(ROOM_ID, 'running');
 
         if (role === 'player') {
             players.set(socket.id, socket);

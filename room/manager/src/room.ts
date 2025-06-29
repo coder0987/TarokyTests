@@ -47,6 +47,8 @@ export class Room {
     room.audience = 0;
     room.status = "starting";
 
+    Room.update(room);
+
     roomSub.publish(roomId, 'reset');
   }
 

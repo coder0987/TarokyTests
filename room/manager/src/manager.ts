@@ -50,11 +50,13 @@ roomSub.on("message", async (channel: string, message: string) => {
     case 'empty':
       // Room had users but no longer does
       to.status = "empty";
+      Room.update(to);
       resetEmptyRoomConditional(to.roomId);
       break;
     case 'ready':
       // Room has no users and is reset (either just started or just finished a reset)
       to.status = "ready";
+      Room.update(to);
       break;
     case 'running':
       // Room has users actively in it (currently handled by other redis channel)
