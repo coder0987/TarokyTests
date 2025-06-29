@@ -137,6 +137,17 @@ function renderRoomButtons(rooms) {
     container.appendChild(leaveBtn);
   }
   leaveBtn.style.display = currentRoomId ? "inline-block" : "none";
+
+  let refreshBtn = document.getElementById("refresh-rooms-btn");
+  if (!refreshBtn) {
+    refreshBtn = document.createElement("button");
+    refreshBtn.id = "refresh-rooms-btn";
+    refreshBtn.textContent = "Refresh Rooms";
+    refreshBtn.onclick = () => {
+      serverSocket.emit("getRooms");
+    };
+    container.appendChild(refreshBtn);
+  }
 }
 
 function joinRoom(roomId) {
@@ -168,6 +179,22 @@ window.onload = () => {
     const msg = document.getElementById("chat").value;
     sendMsg(msg);
   });
+
+  window.onload = () => {
+    const userId = getUserId();
+    serverSocket = io({ query: { userId } }); // send userId to server
+    setupServerSocketHandlers(serverSocket);
+  
+    document.getElementById("send").addEventListener("click", () => {
+      const msg = document.getElementById("chat").value;
+      sendMsg(msg);
+    });
+  
+    // Auto-refresh rooms every 30 seconds
+    setInterval(() => {
+      serverSocket.emit("getRooms");
+    }, 30000);
+  };
 };
 
 function sendMsg(msg) {
