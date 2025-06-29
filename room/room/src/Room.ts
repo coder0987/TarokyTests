@@ -12,7 +12,7 @@ const Settings = require('./Settings.js');
 
 let iterator = 100000;
 
-class Room {
+export class Room {
     #gameplay;
 
     constructor(args) {
@@ -829,4 +829,4 @@ class Room {
     }
 }
 
-module.exports = Room;
+export const room = new Room();

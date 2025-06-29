@@ -1,4 +1,4 @@
-import { ACTION, VALUE } from "./enums";
+import { ACTION, DIFFICULTY, VALUE } from "./enums";
 
 export type t_value = keyof typeof VALUE;
 export type t_suit = "Trump" | "Spade" | "Heart" | "Diamond" | "Club";
@@ -51,4 +51,23 @@ export interface trick {
     leadPlayer: t_seat;
     winner: t_seat;
     cards: card[];
+};
+
+export interface settings {
+    lock: boolean;
+    timeout: number;
+    aceHigh: boolean;
+    difficulty: keyof typeof DIFFICULTY;
+    botPlayTime: number;
+    botThinkTime: number;
+}
+
+export interface userInfo {
+    avatar: number;
+    username?: string;
+    elo?: number;
+    admin?: boolean;
+    settings?: settings;
+    deck?: string;
+    chat?: boolean;
 };
