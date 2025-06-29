@@ -7,15 +7,13 @@ Kube.INSTANCE = kube;
 const { sub, redis } = require('./redis');
 const Room = require('./room');
 
-
-
-
 // Listen for room creation/deletion requests from server.ts
 sub.subscribe("room_create");
 sub.subscribe("room_delete");
 
 const ROOM_HASH = "rooms";
 const TARGET_EMPTY_ROOMS = 2;
+const MAX_EMPTY_ROOMS = 5;
 const CHECK_INTERVAL_MS = 10000;
 
 sub.on("message", async (channel: string, message: string) => {
