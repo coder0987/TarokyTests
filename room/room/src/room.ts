@@ -7,7 +7,6 @@ import express, { Request, Response } from 'express';
 import { Server, Socket } from 'socket.io';
 import Redis from 'ioredis';
 import url from 'url';
-import { channel } from 'diagnostics_channel';
 
 const app = express();
 const server = http.createServer(app);
