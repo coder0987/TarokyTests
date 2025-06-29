@@ -1,6 +1,6 @@
 import { settings, t_difficulty } from "./types";
 
-const { DIFFICULTY_TABLE, DIFFICULTY } = require('./enums');
+import { DIFFICULTY_TABLE, DIFFICULTY } from "./enums";
 
 export default class Settings {
     lock;
@@ -37,7 +37,7 @@ export default class Settings {
         this.notation += `difficulty=${this.difficulty}`; // Last one doesn't have ';'
     }
 
-    changeDifficulty(difficulty: string) {
+    changeDifficulty(difficulty: number) {
         if (!DIFFICULTY_TABLE[difficulty]) {
             return null;
         }
