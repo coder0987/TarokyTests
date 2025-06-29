@@ -1,71 +1,60 @@
 import { v4 as uuidv4 } from "uuid";
-
-const { redis } = require('./redis');
-const Kube = require('./kube');
-import { RoomData } from './types';
+import { redis } from "./redis";
+import { Kube } from "./kube";
+import { RoomData } from "./types";
 
 const kube = Kube.INSTANCE;
-
 const ROOM_PREFIX = "room-";
 const ROOM_HASH = "rooms";
 
-class Room {
-    static rooms: { [roomId: string]: Room } = {};
+export class Room {
+  id: string;
+  roomId: string;
+  players: number;
+  audience: number;
+  status: "empty" | "active" | "full";
+  createdAt: number;
 
-    id: string;
-    roomId: string;
-    players: number;
-    audience: number;
-    status: "empty" | "active" | "full";
-    createdAt: number;
-    
-    constructor() {
-        this.id = uuidv4();
-        this.roomId = `${ROOM_PREFIX}${this.id}`;
-        this.players = 0;
-        this.audience = 0;
-        this.status = 'empty';
-        this.createdAt = Date.now();
+  constructor(data?: Partial<RoomData>) {
+    this.id = uuidv4();
+    this.roomId = data?.roomId || `${ROOM_PREFIX}${this.id}`;
+    this.players = data?.players ?? 0;
+    this.audience = data?.audience ?? 0;
+    this.status = data?.status ?? "empty";
+    this.createdAt = data?.createdAt ?? Date.now();
+  }
 
-        Room.rooms[this.roomId] = this;
+  get data(): RoomData {
+    return this as RoomData;
+  }
 
-        insertRoom(this);
-        deployRoom(this);
-    }
-
-    async remove() {
-        // Delete from redis
-        await redis.hdel(ROOM_HASH, this.roomId);
-
-        // Delete from kubernetes
-        await kube.deleteRoom(this.roomId);
-
-        delete Room.rooms[this.roomId];
-    }
-
-    get data(): RoomData {
-        return this as RoomData;
-    }
-
-    static async removeRoom(roomId: string) {
-        Room.rooms[roomId]?.remove();
-    }
-
-    static async getRoomData(): Promise<Record<string, RoomData>>  {
-        const raw = await redis.hgetall(ROOM_HASH);
-        return Object.entries(raw).reduce((acc, [id, val]) => {
-            acc[id] = JSON.parse(val as string) as RoomData;
-            return acc;
-        }, {} as Record<string, RoomData>);
-    }
-}
-
-async function insertRoom(room : Room) {
+  static async create(): Promise<Room> {
+    const room = new Room();
     await redis.hset(ROOM_HASH, room.roomId, JSON.stringify(room.data));
-}
+    await kube.deployRoomToK8s(room.roomId);
+    return room;
+  }
 
-async function deployRoom(room: Room) {
-    kube.deployRoomToK8s(room.roomId);
-}
+  static async delete(roomId: string): Promise<void> {
+    await redis.hdel(ROOM_HASH, roomId);
+    await kube.deleteRoom(roomId);
+  }
 
-module.exports = Room;
+  static async getAll(): Promise<Record<string, RoomData>> {
+    const raw = await redis.hgetall(ROOM_HASH);
+    return Object.entries(raw).reduce((acc, [id, val]) => {
+      acc[id] = JSON.parse(val as string) as RoomData;
+      return acc;
+    }, {} as Record<string, RoomData>);
+  }
+
+  static async get(roomId: string): Promise<Room | null> {
+    const val = await redis.hget(ROOM_HASH, roomId);
+    if (!val) return null;
+    return new Room(JSON.parse(val));
+  }
+
+  static async update(room: Room): Promise<void> {
+    await redis.hset(ROOM_HASH, room.roomId, JSON.stringify(room.data));
+  }
+}
