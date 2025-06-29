@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 
-const { redis } = require('./redis');
-const Kube = require('./kube');
+import { redis } from './redis';
+import {Kube} from './kube';
 import { RoomData } from './types';
 
 const kube = Kube.INSTANCE;
@@ -9,7 +9,7 @@ const kube = Kube.INSTANCE;
 const ROOM_PREFIX = "room-";
 const ROOM_HASH = "rooms";
 
-class Room {
+export class Room {
     static rooms: { [roomId: string]: Room } = {};
 
     id: string;
@@ -58,14 +58,12 @@ class Room {
             return acc;
         }, {} as Record<string, RoomData>);
     }
-}
+};
 
 async function insertRoom(room : Room) {
     await redis.hset(ROOM_HASH, room.roomId, JSON.stringify(room.data));
-}
+};
 
 async function deployRoom(room: Room) {
     kube.deployRoomToK8s(room.roomId);
-}
-
-module.exports = Room;
+};
