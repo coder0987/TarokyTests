@@ -15,7 +15,7 @@ const SUIT_SORT_ORDER = {
     Spade: 0, Club: 2, Heart: 1, Diamond: 3, Trump: 4
 }
 
-class Deck {
+export class Deck {
     #deck: card[];
 
     constructor(d: { deck: card[] } | undefined) {
