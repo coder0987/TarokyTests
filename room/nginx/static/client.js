@@ -24,6 +24,8 @@ function setupServerSocketHandlers(sock) {
 function setupRoomSocketHandlers(sock) {
   sock.on('connect', () => {
     console.log(`Connected to room ${currentRoomId}`);
+
+    sock.emit('join', { role: 'player' });
   });
 
   sock.on('msg', (msg) => {
