@@ -6,10 +6,40 @@ import http from 'http';
 import express, { Request, Response } from 'express';
 import { Server, Socket } from 'socket.io';
 import Redis from 'ioredis';
+import url from 'url';
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    path: '/socket.io'
+});
+
+
+function debug_logs(socket : Socket) {
+    const query = socket.handshake.query;
+    const headers = socket.handshake.headers;
+    const remoteAddress = socket.handshake.address;
+
+    console.log(`[CONNECTED] ${remoteAddress}`);
+    console.log(`Query params:`, query);
+    console.log(`Headers:`, headers);
+    console.log(`Namespace: ${socket.nsp.name}`);
+}
+
+io.engine.on('connection_error', (err) => {
+    const req = err.req;
+
+    const parsedUrl = url.parse(req.url || '', true);
+    const path = parsedUrl.pathname;
+    const query = parsedUrl.query;
+
+    console.error(`[FAILED CONNECT]`);
+    console.error(`URL: ${req.url}`);
+    console.error(`Remote Address: ${req.socket.remoteAddress}`);
+    console.error(`Path: ${path}`);
+    console.error(`Query:`, query);
+    console.error(`Error: ${err.code} – ${err.message}`);
+});
 
 const redisHost: string = process.env.REDIS_HOST || 'redis.taroky-namespace.svc.cluster.local';
 const redisPort: number = parseInt(process.env.REDIS_PORT || '6379');
@@ -59,6 +89,8 @@ function checkIfRoomEmpty(): void {
 // Socket.io logic
 io.on('connection', (socket: Socket) => {
     console.log(`[${ROOM_ID}] Connection: ${socket.id}`);
+
+    debug_logs(socket);
 
     socket.on('join', ({ role }: JoinData) => {
         if (role === 'player') {
