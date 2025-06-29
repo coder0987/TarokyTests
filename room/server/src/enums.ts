@@ -1,12 +1,6 @@
-export enum Suit {
-  Spade = 0,
-  Club = 1,
-  Heart = 2,
-  Diamond = 3,
-  Trump = 4,
-}
+// enums.ts
 
-export const SUIT = {
+export const SUIT: { [key: number]: string } & { [key: string]: string } = {
   0: "Spade",
   1: "Club",
   2: "Heart",
@@ -17,54 +11,54 @@ export const SUIT = {
   HEART: "Heart",
   DIAMOND: "Diamond",
   TRUMP: "Trump",
-} as const;
-
-export const SUIT_REVERSE: Record<string, Suit> = {
-  Spade: Suit.Spade,
-  Club: Suit.Club,
-  Heart: Suit.Heart,
-  Diamond: Suit.Diamond,
-  Trump: Suit.Trump,
 };
 
-export enum Value {
-  ACE = "Ace",
-  TWO = "Two",
-  THREE = "Three",
-  FOUR = "Four",
-  SEVEN = "Seven",
-  EIGHT = "Eight",
-  NINE = "Nine",
-  TEN = "Ten",
-  JACK = "Jack",
-  RIDER = "Rider",
-  QUEEN = "Queen",
-  KING = "King",
-  I = "I",
-  II = "II",
-  III = "III",
-  IIII = "IIII",
-  V = "V",
-  VI = "VI",
-  VII = "VII",
-  VIII = "VIII",
-  IX = "IX",
-  X = "X",
-  XI = "XI",
-  XII = "XII",
-  XIII = "XIII",
-  XIV = "XIV",
-  XV = "XV",
-  XVI = "XVI",
-  XVII = "XVII",
-  XVIII = "XVIII",
-  XIX = "XIX",
-  XX = "XX",
-  XXI = "XXI",
-  SKYZ = "Skyz",
-}
+export const SUIT_REVERSE: { [key: string]: number } = {
+  Spade: 0,
+  Club: 1,
+  Heart: 2,
+  Diamond: 3,
+  Trump: 4,
+};
 
-export const RED_VALUE = {
+export const VALUE: { [key: string]: string } = {
+  ACE: "Ace",
+  TWO: "Two",
+  THREE: "Three",
+  FOUR: "Four",
+  SEVEN: "Seven",
+  EIGHT: "Eight",
+  NINE: "Nine",
+  TEN: "Ten",
+  JACK: "Jack",
+  RIDER: "Rider",
+  QUEEN: "Queen",
+  KING: "King",
+  I: "I",
+  II: "II",
+  III: "III",
+  IIII: "IIII",
+  V: "V",
+  VI: "VI",
+  VII: "VII",
+  VIII: "VIII",
+  IX: "IX",
+  X: "X",
+  XI: "XI",
+  XII: "XII",
+  XIII: "XIII",
+  XIV: "XIV",
+  XV: "XV",
+  XVI: "XVI",
+  XVII: "XVII",
+  XVIII: "XVIII",
+  XIX: "XIX",
+  XX: "XX",
+  XXI: "XXI",
+  SKYZ: "Skyz",
+};
+
+export const RED_VALUE: { [key: number]: string } = {
   0: "Ace",
   1: "Two",
   2: "Three",
@@ -73,9 +67,9 @@ export const RED_VALUE = {
   5: "Rider",
   6: "Queen",
   7: "King",
-} as const;
+};
 
-export const RED_VALUE_ACE_HIGH = {
+export const RED_VALUE_ACE_HIGH: { [key: number]: string } = {
   0: "Two",
   1: "Three",
   2: "Four",
@@ -84,9 +78,9 @@ export const RED_VALUE_ACE_HIGH = {
   5: "Rider",
   6: "Queen",
   7: "King",
-} as const;
+};
 
-export const BLACK_VALUE = {
+export const BLACK_VALUE: { [key: number]: string } = {
   0: "Seven",
   1: "Eight",
   2: "Nine",
@@ -95,9 +89,9 @@ export const BLACK_VALUE = {
   5: "Rider",
   6: "Queen",
   7: "King",
-} as const;
+};
 
-export const TRUMP_VALUE = {
+export const TRUMP_VALUE: { [key: number]: string } = {
   0: "I",
   1: "II",
   2: "III",
@@ -120,9 +114,9 @@ export const TRUMP_VALUE = {
   19: "XX",
   20: "XXI",
   21: "Skyz",
-} as const;
+};
 
-export const VALUE_REVERSE: Record<string, number> = {
+export const VALUE_REVERSE: { [key: string]: number } = {
   Ace: 0,
   Two: 1,
   Three: 2,
@@ -159,7 +153,7 @@ export const VALUE_REVERSE: Record<string, number> = {
   Skyz: 21,
 };
 
-export const VALUE_REVERSE_ACE_HIGH: Record<string, number> = {
+export const VALUE_REVERSE_ACE_HIGH: { [key: string]: number } = {
   Two: 0,
   Three: 1,
   Four: 2,
@@ -196,53 +190,56 @@ export const VALUE_REVERSE_ACE_HIGH: Record<string, number> = {
   Skyz: 21,
 };
 
-export enum Difficulty {
-  BEGINNER = 0,
-  EASY = 1,
-  NORMAL = 2,
-  HARD = 3,
-  RUTHLESS = 4,
-  AI = 5,
-}
-export const DIFFICULTY_TABLE = {
+export const DIFFICULTY: { [key: string]: number } = {
+  BEGINNER: 0,
+  EASY: 1,
+  NORMAL: 2,
+  HARD: 3,
+  RUTHLESS: 4,
+  AI: 5,
+};
+
+export const DIFFICULTY_TABLE: { [key: number]: string } = {
   0: "Beginner",
   1: "Easy",
   2: "Normal",
   3: "Hard",
   4: "Ruthless",
   5: "AI",
-} as const;
+};
 
-export enum MessageType {
-  POVINNOST = 0,
-  MONEY_CARDS = 1,
-  PARTNER = 2,
-  VALAT = 3,
-  CONTRA = 4,
-  IOTE = 5,
-  LEAD = 6,
-  PLAY = 7,
-  WINNER = 8,
-  PREVER_TALON = 9,
-  PAY = 10,
-  CONNECT = 11,
-  DISCONNECT = 12,
-  SETTING = 13,
-  TRUMP_DISCARD = 14,
-  NOTATION = 15,
-  DRAW = 16,
-  CUT = 17,
-}
+export const MESSAGE_TYPE: { [key: string]: number } = {
+  POVINNOST: 0,
+  MONEY_CARDS: 1,
+  PARTNER: 2,
+  VALAT: 3,
+  CONTRA: 4,
+  IOTE: 5,
+  LEAD: 6,
+  PLAY: 7,
+  WINNER: 8,
+  PREVER_TALON: 9,
+  PAY: 10,
+  CONNECT: 11,
+  DISCONNECT: 12,
+  SETTING: 13,
+  TRUMP_DISCARD: 14,
+  NOTATION: 15,
+  DRAW: 16,
+  CUT: 17,
+};
 
-export enum PlayerType {
-  HUMAN = 0,
-  ROBOT = 1,
-  AI = 2,
-}
+export const PLAYER_TYPE: { [key: string]: number } = {
+  HUMAN: 0,
+  ROBOT: 1,
+  AI: 2,
+  H: 0,
+  R: 1,
+};
 
-export const DISCONNECT_TIMEOUT = 20_000 as const;
+export const DISCONNECT_TIMEOUT: number = 20 * 1000;
 
-export const SENSITIVE_ACTIONS: Record<string, boolean> = {
+export const SENSITIVE_ACTIONS: { [key: string]: boolean } = {
   povinnostBidaUniChoice: true,
   contra: true,
   preverContra: true,
@@ -251,72 +248,72 @@ export const SENSITIVE_ACTIONS: Record<string, boolean> = {
   iote: true,
 };
 
-export enum RoomType {
-  STANDARD = 0,
-  DEBUG = 1,
-  TRAINING = 2,
-  CHALLENGE = 3,
-  TEST = 4,
-}
+export const ROOM_TYPE: { [key: string]: number } = {
+  STANDARD: 0,
+  DEBUG: 1,
+  TRAINING: 2,
+  CHALLENGE: 3,
+  TEST: 4,
+};
 
-export const NUM_AVATARS = 58 as const;
+export const NUM_AVATARS: number = 58;
 
-export enum Action {
-  START = "start",
-  PLAY = "play",
-  SHUFFLE = "shuffle",
-  CUT = "cut",
-  DEAL = "deal",
-  CHOICE = "12choice",
-  PREVER = "prever",
-  DRAW_TALON = "drawTalon",
-  PASS_TALON = "passTalon",
-  PASS_PREVER = "passPrever",
-  CALL_PREVER = "callPrever",
-  DISCARD = "discard",
-  DRAW_PREVER_TALON = "drawPreverTalon",
-  MONEY_CARDS = "moneyCards",
-  PARTNER = "partner",
-  POVINNOST_BIDA_UNI_CHOICE = "povinnostBidaUniChoice",
-  VALAT = "valat",
-  LEAD = "lead",
-  FOLLOW = "follow",
-  IOTE = "iote",
-  CONTRA = "contra",
-  PREVER_CONTRA = "preverContra",
-  PREVER_VALAT_CONTRA = "preverValatContra",
-  VALAT_CONTRA = "valatContra",
-  WIN_TRICK = "winTrick",
-  COUNT_POINTS = "countPoints",
-  RESET = "resetBoard",
-  RETRY = "retry",
-}
+export const ACTION: { [key: string]: string } = {
+  START: "start",
+  PLAY: "play",
+  SHUFFLE: "shuffle",
+  CUT: "cut",
+  DEAL: "deal",
+  CHOICE: "12choice",
+  PREVER: "prever",
+  DRAW_TALON: "drawTalon",
+  PASS_TALON: "passTalon",
+  PASS_PREVER: "passPrever",
+  CALL_PREVER: "callPrever",
+  DISCARD: "discard",
+  DRAW_PREVER_TALON: "drawPreverTalon",
+  MONEY_CARDS: "moneyCards",
+  PARTNER: "partner",
+  POVINNOST_BIDA_UNI_CHOICE: "povinnostBidaUniChoice",
+  VALAT: "valat",
+  LEAD: "lead",
+  FOLLOW: "follow",
+  IOTE: "iote",
+  CONTRA: "contra",
+  PREVER_CONTRA: "preverContra",
+  PREVER_VALAT_CONTRA: "preverValatContra",
+  VALAT_CONTRA: "valatContra",
+  WIN_TRICK: "winTrick",
+  COUNT_POINTS: "countPoints",
+  RESET: "resetBoard",
+  RETRY: "retry",
+};
 
-export enum ShuffleType {
-  CUT = 1,
-  RIFFLE = 2,
-  RANDOM = 3,
-}
+export const SHUFFLE_TYPE: { [key: string]: number } = {
+  CUT: 1,
+  RIFFLE: 2,
+  RANDOM: 3,
+};
 
-export enum CutType {
-  CUT = "Cut",
-  ONES = "1",
-  TWOS = "2",
-  THREES = "3",
-  FOURS = "4",
-  SIXES = "6",
-  TWELVES = "12",
-  TWELVE_STRAIGHT = "12 Straight",
-  THREE_FOUR_FIVE = "345",
-}
+export const CUT_TYPE: { [key: string]: string } = {
+  CUT: "Cut",
+  ONES: "1",
+  TWOS: "2",
+  THREES: "3",
+  FOURS: "4",
+  SIXES: "6",
+  TWELVES: "12",
+  TWELVE_STRAIGHT: "12 Straight",
+  THREE_FOUR_FIVE: "345",
+};
 
-export enum MoneyCards {
-  UNI = "Uni",
-  BIDA = "Bida",
-  TAROKY = "Taroky",
-  TAROCKY = "Tarocky",
-  TRUL = "Trul",
-  PANE = "Pane",
-  ROSA_PANE = "Rosa-Pane",
-  ROSA_PANE_PLUS = "Rosa-Pane+",
-}
+export const MONEY_CARDS: { [key: string]: string } = {
+  UNI: "Uni",
+  BIDA: "Bida",
+  TAROKY: "Taroky",
+  TAROCKY: "Tarocky",
+  TRUL: "Trul",
+  PANE: "Pane",
+  ROSA_PANE: "Rosa-Pane",
+  ROSA_PANE_PLUS: "Rosa-Pane+",
+};
