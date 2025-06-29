@@ -5,52 +5,52 @@
 const Deck = require('./deck');
 const { ACTION, SHUFFLE_TYPE, CUT_TYPE } = require('./enums');
 const GameManager = require('./GameManager');
-const SERVER = require('./logger');
+
 const gm = GameManager.INSTANCE;
 
 const { u } = require('./utils');
 
-function isNumericalType(arg) {
+export function isNumericalType(arg) {
     return !u(arg) && !isNaN(+arg);
 }
 
-function clientAvailableForGame(client) {
+export function clientAvailableForGame(client) {
     return !u(client) && client && !client.inGame && !client.inAudience;
 }
 
-function clientIsHost(client) {
+export function clientIsHost(client) {
     return !u(client) && client && client.inGame && client.room && ~client.room.host && client.room.host === client.socketId;
 }
 
-function clientIsPovinnost(client) {
+export function clientIsPovinnost(client) {
     return !u(client) && client && client.inGame && client.room && client.room.board && client.room.board.povinnost && client.room.board.povinnost === client.pn;
 }
 
-function roomNextStep(client, action) {
+export function roomNextStep(client, action) {
     return !u(client) && client && client.inGame && client.room && client.room.board && client.room.board.nextStep && client.room.board.nextStep.action === action;
 }
 
-function clientIsCurrentPlayer(client) {
+export function clientIsCurrentPlayer(client) {
     return !u(client) && client && client.inGame && client.room && client.room.board && client.room.board.nextStep && Number(client.room.board.nextStep.player) === Number(client.pn);
 }
 
-function notNegativeOne(number) {
+export function notNegativeOne(number) {
     return !u(number) && !isNaN(+number) && ~(+number);
 }
 
-function isString(string) {
+export function isString(string) {
     return typeof string === 'string';
 }
 
-function verifyIsAdmin(client) {
+export function verifyIsAdmin(client) {
     return !u(client) && client && client.username && client.username !== 'Guest' && client.userInfo && client.userInfo.admin;
 }
 
-function verifyCardStructure(card) {
+export function verifyCardStructure(card) {
     return !u(card) && card && card.suit && card.value && typeof card.suit === 'string' && typeof card.value === 'string';
 }
 
-function verifyCanJoinAudience(client, roomID) {
+export function verifyCanJoinAudience(client, roomID) {
     const clientIsValid = clientAvailableForGame(client);
 
     const roomIDIsValid = isNumericalType(roomID) && ~roomID && gm.rooms[roomID] && !gm.rooms[roomID].settings.locked;
@@ -58,7 +58,7 @@ function verifyCanJoinAudience(client, roomID) {
     return clientIsValid && roomIDIsValid;
 }
 
-function verifyCanJoinRoom(client, roomID, isCode) {
+export function verifyCanJoinRoom(client, roomID, isCode) {
     const clientIsValid = clientAvailableForGame(client);
 
     const roomIDIsValid = isNumericalType(roomID) && ~roomID && gm.rooms[roomID] && (!gm.rooms[roomID].settings.locked || isCode) && gm.rooms[roomID].playerCount < 4;
@@ -66,23 +66,23 @@ function verifyCanJoinRoom(client, roomID, isCode) {
     return clientIsValid && roomIDIsValid;
 }
 
-function verifyCanPlayDailyChallenge(client) {
+export function verifyCanPlayDailyChallenge(client) {
     const clientIsValid = clientAvailableForGame(client);
 
     return clientIsValid && client.username !== 'Guest';
 }
 
-function verifyCanMakeRoom(client) {
+export function verifyCanMakeRoom(client) {
     return clientAvailableForGame(client);
 }
 
-function verifyCanReturnToGame(client) {
+export function verifyCanReturnToGame(client) {
     const clientIsValid = clientAvailableForGame(client);
 
     return gm.returnToGame[client.socketId] && clientIsValid;
 }
 
-function verifyPlayerCanChangeSettings(client, setting, rule) {
+export function verifyPlayerCanChangeSettings(client, setting, rule) {
     const clientIsValid = clientIsHost(client);
     const roomIsValid = roomNextStep(client, ACTION.START);
 
@@ -91,41 +91,41 @@ function verifyPlayerCanChangeSettings(client, setting, rule) {
     return clientIsValid && roomIsValid;
 }
 
-function verifyCanSendInvite(client, socketId) {
+export function verifyCanSendInvite(client, socketId) {
     const clientIsValid = roomNextStep(client, ACTION.START);
     const socketIsValid = notNegativeOne(socketId) && gm.players[socketId];
 
     return clientIsValid && socketIsValid;
 }
 
-function verifyCanStartGame(client) {
+export function verifyCanStartGame(client) {
     const clientIsValid = roomNextStep(client, ACTION.START) && clientIsHost(client);
 
     return clientIsValid;
 }
 
-function verifyPlayerCanTakeAction(client, action) {
+export function verifyPlayerCanTakeAction(client, action) {
     const clientIsValid = roomNextStep(client, action);
     const clientIsPlayer = clientIsCurrentPlayer(client);
 
     return clientIsValid && clientIsPlayer;
 }
 
-function verifyCanDiscard(client, card) {
+export function verifyCanDiscard(client, card) {
     return verifyCardStructure(card) && Deck.handContainsNonGray(client.hand, card.value, card.suit);
 }
 
-function verifyPlayerCanPlayCard(client, card) {
+export function verifyPlayerCanPlayCard(client, card) {
     return verifyCanDiscard(client, card); // Same logic
 }
 
-function verifyPartnerChoice(client, partner) {
+export function verifyPartnerChoice(client, partner) {
     const partnerChoices = Deck.possiblePartners(client.hand);
 
     return isString(partner) && partnerChoices.some(p => p.value === partner);
 }
 
-function verifyPlayerCanTakeContraAction(client) {
+export function verifyPlayerCanTakeContraAction(client) {
     const clientIsValid = roomNextStep(client, ACTION.CONTRA)
         || roomNextStep(client, ACTION.PREVER_CONTRA)
         || roomNextStep(client, ACTION.VALAT_CONTRA)
@@ -135,7 +135,7 @@ function verifyPlayerCanTakeContraAction(client) {
     return clientIsValid && clientIsPlayer;
 }
 
-function verifyCredentials(username, token) {
+export function verifyCredentials(username, token) {
     // Not meant to verify that they go together, but that they are the right structure
 
     const usernameIsValid = !u(username) && typeof username === 'string';
@@ -144,29 +144,29 @@ function verifyCredentials(username, token) {
     return usernameIsValid && tokenIsValid;
 }
 
-function verifyCanSendMessageTo(id) {
+export function verifyCanSendMessageTo(id) {
     return notNegativeOne(id) && gm.players[id];
 }
 
-function verifyRoomExists(id) {
+export function verifyRoomExists(id) {
     return notNegativeOne(id) && gm.rooms[id];
 }
 
-function verifyCanSendMessage(client) {
+export function verifyCanSendMessage(client) {
     SERVER.debug(client.username);
     SERVER.debug(client.canSendMessage());
     SERVER.debug(client.timeLastMessageSent);
     return !u(client) && client.username && client.username !== 'Guest' && client.canSendMessage();
 }
 
-function verifyCanSaveSettings(client) {
+export function verifyCanSaveSettings(client) {
     const isValid = !u(client) && client.username && client.username !== 'Guest'
         && client.inGame && client.room && client.room.settingsNotation;
 
     return isValid;
 }
 
-function sanitizeShuffleType(type) {
+export function sanitizeShuffleType(type) {
     if (u(type) || !type || isNaN(Number(type)) || Number(type) == SHUFFLE_TYPE.CUT) {
         return SHUFFLE_TYPE.CUT;
     }
@@ -178,7 +178,7 @@ function sanitizeShuffleType(type) {
     return SHUFFLE_TYPE.RANDOM;
 }
 
-function sanitizeCutStyle(style) {
+export function sanitizeCutStyle(style) {
     if (u(style) || !style || style == CUT_TYPE.CUT) {
         return CUT_TYPE.CUT;
     }
@@ -196,7 +196,7 @@ function sanitizeCutStyle(style) {
     }
 }
 
-function sanitizeCutLocation(location) {
+export function sanitizeCutLocation(location) {
     if (u(location) || isNaN(Number(location))) {
         return 32;
     }
@@ -214,7 +214,7 @@ function sanitizeCutLocation(location) {
     return location;
 }
 
-function sanitizeHandChoice(client, choice) {
+export function sanitizeHandChoice(client, choice) {
     if (!isNumericalType(choice)) {
         choice = 0;
     } else {
@@ -234,7 +234,7 @@ function sanitizeHandChoice(client, choice) {
     return -1;
 }
 
-function sanitizeDrawTalonChoice(client, choice) {
+export function sanitizeDrawTalonChoice(client, choice) {
     if (clientIsPovinnost(client)) {
         return true;
     }
@@ -242,44 +242,14 @@ function sanitizeDrawTalonChoice(client, choice) {
     return choice;
 }
 
-function sanitizeBoolean(bool) {
+export function sanitizeBoolean(bool) {
     return !(!bool);
 }
 
-function sanitizeMessage(message) {
+export function sanitizeMessage(message) {
     if (typeof message !== 'string') {
         return '';
     }
 
     return message.replace(/[\u0000-\u001F\u007F-\u009F\u061C\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, "");
 }
-
-module.exports = {
-    verifyCanJoinAudience, 
-    verifyCanJoinRoom, 
-    verifyCanPlayDailyChallenge, 
-    verifyCanMakeRoom, 
-    verifyCanReturnToGame, 
-    verifyPlayerCanChangeSettings, 
-    verifyCanSendInvite,
-    verifyCanStartGame,
-    verifyPlayerCanTakeAction,
-    verifyCanDiscard,
-    verifyPartnerChoice,
-    verifyPlayerCanTakeContraAction,
-    verifyPlayerCanPlayCard,
-    verifyCredentials,
-    verifyIsAdmin,
-    verifyCanSendMessageTo,
-    verifyRoomExists,
-    verifyCanSendMessage,
-    verifyCanSaveSettings,
-
-    sanitizeShuffleType,
-    sanitizeCutStyle,
-    sanitizeCutLocation,
-    sanitizeHandChoice,
-    sanitizeDrawTalonChoice,
-    sanitizeBoolean,
-    sanitizeMessage,
-};

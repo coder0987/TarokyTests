@@ -194,5 +194,3 @@ export const SERVER = {
 };
 
 SERVER.initLogFile();
-
-module.exports = SERVER;
