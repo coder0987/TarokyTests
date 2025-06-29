@@ -11,7 +11,6 @@ import { Room } from './room';
 sub.subscribe("room_create");
 sub.subscribe("room_delete");
 
-const ROOM_HASH = "rooms";
 const TARGET_EMPTY_ROOMS = 2;
 const MAX_EMPTY_ROOMS = 5;
 const CHECK_INTERVAL_MS = 10000;
@@ -63,6 +62,8 @@ async function checkAndScaleRooms(): Promise<void> {
     const rooms = await Room.getAll();
     const emptyRooms = Object.values(rooms).filter((r) => r.status === "empty");
     const needed = TARGET_EMPTY_ROOMS - emptyRooms.length;
+    const excess = emptyRooms.length - MAX_EMPTY_ROOMS;
+
     console.log("needed: ", needed);
     if (needed > 0) {
       console.log(
@@ -71,9 +72,9 @@ async function checkAndScaleRooms(): Promise<void> {
       for (let i = 0; i < needed; i++) {
         await Room.create();
       }
-    } else if (needed < 0) {
+    } else if (excess > 0) {
       // Too many empty rooms, delete the extras
-      const extraRooms = emptyRooms.slice(0, -needed); // Get the extra rooms to delete
+      const extraRooms = emptyRooms.slice(0, excess); // Get the extra rooms to delete
       for (const room of extraRooms) {
         await Room.delete(room.roomId);
         console.log(`[scaler] Deleted extra empty room: ${room.roomId}`);
