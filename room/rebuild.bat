@@ -1,5 +1,6 @@
 call npm --prefix .\room run build
 call npm --prefix .\server run build
+call npm --prefix .\manager run build
 
 call docker build -t professorninja/taroky-room:latest .\room
 call docker build -t professorninja/taroky-server:latest .\server
