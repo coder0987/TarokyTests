@@ -2,6 +2,7 @@ import http from "http";
 import express from "express";
 import { Server } from "socket.io";
 import Redis from "ioredis";
+import { v4 as uuidv4 } from "uuid";
 
 // Environment variables
 const redisHost: string = process.env.REDIS_HOST || "localhost";
@@ -27,6 +28,8 @@ const io = new Server(server);
 const PORT = 8449;
 const MAX_PLAYERS_PER_ROOM = 4;
 const ROOM_HASH = "rooms";
+
+const disconnectTimers: { [userId: string]: NodeJS.Timeout } = {};
 
 // Types
 interface RoomData {
@@ -82,18 +85,34 @@ sub.on("message", (channel: string, message: string) => {
 
 // WebSocket logic
 io.on("connection", (socket) => {
-  console.log(`Client connected: ${socket.id}`);
+  // Get userId from client or assign a new one
+  let userId = socket.handshake.query.userId as string;
+  if (!userId) {
+    userId = uuidv4();
+    socket.emit("assignUserId", userId);
+  }
+
+  // Clear disconnect timer on reconnect
+  if (disconnectTimers[userId]) {
+    clearTimeout(disconnectTimers[userId]);
+    delete disconnectTimers[userId];
+  }
+
+  // On reconnect, check if user was in a room and rejoin
+  (async () => {
+    const roomId = await redis.get(`user:${userId}:room`);
+    if (roomId) {
+      socket.emit("rejoinRoom", { roomId });
+      // Optionally, you could auto-join the room here
+    }
+  })();
 
   socket.on("createRoom", async () => {
-    // Ask manager to create a room
     await redis.publish("room_create", "");
-    // Optionally, wait for "room_created" event to notify client
   });
 
   socket.on("deleteRoom", async (roomId: string) => {
-    // Ask manager to delete a room
     await redis.publish("room_delete", JSON.stringify({ roomId }));
-    // Optionally, wait for "room_deleted" event to notify client
   });
 
   socket.on("getRooms", async () => {
@@ -124,19 +143,32 @@ io.on("connection", (socket) => {
 
       const roomData: RoomData = JSON.parse(roomRaw);
 
-      if (role === "player") {
-        if (roomData.players >= MAX_PLAYERS_PER_ROOM) {
-          socket.emit("error", { message: `Room ${roomId} is full.` });
-          return;
+      // Only increment if user is not already in this room
+      const prevRoom = await redis.get(`user:${userId}:room`);
+      if (prevRoom !== roomId) {
+        if (role === "player") {
+          if (roomData.players >= MAX_PLAYERS_PER_ROOM) {
+            socket.emit("error", { message: `Room ${roomId} is full.` });
+            return;
+          }
+          roomData.players++;
+        } else {
+          roomData.audience++;
         }
-        roomData.players++;
-      } else {
-        roomData.audience++;
       }
 
       roomData.status =
         roomData.players >= MAX_PLAYERS_PER_ROOM ? "full" : "active";
       await redis.hset(ROOM_HASH, roomId, JSON.stringify(roomData));
+
+      // Store user-room mapping in Redis
+      await redis.set(`user:${userId}:room`, roomId);
+
+      // Clear any disconnect timer for this user
+      if (disconnectTimers[userId]) {
+        clearTimeout(disconnectTimers[userId]);
+        delete disconnectTimers[userId];
+      }
 
       console.log(`Player ${socket.id} joined room ${roomId}`);
 
@@ -147,12 +179,78 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("leaveRoom", async (data: { roomId: string }) => {
+    const { roomId } = data;
+    const userRoom = await redis.get(`user:${userId}:room`);
+    if (userRoom !== roomId) {
+      // User is not in this room, nothing to do
+      return;
+    }
+
+    const roomRaw = await redis.hget(ROOM_HASH, roomId);
+    if (roomRaw) {
+      const roomData: RoomData = JSON.parse(roomRaw);
+      // Decrement player count
+      if (roomData.players > 0) {
+        roomData.players--;
+      }
+      // Optionally, handle audience decrement if needed
+      // roomData.audience--;
+
+      // Update room status
+      roomData.status =
+        roomData.players === 0
+          ? "empty"
+          : roomData.players >= MAX_PLAYERS_PER_ROOM
+          ? "full"
+          : "active";
+
+      await redis.hset(ROOM_HASH, roomId, JSON.stringify(roomData));
+    }
+    await redis.del(`user:${userId}:room`);
+
+    // Optionally, emit a confirmation to the client
+    socket.emit("leftRoom", { roomId });
+  });
+
   socket.on("msg", (msg: string) => {
     console.log("Message received: " + msg);
   });
 
-  socket.on("disconnect", () => {
-    console.log(`Client disconnected: ${socket.id}`);
+  socket.on("disconnect", async () => {
+    // Start a timer to allow for quick reconnects (e.g., page refresh)
+    disconnectTimers[userId] = setTimeout(async () => {
+      const roomId = await redis.get(`user:${userId}:room`);
+      if (roomId) {
+        const roomRaw = await redis.hget(ROOM_HASH, roomId);
+        if (roomRaw) {
+          const roomData: RoomData = JSON.parse(roomRaw);
+          // Decrement player count
+          if (roomData.players > 0) {
+            roomData.players--;
+          }
+          // Optionally, handle audience decrement if needed
+          // roomData.audience--;
+
+          // Update room status
+          roomData.status =
+            roomData.players === 0
+              ? "empty"
+              : roomData.players >= MAX_PLAYERS_PER_ROOM
+              ? "full"
+              : "active";
+
+          await redis.hset(ROOM_HASH, roomId, JSON.stringify(roomData));
+        }
+        await redis.del(`user:${userId}:room`);
+      }
+      console.log(
+        `Client ${socket.id} fully disconnected and removed from room`
+      );
+    }, 10000); // 10 seconds
+    console.log(
+      `Client disconnected: ${socket.id} (waiting for possible reconnect)`
+    );
   });
 });
 

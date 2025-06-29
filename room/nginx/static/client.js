@@ -2,22 +2,57 @@ let serverSocket = null;
 let roomSocket = null;
 let currentRoomId = null;
 
+function getUserId() {
+  let userId = localStorage.getItem("userId");
+  return userId;
+}
+
+function setUserId(id) {
+  localStorage.setItem("userId", id);
+}
+
 function setupServerSocketHandlers(sock) {
-  sock.on('connect', () => {
-    console.log('Connected to main server');
-    sock.emit('getRooms');
+  sock.on("connect", () => {
+    console.log("Connected to main server");
+    sock.emit("getRooms");
   });
 
-  sock.on('msg', (msg) => {
-    appendMessage(msg, 'Server');
+  sock.on("assignUserId", (id) => {
+    setUserId(id);
   });
 
-  sock.on('roomList', (rooms) => {
+  sock.on("rejoinRoom", ({ roomId }) => {
+    // Automatically rejoin the previous room
+    if (roomId) {
+      joinRoom(roomId);
+    }
+  });
+
+  sock.on("msg", (msg) => {
+    appendMessage(msg, "Server");
+  });
+
+  sock.on("roomList", (rooms) => {
     renderRoomButtons(rooms);
   });
 
-  sock.on('roomJoined', ({ roomId }) => {
+  sock.on("roomJoined", ({ roomId }) => {
     joinRoom(roomId);
+    serverSocket.emit("getRooms");
+  });
+
+  sock.on("leftRoom", ({ roomId }) => {
+    if (roomSocket) {
+      roomSocket.disconnect();
+      roomSocket = null;
+    }
+    currentRoomId = null;
+    document.getElementById("room-id").textContent = "None";
+    // Optionally clear chat/messages if you want
+    // document.getElementById('chatbox').innerHTML = '';
+    // Request the updated room list from the server
+    serverSocket.emit("getRooms");
+    // Do NOT call renderRoomButtons([]) here!
   });
 }
 
@@ -37,7 +72,20 @@ function setupRoomSocketHandlers(sock) {
     document.getElementById('room-id').textContent = 'None';
   });
 
-  // Add other room-specific event handlers here
+  sock.on("leftRoom", ({ roomId }) => {
+    // Clean up client state/UI
+    if (roomSocket) {
+      roomSocket.disconnect();
+      roomSocket = null;
+    }
+    currentRoomId = null;
+    document.getElementById("room-id").textContent = "None";
+    // Optionally clear chat/messages if you want
+    // document.getElementById('chatbox').innerHTML = '';
+    // Re-enable room buttons and hide leave button
+    serverSocket.emit("getRooms"); // Refresh room list/buttons
+    renderRoomButtons([]); // Or call with the latest room list if you have it
+  });
 }
 
 function appendMessage(msg, prefix = '') {
@@ -49,22 +97,44 @@ function appendMessage(msg, prefix = '') {
 }
 
 function renderRoomButtons(rooms) {
-  const container = document.getElementById('join-buttons');
-  container.innerHTML = '';
+  const container = document.getElementById("join-buttons");
+  container.innerHTML = "";
   rooms.forEach(({ roomId, players, audience, status }) => {
-    const btn = document.createElement('button');
+    const btn = document.createElement("button");
     btn.textContent = `Room ${roomId} (${players} players, ${audience} audience) [${status}]`;
     btn.onclick = () => {
       if (currentRoomId === roomId) {
         alert(`Already in room ${roomId}`);
       } else {
         console.log(`Attempting to join room ${roomId}`);
-        serverSocket.emit('joinRoom', { roomId, role: 'player' });
+        serverSocket.emit("joinRoom", { roomId, role: "player" });
       }
     };
+    btn.disabled = !!currentRoomId;
     container.appendChild(btn);
-    container.appendChild(document.createElement('br'));
+    container.appendChild(document.createElement("br"));
   });
+  // Add leave room button if in a room
+  let leaveBtn = document.getElementById("leave-room-btn");
+  if (!leaveBtn) {
+    leaveBtn = document.createElement("button");
+    leaveBtn.id = "leave-room-btn";
+    leaveBtn.textContent = "Leave Room";
+    leaveBtn.onclick = () => {
+      if (currentRoomId) {
+        serverSocket.emit("leaveRoom", { roomId: currentRoomId });
+        if (roomSocket) {
+          roomSocket.disconnect();
+          roomSocket = null;
+        }
+        currentRoomId = null;
+        document.getElementById("room-id").textContent = "None";
+        renderRoomButtons([]); // Refresh buttons
+      }
+    };
+    container.appendChild(leaveBtn);
+  }
+  leaveBtn.style.display = currentRoomId ? "inline-block" : "none";
 }
 
 function joinRoom(roomId) {
@@ -88,11 +158,12 @@ function joinRoom(roomId) {
 }
 
 window.onload = () => {
-  serverSocket = io(); // connect to main server namespace
+  const userId = getUserId();
+  serverSocket = io({ query: { userId } }); // send userId to server
   setupServerSocketHandlers(serverSocket);
 
-  document.getElementById('send').addEventListener('click', () => {
-    const msg = document.getElementById('chat').value;
+  document.getElementById("send").addEventListener("click", () => {
+    const msg = document.getElementById("chat").value;
     sendMsg(msg);
   });
 };
