@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { redis, roomSub } from "./redis";
+import { redis, roomPub, roomSub } from "./redis";
 import { Kube } from "./kube";
 import { RoomData } from "./types";
 
@@ -49,7 +49,7 @@ export class Room {
 
     Room.update(room);
 
-    roomSub.publish(roomId, 'reset');
+    roomPub.publish(roomId, 'reset');
   }
 
   static async delete(roomId: string): Promise<void> {
