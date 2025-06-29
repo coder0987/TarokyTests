@@ -370,7 +370,7 @@ class Room {
         if (this._board.prever != -1) {
             this._board.trumpDiscarded[0].push({suit:card.suit, value:card.value});
         } else {
-            this._board.trumpDiscarded[((+this._board.povinnost - +pn) + 4)%4].push({suit:card.suit, value:card.value});
+            this._board.trumpDiscarded[playerOffset(this._board.povinnost, pn)].push({suit:card.suit, value:card.value});
         }
 
         // Mark it as played for the bots

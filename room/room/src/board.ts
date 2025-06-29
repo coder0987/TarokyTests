@@ -1,36 +1,38 @@
+import { card, importantInfo, nextStep, t_seat, t_value, table, trick } from "./types";
+
 class Board {
     // Private fields
-    #partnerCard;
-    #talon;
-    #table;
-    #preverTalon;
-    #preverTalonStep;
-    #prever;
-    #playingPrever;
-    #povinnost;
-    #buc;
-    #leadPlayer;
-    #leadCard;
-    #nextStep;
-    #cutStyle;
-    #moneyCards;
-    #trickWinCount;
-    #valat;
-    #iote;
-    #ioteWin;
-    #hasTheI;
-    #contra;
-    #calledContra;
-    #rheaContra;
-    #supraContra;
-    #firstContraPlayer;
-    #gameNumber;
-    #importantInfo;
-    #notation;
-    #trickHistory;
-    #cardsPlayed;
-    #publicPreverTalon;
-    #trumpDiscarded;
+    #partnerCard: t_value;
+    #talon: card[];
+    #table: table[];
+    #preverTalon: card[];
+    #preverTalonStep: number;
+    #prever: t_seat;
+    #playingPrever: boolean;
+    #povinnost: t_seat;
+    #buc: boolean;
+    #leadPlayer: t_seat;
+    #leadCard: card | null;
+    #nextStep: nextStep;
+    #cutStyle: string;
+    #moneyCards: string[][];
+    #trickWinCount: number[];
+    #valat: t_seat;
+    #iote: number;
+    #ioteWin: number;
+    #hasTheI: t_seat;
+    #contra: number[];
+    #calledContra: t_seat;
+    #rheaContra: t_seat;
+    #supraContra: t_seat;
+    #firstContraPlayer: t_seat;
+    #gameNumber: number;
+    #importantInfo: importantInfo;
+    #notation: string;
+    #trickHistory: trick[];
+    #cardsPlayed: boolean[];
+    #publicPreverTalon: card[];
+    #trumpDiscarded: card[][];
 
     constructor() {
         this.#partnerCard = "";
@@ -63,7 +65,7 @@ class Board {
         this.#trickHistory = [];
         this.#cardsPlayed = new Array(54).fill(false);
         this.#publicPreverTalon = [];
-        this.#trumpDiscarded = [[], [], []];
+        this.#trumpDiscarded = [[], [], [], []];
     }
 
     resetForNextRound() {
@@ -74,7 +76,7 @@ class Board {
         this.#preverTalonStep = 0;
         this.#prever = -1;
         this.#playingPrever = false;
-        this.#povinnost = (this.#povinnost + 1) % 4;
+        this.#povinnost = (this.#povinnost + 1) % 4 as t_seat;
         this.#buc = false;
         this.#leadPlayer = -1;
         this.#leadCard = null;
@@ -95,7 +97,7 @@ class Board {
         this.#trickHistory = [];
         this.#cardsPlayed = new Array(54).fill(false);
         this.#publicPreverTalon = [];
-        this.#trumpDiscarded = [[], [], []];
+        this.#trumpDiscarded = [[], [], [], []];
     }
 
     // Setters
