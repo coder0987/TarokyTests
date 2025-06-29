@@ -9,6 +9,8 @@ class Kube {
     #k8sApiCore;
     public static NAMESPACE = "taroky-namespace";
 
+    static INSTANCE: typeof Kube;
+
     constructor() {
         this.#kc = new k8s.KubeConfig();
         this.#kc.loadFromDefault();
