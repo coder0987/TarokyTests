@@ -37,91 +37,97 @@ class Deck {
         return theDeck;
     }
 
-    shuffleDeck(shuffleType, cutLocation) {
-        let tempDeck = [...this._deck];
+    shuffleDeck(shuffleType: number, cutLocation: number) {
+        let tempDeck = [...this.#deck];
         cutLocation = cutLocation || tempDeck.length / 2;
         switch (shuffleType) {
             case 1: /*cut*/     this.cutShuffle(cutLocation);
             case 2: /*riffle*/  this.riffleShuffle(true);
-            case 3: /*randomize*/this._deck = tempDeck.sort(() => Math.random() - 0.5);
-            default: this._deck = [...tempDeck];
+            case 3: /*randomize*/this.#deck = tempDeck.sort(() => Math.random() - 0.5);
+            default: this.#deck = [...tempDeck];
         }
     }
 
-    cutShuffle(cutPosition) {
-        if (this._deck.length >= cutPosition) { return }
-        let leftSide = this._deck.slice(0, cutPosition);
-        let rightSide = this._deck.slice(cutPosition + 1);
-        this._deck = [...rightSide, ...leftSide];
+    cutShuffle(cutPosition: number) {
+        if (this.#deck.length >= cutPosition) { return }
+        let leftSide = this.#deck.slice(0, cutPosition);
+        let rightSide = this.#deck.slice(cutPosition + 1);
+        this.#deck = [...rightSide, ...leftSide];
     }
 
-    riffleShuffle(isRandom) {
-        let middle = this._deck.length / 2;
-        let leftSide = this._deck.slice(0, middle);
-        let rightSide = this._deck.slice(middle);
-        let result = [];
+    riffleShuffle(isRandom: boolean) {
+        let middle = this.#deck.length / 2;
+        let leftSide = this.#deck.slice(0, middle);
+        let rightSide = this.#deck.slice(middle);
+        let result: card[] = [];
         let leftSideFirst = 1;
         for (var i = 0; i < leftSide.length; i++) {
             if (isRandom) { leftSideFirst = Math.floor(Math.random() * 2); }
             if (leftSideFirst == 1) {
-                result.push(leftSide[i]);
-                result.push(rightSide[i]);
+                result.push(leftSide[i] as card);
+                result.push(rightSide[i] as card);
             }
             else {
-                result.push(rightSide[i]);
-                result.push(leftSide[i]);
+                result.push(rightSide[i] as card);
+                result.push(leftSide[i] as card);
             }
         }
-        this._deck = result;
+        this.#deck = result;
     }
 
-    splice(start, end) {
-        return this._deck.splice(start, end);
+    splice(start: number, end: number) {
+        return this.#deck.splice(start, end);
     }
 
-    dealTalon(talon) {
+    dealTalon(talon: card[]) {
         for (let i = 0; i < 6; i++)
-            talon[i] = this.splice(0, 1)[0];
+            talon[i] = this.splice(0, 1)[0] as card;
     }
 
-    dealBy(hands, num) {
-        for (let i = 0; this._deck[0]; i = (i + 1) % 4) {
+    dealBy(hands: card[][], num: number) {
+        for (let i = 0; this.#deck[0]; i = (i + 1) % 4) {
             for (let c = 0; c < num; c++) {
-                hands[i].push(this.splice(0, 1)[0]);
+                hands[i]?.push(this.splice(0, 1)[0] as card);
             }
         }
     }
 
-    deal345(hands) {
+    deal345(hands: card[][]) {
         for (let t = 3; t < 6; t++) {
             for (let i = 0; i < 4; i++) {
-                for (let c = 0; c < t; c++) hands[i].push(this.splice(0, 1)[0]);
+                for (let c = 0; c < t; c++) hands[i]?.push(this.splice(0, 1)[0] as card);
             }
         }
     }
 
-    static dealHand(from, to) {
-        while (from[0]) {to.push(from.splice(0,1)[0]);}
+    static dealHand(from: card[], to: card[]) {
+        while (from[0]) {to.push(from.splice(0,1)[0] as card);}
     }
 
-    static dealCards(from, to, count) {
-        for (let i=0; i<count; i++) {to.push(from.splice(0,1)[0]);}
+    static dealCards(from: card[], to: card[], count: number) {
+        for (let i=0; i<count; i++) {to.push(from.splice(0,1)[0] as card);}
     }
 
-    static copyCards(from, to, count) {
+    static copyCards(from: card[], to: card[], count: number) {
         to.push(...from.slice(0,count));
     }
 
-    static removeCard(from, card) {
+    static removeCard(from: card[], card: card) {
+        
+         
         for (let i in from) {
+            if (from[i] === undefined) {
+                continue;
+            }
+
             if (from[i].suit === card.suit && from[i].value === card.value) {
-                return from.splice(i, 1)[0];
+                return from.splice(+i, 1)[0];
             }
         }
         return null;
     }
 
-    static points(cards) {
+    static points(cards: card[]) {
         let tp = 0;
         for (let i in cards) {
             tp += Deck.pointValue(cards[i]);
@@ -129,7 +135,7 @@ class Deck {
         return tp;
     }
 
-    static get5(cards) {
+    static get5(cards: card[]) {
         if (cards.length == 0) {return 0;}
         if (Deck.points(cards) <= 5 || cards.length <= 4) {
             return cards.length;
@@ -140,8 +146,8 @@ class Deck {
                 return 1;//5-pointer
             }
             if (Deck.pointValue(cards[1]) == 5) {
-                let temp = cards[0];
-                cards[0] = cards[1];
+                let temp = cards[0] as card;
+                cards[0] = cards[1] as card;
                 cards[1] = temp;
                 return 1;
             }
@@ -150,8 +156,8 @@ class Deck {
                 return 2;
             }
             if (Deck.pointValue(cards[2]) == 5) {
-                let temp = cards[0];
-                cards[0] = cards[2];
+                let temp = cards[0] as card;
+                cards[0] = cards[2] as card;
                 cards[2] = temp;
                 return 1;
             }
@@ -159,8 +165,8 @@ class Deck {
                 return 3;
             }
             if (Deck.pointValue(cards[3]) == 5) {
-                let temp = cards[0];
-                cards[0] = cards[3];
+                let temp = cards[0] as card;
+                cards[0] = cards[3] as card;
                 cards[3] = temp;
                 return 1;
             }
@@ -179,19 +185,19 @@ class Deck {
                     for (let i in cards) {
                         let pv = Deck.pointValue(cards[i])
                         if (pv == 1 && ~first) {
-                            let temp = cards[1];
-                            cards[1] = cards[first];
+                            let temp = cards[1] as card;
+                            cards[1] = cards[first] as card;
                             cards[first] = temp;
 
-                            temp = cards[2];
-                            cards[2] = cards[i];
+                            temp = cards[2] as card;
+                            cards[2] = cards[i] as card;
                             cards[i] = temp;
                             return 3;
                         } else if (pv == 1) {
-                            first = i;
+                            first = +i;
                         } else if (pv == 2) {
-                            let temp = cards[1];
-                            cards[1] = cards[i];
+                            let temp = cards[1] as card;
+                            cards[1] = cards[i] as card;
                             cards[i] = temp;
                             return 2;
                         }
@@ -202,7 +208,7 @@ class Deck {
                     let idx = -1;
                     for (let i in cards) {
                         if (Deck.pointValue(cards[i]) == 1) {
-                            idx = i;
+                            idx = +i;
                             break;
                         }
                     }
@@ -210,8 +216,8 @@ class Deck {
                         //No more 1-pointers :( just give up
                         return cards.length;
                     }
-                    let temp = cards[1];
-                    cards[1] = cards[idx];
+                    let temp = cards[1] as card;
+                    cards[1] = cards[idx] as card;
                     cards[idx] = temp;
                     return 2;
             }
@@ -219,8 +225,8 @@ class Deck {
         return 5;//First 5 are all 1s
     }
 
-    static simulateCounting(povCards, oppCards) {
-        let stack = [];
+    static simulateCounting(povCards: card[], oppCards: card[]) {
+        let stack: card[] = [];
 
         //Simulate counting the cards and return one string of all the cards put together
         if (povCards.length < oppCards.length - 5) {
@@ -238,7 +244,7 @@ class Deck {
         return povCards.concat(stack).concat(oppCards);
     }
 
-    static sortCards(toSort, aceHigh) {
+    static sortCards(toSort: card[], aceHigh: boolean) {
         let valueEnum = aceHigh ? VALUE_REVERSE_ACE_HIGH : VALUE_REVERSE;
         toSort = toSort.sort((a, b) => {
              if (SUIT_SORT_ORDER[a.suit] > SUIT_SORT_ORDER[b.suit]) {
@@ -692,11 +698,11 @@ class Deck {
 
     //Getters
     get deck() {
-        return this._deck
+        return this.#deck
     }
 
     set deck(deck) {
-        this._deck = deck;
+        this.#deck = deck;
     }
 
 }
