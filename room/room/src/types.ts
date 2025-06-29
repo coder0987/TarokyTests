@@ -5,6 +5,7 @@ export type t_suit = "Trump" | "Spade" | "Heart" | "Diamond" | "Club";
 export type t_action = keyof typeof ACTION;
 export type t_seat = -1 | 0 | 1 | 2 | 3;
 export type t_seat_c = 1 | 2 | 3 | 4; //what the client sees
+export type t_difficulty = keyof typeof DIFFICULTY;
 
 export interface table {
     card: card;
@@ -54,12 +55,12 @@ export interface trick {
 };
 
 export interface settings {
-    lock: boolean;
-    timeout: number;
-    aceHigh: boolean;
-    difficulty: keyof typeof DIFFICULTY;
-    botPlayTime: number;
-    botThinkTime: number;
+    lock?: boolean;
+    timeout?: number;
+    aceHigh?: boolean;
+    difficulty?: keyof typeof DIFFICULTY;
+    botPlayTime?: number;
+    botThinkTime?: number;
 }
 
 export interface userInfo {
