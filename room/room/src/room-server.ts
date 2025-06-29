@@ -60,6 +60,7 @@ const roomPub = new Redis({
 
 const PORT: number = parseInt(process.env.PORT || '3000');
 const ROOM_ID: string = process.env.ROOM_ID || 'local-test-room';
+const ROOM_NAME: string = process.env.ROOM_NAME || 'local-test-room';
 const REDIS_CHANNEL = 'room_updates';
 
 // Let the manager know that the room is ready
@@ -202,3 +203,14 @@ app.get('/status', (req: Request, res: Response) => {
 server.listen(PORT, () => {
     console.log(`[${ROOM_ID}] Room server running on port ${PORT}`);
 });
+
+
+// Taroky game: beyond this point
+
+
+import RoomManager from './RoomManager';
+import Room from './Room';
+
+RoomManager.ROOM_ID = ROOM_ID;
+RoomManager.ROOM_NAME = ROOM_NAME;
+RoomManager.room = new Room();

@@ -1,4 +1,4 @@
-import { ACTION, DIFFICULTY, VALUE } from "./enums";
+import { ACTION, DIFFICULTY, PLAYER_TYPE, VALUE } from "./enums";
 
 export type t_value = keyof typeof VALUE;
 export type t_suit = "Trump" | "Spade" | "Heart" | "Diamond" | "Club";
@@ -6,6 +6,7 @@ export type t_action = keyof typeof ACTION;
 export type t_seat = -1 | 0 | 1 | 2 | 3;
 export type t_seat_c = 1 | 2 | 3 | 4; //what the client sees
 export type t_difficulty = keyof typeof DIFFICULTY;
+export type t_player = keyof typeof PLAYER_TYPE;
 
 export interface table {
     card: card;

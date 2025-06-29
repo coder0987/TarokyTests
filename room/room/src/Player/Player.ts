@@ -1,8 +1,10 @@
 const { ACTION } = require("../enums");
 const SERVER = require("../logger");
+import { PLAYER_TYPE } from '../enums';
+import RoomManager from '../RoomManager';
 
-class Player {
-    #type;
+export default abstract class Player {
+    #type = PLAYER_TYPE.ROBOT;
     #pid = -1;
     #chips = 100;
     #discard = [];
@@ -10,35 +12,31 @@ class Player {
     #tempHand = [];
     #isTeamPovinnost = false;
     #publicTeam = 0;
-    #savePoints = [];
+    //#savePoints = [];
     #consecutiveAutos = 0;
     #avatar = 0;
     #handRank = 0;
 
-    #room;
-
     // Meant only to be called by super()
-    constructor(args = {}) {
-        this.#pid = args.pid ?? -1;
-        this.#chips = args.chips ?? 100;
-        this.#discard = args.discard ?? [];
-        this.#hand = args.hand ?? [];
-        this.#tempHand = args.tempHand ?? [];
-        this.#isTeamPovinnost = args.isTeamPovinnost ?? false;
-        this.#publicTeam = args.publicTeam ?? 0;
-        this.#savePoints = args.savePoints ?? [];
-        this.#consecutiveAutos = args.consecutiveAutos ?? 0;
-        this.#avatar = args.avatar ?? 0;
-        this.#handRank = args.handRank ?? 0;
-
-        this.#room = args.room;
+    constructor(args?: Player) {
+        this.#pid = args?.pid ?? -1;
+        this.#chips = args?.chips ?? 100;
+        this.#discard = args?.discard ?? [];
+        this.#hand = args?.hand ?? [];
+        this.#tempHand = args?.tempHand ?? [];
+        this.#isTeamPovinnost = args?.isTeamPovinnost ?? false;
+        this.#publicTeam = args?.publicTeam ?? 0;
+        //this.#savePoints = args?.savePoints ?? [];
+        this.#consecutiveAutos = args?.consecutiveAutos ?? 0;
+        this.#avatar = args?.avatar ?? 0;
+        this.#handRank = args?.handRank ?? 0;
     }
 
     next() {
         // Figure out what the next action is and do it
-        const nextAction = this.#room.board.nextStep;
+        const nextAction = RoomManager.room.board.nextStep;
 
-        SERVER.functionCall('next', {name:'action', value:nextAction.action}, {name:'Room Number',value: this.#room.name});
+        SERVER.functionCall('next', {name:'action', value:nextAction.action}, {name:'Room Number',value: RoomManager.room.name});
         
         let fakeMoneyCards = false;
 
@@ -115,12 +113,34 @@ class Player {
                 SERVER.warn('Unknown robot action: ' + nextAction.action, this.room.name);
         }
 
-        this.#room.informNextAction();
+        RoomManager.room.informNextAction();
 
         if (fakeMoneyCards) {
             nextAction.action = ACTION.POVINNOST_BIDA_UNI_CHOICE;
         }
     }
+
+    abstract start(): void;
+    abstract play(): void;
+    abstract shuffle(): void;
+    abstract cut(): void;
+    abstract deal(): void;
+    abstract twelves(): void;
+    abstract prever(): void;
+    abstract drawPreverTalon(): void;
+    abstract drawTalon(): void;
+    abstract discardAction(): void;
+    abstract bidaUniChoice(): boolean;
+    abstract moneyCards(): void;
+    abstract partner(): void;
+    abstract valat(): void;
+    abstract iote(): void;
+    abstract contra(): void;
+    abstract lead(): void;
+    abstract follow(): void;
+    abstract win(): void;
+    abstract count(): void;
+    abstract reset(): void;
 
     resetForNextRound() {
         this.hand = [];
@@ -173,7 +193,7 @@ class Player {
     }
 
     set room(room) {
-        this.#room = room;
+        RoomManager.room = room;
     }
 
     set consecutiveAutos(consecutiveAutos) {
@@ -222,20 +242,18 @@ class Player {
     }
 
     get room() {
-        return this.#room;
+        return RoomManager.room;
     }
     
     get action() {
-        return this.#room.board.nextStep;
+        return RoomManager.room.board.nextStep;
     }
 
     get info() {
-        return this.#room.board.nextStep.info;
+        return RoomManager.room.board.nextStep.info;
     }
 
     get consecutiveAutos() {
         return this.#consecutiveAutos;
     }
 }
-
-module.exports = Player;

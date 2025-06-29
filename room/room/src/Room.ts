@@ -11,17 +11,19 @@ const {cardsToNotation} = require('./notation');
 const HumanPlayer = require('./Player/HumanPlayer.js');
 
 import Settings from './Settings';
-import Board from './_Board';
+import Board from './Board';
 
 let iterator = 100000;
 
-export class Room {
+export default class Room {
     #gameplay;
     #settings: Settings;
     #joinCode: string;
     #host: number;
     #hostPN: t_seat;
     #board: Board;
+    #playerCount: number;
+    #players: player[];
 
     constructor() {
         this.#settings = new Settings();
@@ -826,5 +828,3 @@ export class Room {
         this.#trainingGoal = trainingGoal;
     }
 }
-
-export const room = new Room();
