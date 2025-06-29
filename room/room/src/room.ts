@@ -110,6 +110,8 @@ function reset() {
         s.emit('close');
         s.disconnect();
     });
+
+    roomPub.publish(ROOM_ID, 'ready');
 }
 
 // Manager messages
