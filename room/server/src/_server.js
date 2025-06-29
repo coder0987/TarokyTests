@@ -5,9 +5,7 @@
 
 //Used for non-"production" instances of the server
 const DEBUG_MODE = process.argv[2] == 'debug' || process.argv[2] == 'train' || process.argv[2] == 'test';
-const TEST = process.argv[4];
 const LOG_LEVEL = process.argv[3] || (DEBUG_MODE ? 5 : 3);//Defaults to INFO level. No traces or debugs.
-const TRAINING_MODE = process.argv[2] == 'train';
 
 //imports
 const SERVER = require('./logger.js');
@@ -28,15 +26,10 @@ const Client = require('./Client.js');
 
 const http = require('http');
 const express = require('express');
-const bodyParser = require('body-parser');
 
 const app = express();
 
-const BASE_FOLDER = __dirname.substring(0,__dirname.length - 6);
-
-//Standard file-serving
-app.use(express.static(BASE_FOLDER + 'public'));
-app.use(bodyParser.urlencoded({ extended: false }))
+//Preferences
 app.post('/preferences', function (req, res) {
     if(!req.headers.authorization) {
         console.log('Sent request without username or password');
@@ -480,30 +473,10 @@ function tick() {
     }
 }
 
-if (!TRAINING_MODE) {
-    //AI in training won't use normal room operations
-    setInterval(tick, 1000);//once each second
-    setInterval(Auth.checkAllUsers, 5*60*1000);
-}
+setInterval(tick, 1000);//once each second
+setInterval(Auth.checkAllUsers, 5*60*1000);
 
 //Begin listening
-if (DEBUG_MODE) {
-    console.log("DEBUG MODE ACTIVATED");
-    console.log("Listening on port 8448 (Accessible at http://localhost:8448/ )")
-    server.listen(8448);
-} else {
-    console.log("Server running in production mode. For debug mode, run \nnode _server.js debug")
-    console.log("Listening on port 8442 (Accessible at http://localhost:8442/ )");
-    server.listen(8442);
-}
+console.log("Listening on port 8442 (Accessible at http://localhost:8442/ )");
+server.listen(8442);
 console.log("Log level: " + LOG_LEVEL);
-
-if (TEST) {
-    const ShuffleTest = require('./Tests/shuffle.js');
-    if (!ShuffleTest) {
-        console.log('Unknown test: ' + TEST);
-        return;
-    }
-    let test = new ShuffleTest();
-    test.initiateTest();
-}

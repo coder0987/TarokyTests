@@ -25,7 +25,6 @@ function debug_logs(socket : Socket) {
     console.log(`Headers:`, headers);
     console.log(`Namespace: ${socket.nsp.name}`);
 }
-
 io.engine.on('connection_error', (err) => {
     const req = err.req;
 

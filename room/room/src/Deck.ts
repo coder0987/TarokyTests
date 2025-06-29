@@ -5,8 +5,10 @@ const { SUIT,
     BLACK_VALUE,
     TRUMP_VALUE,
     VALUE_REVERSE,
-    VALUE_REVERSE_ACE_HIGH } = require('./enums.js')
-const SERVER = require('./logger.js');
+    VALUE_REVERSE_ACE_HIGH } = require('./enums')
+const SERVER = require('./logger');
+
+import { card } from './types';
 
 //To sort Spades, Hearts, Clubs, Diamonds, Trump and prevent similar colors from touching
 const SUIT_SORT_ORDER = {
@@ -14,17 +16,19 @@ const SUIT_SORT_ORDER = {
 }
 
 class Deck {
-    constructor(d) {
+    #deck: card[];
+
+    constructor(d: { deck: card[] } | undefined) {
         if (d) {
             //Create a copy of this deck instead
-            this._deck = structuredClone(d.deck);
+            this.#deck = structuredClone(d.deck);
             return;
         }
-        this._deck = Deck.createDeck();
+        this.#deck = Deck.createDeck();
     }
 
-    static createDeck() {
-        let theDeck = [];
+    static createDeck(): card[] {
+        let theDeck: card[] = [];
         for (let s = 0; s < 4; s++)
             for (let v = 0; v < 8; v++)
                 theDeck.push({ 'value': s > 1 ? RED_VALUE[v] : BLACK_VALUE[v], 'suit': SUIT[s] });
