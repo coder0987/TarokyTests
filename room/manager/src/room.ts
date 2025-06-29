@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { redis } from "./redis";
+import { redis, roomSub } from "./redis";
 import { Kube } from "./kube";
 import { RoomData } from "./types";
 
@@ -32,12 +32,14 @@ export class Room {
     const room = new Room();
     await redis.hset(ROOM_HASH, room.roomId, JSON.stringify(room.data));
     await kube.deployRoomToK8s(room.roomId);
+    await roomSub.subscribe(room.roomId);
     return room;
   }
 
   static async delete(roomId: string): Promise<void> {
     await redis.hdel(ROOM_HASH, roomId);
     await kube.deleteRoom(roomId);
+    await roomSub.unsubscribe(roomId);
   }
 
   static async getAll(): Promise<Record<string, RoomData>> {
@@ -56,5 +58,25 @@ export class Room {
 
   static async update(room: Room): Promise<void> {
     await redis.hset(ROOM_HASH, room.roomId, JSON.stringify(room.data));
+  }
+
+  static async cleanupOrphanedRooms(): Promise<void> {
+    const rooms = await Room.getAll();
+  
+    for (const roomId of Object.keys(rooms)) {
+      try {
+        // Check if deployment exists in the namespace
+        await kube.getRoom(roomId);
+        // Deployment exists, no action needed
+      } catch (err: any) {
+        if (err.statusCode === 404) {
+          // Deployment not found — remove room from Redis
+          await Room.delete(roomId);
+          console.log(`[cleanup] Removed orphaned room from Redis: ${roomId}`);
+        } else {
+          console.error(`[cleanup] Error checking deployment ${roomId}:`, err);
+        }
+      }
+    }
   }
 }
