@@ -7,6 +7,7 @@ import express, { Request, Response } from 'express';
 import { Server, Socket } from 'socket.io';
 import Redis from 'ioredis';
 import url from 'url';
+import { channel } from 'diagnostics_channel';
 
 const app = express();
 const server = http.createServer(app);
@@ -49,9 +50,17 @@ const pub = new Redis({
   port: redisPort,
 });
 
+const roomSub = new Redis({
+  host: redisHost,
+  port: redisPort,
+});
+
 const PORT: number = parseInt(process.env.PORT || '3000');
 const ROOM_ID: string = process.env.ROOM_ID || 'local-test-room';
 const REDIS_CHANNEL = 'room_updates';
+
+// Let the manager know that the room is ready
+roomSub.publish(ROOM_ID, 'ready');
 
 // Type definitions
 interface JoinData {
@@ -79,12 +88,44 @@ const audience = new Map<string, Socket>();  // socket.id -> socket
 function checkIfRoomEmpty(): void {
     if (players.size === 0 && audience.size === 0) {
         console.log(`[${ROOM_ID}] Room is now empty`);
+
+        roomSub.publish(ROOM_ID, 'empty');
+
         pub.publish(REDIS_CHANNEL, JSON.stringify({
             type: 'room_empty',
             roomId: `room-${ROOM_ID}`,
         } as RedisMessage));
     }
 }
+
+function reset() {
+    // Remove all connections
+    // Reset all variables
+
+    [...players.values(), ...audience.values()].forEach((s: Socket) => {
+        s.emit('close');
+        s.disconnect();
+    });
+}
+
+// Manager messages
+roomSub.subscribe(ROOM_ID);
+
+roomSub.on('message', (channel: string, message: string) => {
+    console.log(`Received message ${message} for ${channel}`);
+
+    if (channel !== ROOM_ID) {
+        return;
+    }
+
+    switch (message) {
+        case 'reset':
+            reset();
+            break;
+        default:
+            console.log(`Unknown message: ${message}`);
+    }
+});
 
 // Socket.io logic
 io.on('connection', (socket: Socket) => {
@@ -93,6 +134,9 @@ io.on('connection', (socket: Socket) => {
     debug_logs(socket);
 
     socket.on('join', ({ role }: JoinData) => {
+        // Inform manager that the room has users
+        roomSub.publish(ROOM_ID, 'running');
+
         if (role === 'player') {
             players.set(socket.id, socket);
             console.log(`[${ROOM_ID}] Player joined: ${socket.id}`);

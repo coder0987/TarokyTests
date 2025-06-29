@@ -36,7 +36,9 @@ sub.on("message", async (channel: string, message: string) => {
 });
 
 roomSub.on("message", async (channel: string, message: string) => {
-  const to = Room.get(channel);
+  const to = await Room.get(channel);
+
+  console.log(`Received message from ${channel}: ${message}`);
 
   if (!to) {
     // No room with that id
@@ -47,21 +49,43 @@ roomSub.on("message", async (channel: string, message: string) => {
   switch (message) {
     case 'empty':
       // Room had users but no longer does
+      to.status = "empty";
+      resetEmptyRoomConditional(to.roomId);
       break;
     case 'ready':
       // Room has no users and is reset (either just started or just finished a reset)
+      to.status = "ready";
+      break;
+    case 'running':
+      // Room has users actively in it (currently handled by other redis channel)
       break;
     default:
       console.log('unknown message:', message);
   }
 });
 
+// Reset a room if it's empty and max capacity isn't exceeded
+async function resetEmptyRoomConditional(roomId: string) {
+  try {
+    await Room.cleanupOrphanedRooms();
+    const rooms = await Room.getAll();
+    const emptyRooms = Object.values(rooms).filter((r) => r.status === "ready" || r.status === "starting");
+    if (MAX_EMPTY_ROOMS - emptyRooms.length > 0) {
+      Room.reset(roomId);
+    } else {
+      Room.delete(roomId);
+    }
+  } catch (error) {
+    console.error("[scaler] Error in resetEmptyRoomConditional:", error);
+  }
+}
+
 // Check empty rooms and scale up if needed
 async function checkAndScaleRooms(): Promise<void> {
   try {
     await Room.cleanupOrphanedRooms();
     const rooms = await Room.getAll();
-    const emptyRooms = Object.values(rooms).filter((r) => r.status === "empty");
+    const emptyRooms = Object.values(rooms).filter((r) => r.status === "ready" || r.status === "starting");
     const needed = TARGET_EMPTY_ROOMS - emptyRooms.length;
     const excess = emptyRooms.length - MAX_EMPTY_ROOMS;
 

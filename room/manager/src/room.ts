@@ -12,7 +12,7 @@ export class Room {
   roomId: string;
   players: number;
   audience: number;
-  status: "empty" | "active" | "full";
+  status: "starting" | "ready" | "empty" | "active" | "full";
   createdAt: number;
 
   constructor(data?: Partial<RoomData>) {
@@ -20,7 +20,7 @@ export class Room {
     this.roomId = data?.roomId || `${ROOM_PREFIX}${this.id}`;
     this.players = data?.players ?? 0;
     this.audience = data?.audience ?? 0;
-    this.status = data?.status ?? "empty";
+    this.status = data?.status ?? "starting";
     this.createdAt = data?.createdAt ?? Date.now();
   }
 
@@ -34,6 +34,20 @@ export class Room {
     await kube.deployRoomToK8s(room.roomId);
     await roomSub.subscribe(room.roomId);
     return room;
+  }
+
+  static async reset(roomId: string): Promise<void> {
+    const room = await Room.get(roomId);
+
+    if (room === null) {
+        return;
+    }
+
+    room.players  = 0;
+    room.audience = 0;
+    room.status = "starting";
+
+    roomSub.publish(roomId, 'reset');
   }
 
   static async delete(roomId: string): Promise<void> {
