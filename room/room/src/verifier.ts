@@ -2,87 +2,76 @@
     Verifier is here to verify that actions taken by players are legal
 */
 
-const Deck = require('./deck');
-const { ACTION, SHUFFLE_TYPE, CUT_TYPE } = require('./enums');
-const GameManager = require('./GameManager');
+import Client from "./RoomClient";
+import { card, nextStep, t_value } from "./types";
+import Deck from "./Deck";
+import RoomManager from "./RoomManager";
 
-const gm = GameManager.INSTANCE;
+const room = RoomManager.room;
+
+const { ACTION, SHUFFLE_TYPE, CUT_TYPE } = require('./enums');
+
+
 
 const { u } = require('./utils');
 
-export function isNumericalType(arg) {
+export function isNumericalType(arg: number) {
     return !u(arg) && !isNaN(+arg);
 }
 
-export function clientAvailableForGame(client) {
+export function clientAvailableForGame(client: Client) {
     return !u(client) && client && !client.inGame && !client.inAudience;
 }
 
-export function clientIsHost(client) {
-    return !u(client) && client && client.inGame && client.room && ~client.room.host && client.room.host === client.socketId;
+export function clientIsHost(client: Client) {
+    return !u(client) && client && client.inGame && room && ~room.host && room.host === client.socketId;
 }
 
-export function clientIsPovinnost(client) {
-    return !u(client) && client && client.inGame && client.room && client.room.board && client.room.board.povinnost && client.room.board.povinnost === client.pn;
+export function clientIsPovinnost(client: Client) {
+    return !u(client) && client && client.inGame && room && room.board && room.board.povinnost && room.board.povinnost === client.pn;
 }
 
-export function roomNextStep(client, action) {
-    return !u(client) && client && client.inGame && client.room && client.room.board && client.room.board.nextStep && client.room.board.nextStep.action === action;
+export function roomNextStep(client: Client, action: nextStep) {
+    return !u(client) && client && client.inGame && room && room.board && room.board.nextStep && room.board.nextStep.action === action;
 }
 
-export function clientIsCurrentPlayer(client) {
-    return !u(client) && client && client.inGame && client.room && client.room.board && client.room.board.nextStep && Number(client.room.board.nextStep.player) === Number(client.pn);
+export function clientIsCurrentPlayer(client: Client) {
+    return !u(client) && client && client.inGame && room && room.board && room.board.nextStep && Number(room.board.nextStep.player) === Number(client.pn);
 }
 
-export function notNegativeOne(number) {
+export function notNegativeOne(number: number) {
     return !u(number) && !isNaN(+number) && ~(+number);
 }
 
-export function isString(string) {
+export function isString(string: string) {
     return typeof string === 'string';
 }
 
-export function verifyIsAdmin(client) {
+export function verifyIsAdmin(client: Client) {
     return !u(client) && client && client.username && client.username !== 'Guest' && client.userInfo && client.userInfo.admin;
 }
 
-export function verifyCardStructure(card) {
+export function verifyCardStructure(card: card) {
     return !u(card) && card && card.suit && card.value && typeof card.suit === 'string' && typeof card.value === 'string';
 }
 
-export function verifyCanJoinAudience(client, roomID) {
-    const clientIsValid = clientAvailableForGame(client);
-
-    const roomIDIsValid = isNumericalType(roomID) && ~roomID && gm.rooms[roomID] && !gm.rooms[roomID].settings.locked;
-
-    return clientIsValid && roomIDIsValid;
-}
-
-export function verifyCanJoinRoom(client, roomID, isCode) {
-    const clientIsValid = clientAvailableForGame(client);
-
-    const roomIDIsValid = isNumericalType(roomID) && ~roomID && gm.rooms[roomID] && (!gm.rooms[roomID].settings.locked || isCode) && gm.rooms[roomID].playerCount < 4;
-
-    return clientIsValid && roomIDIsValid;
-}
-
-export function verifyCanPlayDailyChallenge(client) {
+export function verifyCanPlayDailyChallenge(client: Client) {
     const clientIsValid = clientAvailableForGame(client);
 
     return clientIsValid && client.username !== 'Guest';
 }
 
-export function verifyCanMakeRoom(client) {
+export function verifyCanMakeRoom(client: Client) {
     return clientAvailableForGame(client);
 }
 
-export function verifyCanReturnToGame(client) {
+export function verifyCanReturnToGame(client: Client) {
     const clientIsValid = clientAvailableForGame(client);
 
     return gm.returnToGame[client.socketId] && clientIsValid;
 }
 
-export function verifyPlayerCanChangeSettings(client, setting, rule) {
+export function verifyPlayerCanChangeSettings(client: Client) {
     const clientIsValid = clientIsHost(client);
     const roomIsValid = roomNextStep(client, ACTION.START);
 
@@ -91,41 +80,41 @@ export function verifyPlayerCanChangeSettings(client, setting, rule) {
     return clientIsValid && roomIsValid;
 }
 
-export function verifyCanSendInvite(client, socketId) {
+export function verifyCanSendInvite(client: Client, socketId: number) {
     const clientIsValid = roomNextStep(client, ACTION.START);
     const socketIsValid = notNegativeOne(socketId) && gm.players[socketId];
 
     return clientIsValid && socketIsValid;
 }
 
-export function verifyCanStartGame(client) {
+export function verifyCanStartGame(client: Client) {
     const clientIsValid = roomNextStep(client, ACTION.START) && clientIsHost(client);
 
     return clientIsValid;
 }
 
-export function verifyPlayerCanTakeAction(client, action) {
+export function verifyPlayerCanTakeAction(client: Client, action: nextStep) {
     const clientIsValid = roomNextStep(client, action);
     const clientIsPlayer = clientIsCurrentPlayer(client);
 
     return clientIsValid && clientIsPlayer;
 }
 
-export function verifyCanDiscard(client, card) {
+export function verifyCanDiscard(client: Client, card: card) {
     return verifyCardStructure(card) && Deck.handContainsNonGray(client.hand, card.value, card.suit);
 }
 
-export function verifyPlayerCanPlayCard(client, card) {
+export function verifyPlayerCanPlayCard(client: Client, card: card) {
     return verifyCanDiscard(client, card); // Same logic
 }
 
-export function verifyPartnerChoice(client, partner) {
+export function verifyPartnerChoice(client: Client, partner: t_value) {
     const partnerChoices = Deck.possiblePartners(client.hand);
 
-    return isString(partner) && partnerChoices.some(p => p.value === partner);
+    return isString(partner as string) && partnerChoices.some(p => p.value === partner);
 }
 
-export function verifyPlayerCanTakeContraAction(client) {
+export function verifyPlayerCanTakeContraAction(client: Client) {
     const clientIsValid = roomNextStep(client, ACTION.CONTRA)
         || roomNextStep(client, ACTION.PREVER_CONTRA)
         || roomNextStep(client, ACTION.VALAT_CONTRA)
@@ -135,7 +124,7 @@ export function verifyPlayerCanTakeContraAction(client) {
     return clientIsValid && clientIsPlayer;
 }
 
-export function verifyCredentials(username, token) {
+export function verifyCredentials(username: string, token: string) {
     // Not meant to verify that they go together, but that they are the right structure
 
     const usernameIsValid = !u(username) && typeof username === 'string';
@@ -144,29 +133,28 @@ export function verifyCredentials(username, token) {
     return usernameIsValid && tokenIsValid;
 }
 
+/* TODO: Add RoomManager client list
 export function verifyCanSendMessageTo(id) {
     return notNegativeOne(id) && gm.players[id];
 }
+*/
 
-export function verifyRoomExists(id) {
-    return notNegativeOne(id) && gm.rooms[id];
-}
 
-export function verifyCanSendMessage(client) {
+export function verifyCanSendMessage(client: Client) {
     SERVER.debug(client.username);
     SERVER.debug(client.canSendMessage());
     SERVER.debug(client.timeLastMessageSent);
     return !u(client) && client.username && client.username !== 'Guest' && client.canSendMessage();
 }
 
-export function verifyCanSaveSettings(client) {
+export function verifyCanSaveSettings(client: Client) {
     const isValid = !u(client) && client.username && client.username !== 'Guest'
-        && client.inGame && client.room && client.room.settingsNotation;
+        && client.inGame && room && room.settingsNotation;
 
     return isValid;
 }
 
-export function sanitizeShuffleType(type) {
+export function sanitizeShuffleType(type: number) {
     if (u(type) || !type || isNaN(Number(type)) || Number(type) == SHUFFLE_TYPE.CUT) {
         return SHUFFLE_TYPE.CUT;
     }
@@ -178,7 +166,7 @@ export function sanitizeShuffleType(type) {
     return SHUFFLE_TYPE.RANDOM;
 }
 
-export function sanitizeCutStyle(style) {
+export function sanitizeCutStyle(style: string) {
     if (u(style) || !style || style == CUT_TYPE.CUT) {
         return CUT_TYPE.CUT;
     }
@@ -196,7 +184,7 @@ export function sanitizeCutStyle(style) {
     }
 }
 
-export function sanitizeCutLocation(location) {
+export function sanitizeCutLocation(location: number) {
     if (u(location) || isNaN(Number(location))) {
         return 32;
     }
@@ -214,19 +202,19 @@ export function sanitizeCutLocation(location) {
     return location;
 }
 
-export function sanitizeHandChoice(client, choice) {
+export function sanitizeHandChoice(client: Client, choice: number) {
     if (!isNumericalType(choice)) {
         choice = 0;
     } else {
         choice -= 1;
     }
 
-    if (client.room.board.hands[choice]) {
+    if (room.board.hands[choice]) {
         return choice;
     }
 
-    for (let i in client.room.board.hands) {
-        if (client.room.board.hands[i]) {
+    for (let i in room.board.hands) {
+        if (room.board.hands[i]) {
             return i;
         }
     }
@@ -234,7 +222,7 @@ export function sanitizeHandChoice(client, choice) {
     return -1;
 }
 
-export function sanitizeDrawTalonChoice(client, choice) {
+export function sanitizeDrawTalonChoice(client: Client, choice: t_value) {
     if (clientIsPovinnost(client)) {
         return true;
     }
@@ -242,11 +230,11 @@ export function sanitizeDrawTalonChoice(client, choice) {
     return choice;
 }
 
-export function sanitizeBoolean(bool) {
+export function sanitizeBoolean(bool: boolean) {
     return !(!bool);
 }
 
-export function sanitizeMessage(message) {
+export function sanitizeMessage(message: string) {
     if (typeof message !== 'string') {
         return '';
     }
