@@ -1,6 +1,6 @@
 // enums.ts
 
-export const SUIT: { [key: number]: string } & { [key: string]: string } = {
+export const SUIT: { [key: number | number]: string } & { [key: string]: string } = {
   0: "Spade",
   1: "Club",
   2: "Heart",

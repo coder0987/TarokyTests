@@ -61,7 +61,7 @@ export interface settings {
     difficulty?: keyof typeof DIFFICULTY;
     botPlayTime?: number;
     botThinkTime?: number;
-}
+};
 
 export interface userInfo {
     avatar: number;
