@@ -15,10 +15,10 @@ const SUIT_SORT_ORDER = {
     Spade: 0, Club: 2, Heart: 1, Diamond: 3, Trump: 4
 }
 
-export class Deck {
+export default class Deck {
     #deck: card[];
 
-    constructor(d: { deck: card[] } | undefined) {
+    constructor(d?: { deck: card[] } | undefined) {
         if (d) {
             //Create a copy of this deck instead
             this.#deck = structuredClone(d.deck);

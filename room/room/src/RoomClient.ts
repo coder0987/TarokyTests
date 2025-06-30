@@ -9,8 +9,8 @@ const GameManager = require('./GameManager');
 const gm = GameManager.INSTANCE;
 
 const { DISCONNECT_TIMEOUT, ACTION, SENSITIVE_ACTIONS, ROOM_TYPE } = require('./enums');
-import { Deck } from './Deck';
-import { SERVER } from './logger';
+import  Deck from './Deck';
+import  SERVER from './logger';
 import { Socket } from 'socket.io';
 import { 
     verifyPlayerCanChangeSettings, 
@@ -36,13 +36,15 @@ import {
     sanitizeMessage
 } from './verifier';
 import { card, nextStep, t_value, userInfo } from './types';
-import { room } from './Room';
+import RoomManager from './RoomManager';
+
+const room = RoomManager.room;
 
 const { notationToObject } = require('./notation');
 const Auth = require('./Auth');
 const Database = require('./database');
 
-class Client {
+export default class Client {
     #timeLastMessageSent: number | undefined;
     #socket: Socket;
     #socketId: number;
@@ -598,5 +600,3 @@ class Client {
         this.#userInfo = userInfo;
     }
 }
-
-module.exports = Client;

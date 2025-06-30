@@ -7,6 +7,7 @@ export default class Board {
     #table: table[];
     #preverTalon: card[];
     #preverTalonStep: number;
+    #preverMultiplier: number;
     #prever: t_seat;
     #playingPrever: boolean;
     #povinnost: t_seat;
@@ -28,11 +29,11 @@ export default class Board {
     #firstContraPlayer: t_seat;
     #gameNumber: number;
     #importantInfo: importantInfo;
-    #notation: string;
     #trickHistory: trick[];
     #cardsPlayed: boolean[];
     #publicPreverTalon: card[];
     #trumpDiscarded: card[][];
+    #notation: string;
 
     constructor() {
         this.#partnerCard = "";
@@ -40,6 +41,7 @@ export default class Board {
         this.#table = [];
         this.#preverTalon = [];
         this.#preverTalonStep = 0;
+        this.#preverMultiplier = 1;
         this.#prever = -1;
         this.#playingPrever = false;
         this.#povinnost = -1;
@@ -61,11 +63,11 @@ export default class Board {
         this.#firstContraPlayer = -1;
         this.#gameNumber = 0;
         this.#importantInfo = {};
-        this.#notation = '';
         this.#trickHistory = [];
         this.#cardsPlayed = new Array(54).fill(false);
         this.#publicPreverTalon = [];
         this.#trumpDiscarded = [[], [], [], []];
+        this.#notation = '';
     }
 
     resetForNextRound() {
@@ -73,6 +75,7 @@ export default class Board {
         this.#talon = [];
         this.#table = [];
         this.#preverTalon = [];
+        this.#preverMultiplier = 1;
         this.#preverTalonStep = 0;
         this.#prever = -1;
         this.#playingPrever = false;
@@ -93,11 +96,11 @@ export default class Board {
         this.#supraContra = -1;
         this.#firstContraPlayer = -1;
         this.#importantInfo = {};
-        this.#notation = '';
         this.#trickHistory = [];
         this.#cardsPlayed = new Array(54).fill(false);
         this.#publicPreverTalon = [];
         this.#trumpDiscarded = [[], [], [], []];
+        this.#notation = '';
     }
 
     // Setters
@@ -106,6 +109,7 @@ export default class Board {
     set table(val) { this.#table = val; }
     set preverTalon(val) { this.#preverTalon = val; }
     set preverTalonStep(val) { this.#preverTalonStep = val; }
+    set preverMultiplier(val) { this.#preverMultiplier = val; }
     set prever(val) { this.#prever = val; }
     set playingPrever(val) { this.#playingPrever = val; }
     set povinnost(val) { this.#povinnost = val; }
@@ -131,6 +135,7 @@ export default class Board {
     set cardsPlayed(val) { this.#cardsPlayed = val; }
     set publicPreverTalon(val) { this.#publicPreverTalon = val; }
     set trumpDiscarded(val) { this.#trumpDiscarded = val; }
+    set notation(val) { this.#notation = val; }
 
     // Getters
     get partnerCard() { return this.#partnerCard; }
@@ -138,6 +143,7 @@ export default class Board {
     get table() { return this.#table; }
     get preverTalon() { return this.#preverTalon; }
     get preverTalonStep() { return this.#preverTalonStep; }
+    get preverMultiplier() { return this.#preverMultiplier; }
     get prever() { return this.#prever; }
     get playingPrever() { return this.#playingPrever; }
     get povinnost() { return this.#povinnost; }
@@ -163,4 +169,5 @@ export default class Board {
     get cardsPlayed() { return this.#cardsPlayed; }
     get publicPreverTalon() { return this.#publicPreverTalon; }
     get trumpDiscarded() { return this.#trumpDiscarded; }
+    get notation() { return this.#notation; }
 }

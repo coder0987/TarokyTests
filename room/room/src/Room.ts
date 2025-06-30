@@ -1,29 +1,40 @@
-import { settings, t_seat } from "./types";
+import { card, settings, t_seat, t_seat_c } from "./types";
 
-const RobotPlayer = require('./Player/RobotPlayer.js');
-const Deck = require('./deck.js');
-const GamePlay = require('./GamePlay.js');
-const GameManager = require('./GameManager.js');
-const SERVER = require('./logger.js');
 const {PLAYER_TYPE, MESSAGE_TYPE, SENSITIVE_ACTIONS} = require('./enums.js');
 const {playerOffset} = require('./utils');
 const {cardsToNotation} = require('./notation');
-const HumanPlayer = require('./Player/HumanPlayer.js');
 
+import SERVER from './logger';
 import Settings from './Settings';
 import Board from './Board';
+import Player from './Player/Player';
+import HumanPlayer from './Player/HumanPlayer';
+import RobotPlayer from "./Player/RobotPlayer";
+import Deck from './Deck';
+import Client from './RoomClient';
+import GamePlay from './GamePlay';
+import RoomManager from "./RoomManager";
 
 let iterator = 100000;
 
 export default class Room {
-    #gameplay;
     #settings: Settings;
     #joinCode: string;
     #host: number;
     #hostPN: t_seat;
     #board: Board;
     #playerCount: number;
-    #players: player[];
+    #players: Player[];
+    #deck: Deck;
+    #autoAction: NodeJS.Timeout | undefined;
+    #audience: Record<string, Client>;
+    #audienceCount: number;
+    #roomType: string;
+    #stopAtEnd: boolean;
+    #botCutChoice: string;
+    #botCutLoc: number;
+    #gameplay: GamePlay;
+    #gameNumber: number;
 
     constructor() {
         this.#settings = new Settings();
@@ -32,27 +43,24 @@ export default class Room {
         this.#hostPN = -1;
         this.#board = new Board();
         this.#playerCount = 0;
-        this.#deck = deck;
-        this.#players = [new RobotPlayer({room: this}), new RobotPlayer({room: this}), new RobotPlayer({room: this}), new RobotPlayer({room: this})];
-        this.#autoAction = 0;
-        this.#logLevel = logLevel;//0: none, 1: errors, 2: warn, 3: info, 4: debug logs, 5: trace
+        this.#deck = new Deck();
+        this.#players = [new RobotPlayer({room: this, pn: 0}), new RobotPlayer({room: this, pn: 1}), new RobotPlayer({room: this, pn: 2}), new RobotPlayer({room: this, pn: 3})];
+        this.#autoAction = undefined;
         this.#audience = {};
         this.#audienceCount = 0;
-        this.#roomType = roomType;
+        this.#roomType = 'default';
 
-        this.#stopAtEnd = stop;
-        this.#botCutChoice = botCutChoice;
-        this.#botCutLoc = botCutLoc;
+        this.#stopAtEnd = false;
+        this.#botCutChoice = 'Cut';
+        this.#botCutLoc = 32;
+
+        this.#gameNumber = 0;
 
         this.#gameplay = new GamePlay(this);
-
-        if (args.started) {
-            this.jumpStart(args.povinnost);
-        }
     }
 
-    jumpStart(pov) {
-        this.gameNumber = 1;
+    jumpStart(pov: t_seat) {
+        this.#gameNumber = 1;
         this.#board.nextStep.action = 'shuffle';
         this.#board.nextStep.player = pov;//povinnost shuffles
     }
@@ -65,6 +73,7 @@ export default class Room {
     resetForNextRound() {
         this.#board.resetForNextRound();
         for (let i in this.#players) {
+            if (!this.#players[i]) {continue;}
             this.#players[i].resetForNextRound();
         }
         if (this.#deck.deck.length != 54) {
@@ -74,60 +83,66 @@ export default class Room {
         }
     }
 
-    informPlayers(message, messageType, extraInfo, pn) {
+    informPlayers(message: string, messageType: string, extraInfo: any, pn?: t_seat) {
         SERVER.debug('informPlayers() called with message | ' + message + ' | messageType | ' + messageType + ' | extraInfo | ' + JSON.stringify(extraInfo) + ' | pn | ' + pn);
         for (let i in this.#players) {
-            if (this.#players[i].type == PLAYER#TYPE.HUMAN) {
-                if (typeof pn != 'undefined' && this.#players[pn]) {
-                    if (pn == i) {
-                        //Handled by youMessage
-                        this.#players[i].messenger.emit('gameMessage','You ' + message,messageType,extraInfo);
-                    } else {
-                        if (this.#players[i].messenger && this.#players[pn].type === PLAYER#TYPE.HUMAN && this.#players[pn].username != 'Guest') {
-                            this.#players[i].messenger.emit('gameMessage', this.#players[pn].username + ' ' + message, messageType, extraInfo);
-                        } else {
-                            pn = +pn;
-                            this.#players[i].messenger.emit('gameMessage','Player ' + (pn+1) + ' ' + message, messageType, extraInfo);
-                        }
-                    }
-                } else {
-                    this.#players[i].messenger.emit('gameMessage',message,messageType,extraInfo);
-                }
+            if (!this.#players[i] || this.#players[i].type !== PLAYER_TYPE.HUMAN) {
+                continue;
             }
-        }
-        for (let i in this.#audience) {
-            if (typeof pn != 'undefined') {
-                if (pn != -1 && this.#players[pn].socket != -1 && players[this.#players[pn].socket].username != 'Guest') {
-                    this.#audience[i].messenger.emit('gameMessage', players[this.#players[pn].socket].username + ' ' + message,messageType,extraInfo);
-                } else {
-                    pn = +pn;
-                    this.#audience[i].messenger.emit('gameMessage','Player ' + (pn+1) + ' ' + message,messageType,extraInfo);
-                }
+
+            if (pn === undefined || !this.#players[pn]) {
+                (this.#players[i] as HumanPlayer).socket.emit('gameMessage',message,messageType,extraInfo);
+                continue;
+            }
+            
+            if (pn === +i) {
+                //Handled by youMessage
+                (this.#players[i] as HumanPlayer).socket.emit('gameMessage','You ' + message,messageType,extraInfo);
+                continue;
+            }
+            if ((this.#players[i] as HumanPlayer).socket && 
+                this.#players[pn] !== undefined && 
+                this.#players[pn]?.type === PLAYER_TYPE.HUMAN && 
+                (this.#players[pn] as HumanPlayer)?.username != 'Guest') {
+                (this.#players[i] as HumanPlayer).socket.emit('gameMessage', `${(this.#players[pn] as HumanPlayer)?.username} ${message}`, messageType, extraInfo);
             } else {
-                this.#audience[i].messenger.emit('gameMessage',message,messageType,extraInfo);
+                (this.#players[i] as HumanPlayer).socket.emit('gameMessage',`Player ${(pn+1)} ${message}`, messageType, extraInfo);
             }
         }
-    }
-
-    informPlayer(pn, message, messageType, extraInfo) {
-        SERVER.debug('informPlayer() called with message | ' + message + ' | messageType | ' + messageType + ' | extraInfo | ' + JSON.stringify(extraInfo) + ' | pn | ' + pn);
-        if (this.#players[pn].type == PLAYER#TYPE.HUMAN) {
-            this.#players[pn].messenger.emit('gameMessage', message, messageType, extraInfo);
-        }
-    }
-
-    sendAllPlayers(messageType, message) {
-        for (let i in this.#players) {
-            if (this.#players[i].messenger) {
-                this.#players[i].messenger.emit(messageType, message);
-            }
-        }
-    }
-
-    sendAudience(messageType, message) {
         for (let i in this.#audience) {
-            if (this.#audience[i].messenger) {
-                this.#audience[i].messenger.emit(messageType, message);
+            if (pn === undefined) {
+                this.#audience[i]?.socket.emit('gameMessage',message,messageType,extraInfo);
+                continue;
+            }
+
+            if (pn === -1 || (this.#players[pn] as HumanPlayer).username !== 'Guest') {
+                this.#audience[i]?.socket.emit('gameMessage',`Player ${(pn+1)} ${message}`,messageType,extraInfo);
+                continue;
+            }
+
+            this.#audience[i]?.socket.emit('gameMessage',`${(this.#players[pn] as HumanPlayer)?.username} ${message}`,messageType,extraInfo);
+        }
+    }
+
+    informPlayer(pn: t_seat, message: string, messageType: string, extraInfo: any) {
+        SERVER.debug('informPlayer() called with message | ' + message + ' | messageType | ' + messageType + ' | extraInfo | ' + JSON.stringify(extraInfo) + ' | pn | ' + pn);
+        if (this.#players[pn] instanceof HumanPlayer) {
+            this.#players[pn].socket.emit('gameMessage', message, messageType, extraInfo);
+        }
+    }
+
+    sendAllPlayers(messageType: string, message: any) {
+        for (let i in this.#players) {
+            if (this.#players[i] instanceof HumanPlayer) {
+                this.#players[i].socket.emit(messageType, message);
+            }
+        }
+    }
+
+    sendAudience(messageType: string, message: any) {
+        for (let i in this.#audience) {
+            if (this.#audience[i]?.socket) {
+                this.#audience[i]?.socket.emit(messageType, message);
             }
         }
     }
@@ -138,13 +153,22 @@ export default class Room {
 
     notifyStartGame() {
         for (let i in this.#players) {
-            if (this.#players[i].messenger) {
-                this.#players[i].messenger.emit('startingGame', this.#host, i, this.#board.gameNumber, this.#settings.object);
+            if (this.#players[i] instanceof HumanPlayer) {
+                this.#players[i].socket.emit('startingGame', this.#host, i, this.#board.gameNumber, this.#settings);
             }
         }
     }
 
     updateImportantInfo() {
+        if (this.#players[0] === undefined ||
+            this.#players[1] === undefined ||
+            this.#players[2] === undefined ||
+            this.#players[3] === undefined
+        ) {
+            SERVER.errorTrace('Player undefined!');
+            return;
+        }
+
         this.#board.importantInfo.chips = {
             '0': this.#players[0].chips,
             '1': this.#players[1].chips,
@@ -154,7 +178,7 @@ export default class Room {
     }
 
     updateImportantPreverInfo() {
-        this.#board.importantInfo.prever = (this.#board.prever+1);
+        this.#board.importantInfo.prever = (this.#board.prever+1) as t_seat_c;
     }
 
     updateImportantPreverMultiplierInfo() {
@@ -162,20 +186,15 @@ export default class Room {
     }
 
     updateImportantMoneyCardsInfo() {
-        this.#board.importantInfo.chips = {
-            '0': this.#players[0].chips,
-            '1': this.#players[1].chips,
-            '2': this.#players[2].chips,
-            '3': this.#players[3].chips
-        }
+        this.updateImportantInfo();
         this.#board.importantInfo.moneyCards = this.#board.moneyCards;
     }
 
     updateImportantUsernamesInfo() {
-        this.#board.importantInfo.usernames = {'0':null, '1':null, '2':null, '3':null};
+        this.#board.importantInfo.usernames = {0:null, 1:null, 2:null, 3:null};
         for (let i in this.#players) {
-            if (this.#players[i].username && this.#players[i].username != 'Guest') {
-                this.#board.importantInfo.usernames[i] = this.#players[i].username;
+            if (this.#players[i] instanceof HumanPlayer && this.#players[i].username && this.#players[i].username != 'Guest') {
+                this.#board.importantInfo.usernames[+i] = this.#players[i].username;
             }
         }
     }
@@ -185,37 +204,39 @@ export default class Room {
     }
 
     updateImportantValatInfo() {
-        this.#board.importantInfo.valat = this.#board.valat + 1;
+        this.#board.importantInfo.valat = this.#board.valat + 1 as t_seat_c;
     }
 
     updateImportantIOTEInfo() {
-        this.#board.importantInfo.iote = this.#board.iote + 1;
+        this.#board.importantInfo.iote = this.#board.iote + 1 as t_seat_c;
     }
 
     updateImportantContraInfo() {
         this.#board.importantInfo.contra = Math.pow(2,
-                ~this.#board.contra[0] ? this.#board.contra[0] +
-                (~this.#board.contra[1] ? this.#board.contra[1] : 0) : 0);
+                (this.#board.contra[0] !== undefined && this.#board.contra[0] !== -1) ? 
+                    this.#board.contra[0] + (
+                (this.#board.contra[1]) ? this.#board.contra[1] : 0) : 0);
     }
 
-    updateTrickHistory(pn) {
+    updateTrickHistory(pn : t_seat) {
         this.#board.trickHistory.push(
             {
                 leadPlayer: this.#board.leadPlayer,
                 winner: pn,
                 cards: [
-                    {suit: this.#board.table[0].suit, value: this.#board.table[0].value},
-                    {suit: this.#board.table[1].suit, value: this.#board.table[1].value},
-                    {suit: this.#board.table[2].suit, value: this.#board.table[2].value},
-                    {suit: this.#board.table[3].suit, value: this.#board.table[3].value}
+                    {suit: this.#board.table[0]?.card.suit || SUIT.TRUMP, value: this.#board.table[0]?.card.value || VALUE.ACE},
+                    {suit: this.#board.table[1]?.card.suit || SUIT.TRUMP, value: this.#board.table[1]?.card.value || VALUE.ACE},
+                    {suit: this.#board.table[2]?.card.suit || SUIT.TRUMP, value: this.#board.table[2]?.card.value || VALUE.ACE},
+                    {suit: this.#board.table[3]?.card.suit || SUIT.TRUMP, value: this.#board.table[3]?.card.value || VALUE.ACE}
                 ]
             }
         );
     }
 
-    payMoneyCards(pn, owedChips) {
+    payMoneyCards(pn: t_seat, owedChips: number) {
         for (let i in this.#players) {
-            if (i == pn) {
+            if (this.#players[i] === undefined) {continue;}
+            if (+i === pn) {
                 this.#players[i].chips += 3 * owedChips;
             } else {
                 this.#players[i].chips -= owedChips;
@@ -223,14 +244,16 @@ export default class Room {
         }
     }
 
-    payWinnings(team1Players, team2Players, chipsOwed) {
+    payWinnings(team1Players : Player[], team2Players : Player[], chipsOwed : number) {
         for (let i in team1Players) {
+            if (team1Players[i] === undefined) {continue;}
             let tempChipsOwed = chipsOwed;
             if (team1Players.length == 1) { tempChipsOwed *= 3; }
             team1Players[i].chips += tempChipsOwed;
         }
 
         for (let i in team2Players) {
+            if (team2Players[i] === undefined) {continue;}
             let tempChipsOwed = chipsOwed;
             if (team2Players.length == 1) { tempChipsOwed *= 3; }
             team2Players[i].chips -= tempChipsOwed;
@@ -238,28 +261,30 @@ export default class Room {
     }
 
     updateDealNotation() {
-        this.#board.importantInfo.povinnost = (this.#board.povinnost+1);
-        this.#board.notation = ''   + this.#players[             this.#board.povinnost].chips + '/'
-                                    + this.#players[playerOffset(this.#board.povinnost,1)].chips + '/'
-                                    + this.#players[playerOffset(this.#board.povinnost,2)].chips + '/'
-                                    + this.#players[playerOffset(this.#board.povinnost,3)].chips + '/'
-                                    + cardsToNotation(this.#players[playerOffset(this.#board.povinnost,0)].hand) + '/'
-                                    + cardsToNotation(this.#players[playerOffset(this.#board.povinnost,1)].hand) + '/'
-                                    + cardsToNotation(this.#players[playerOffset(this.#board.povinnost,2)].hand) + '/'
-                                    + cardsToNotation(this.#players[playerOffset(this.#board.povinnost,3)].hand) + '/'
+        this.#board.importantInfo.povinnost = (this.#board.povinnost+1) as t_seat_c;
+        this.#board.notation = ''   + this.#players[             this.#board.povinnost]?.chips + '/'
+                                    + this.#players[playerOffset(this.#board.povinnost,1)]?.chips + '/'
+                                    + this.#players[playerOffset(this.#board.povinnost,2)]?.chips + '/'
+                                    + this.#players[playerOffset(this.#board.povinnost,3)]?.chips + '/'
+                                    + cardsToNotation(this.#players[playerOffset(this.#board.povinnost,0)]?.hand) + '/'
+                                    + cardsToNotation(this.#players[playerOffset(this.#board.povinnost,1)]?.hand) + '/'
+                                    + cardsToNotation(this.#players[playerOffset(this.#board.povinnost,2)]?.hand) + '/'
+                                    + cardsToNotation(this.#players[playerOffset(this.#board.povinnost,3)]?.hand) + '/'
                                     + cardsToNotation(this.#board.talon) + '/';
         
-        this.setSettingsNotation(this);
+        this.setSettingsNotation();
 
         SERVER.log(this.#board.notation);
     }
 
     prepReturnToGame() {
-        for (let i in this.#players) {
-            if (this.#players[i].socket != -1) {
-                GameManager.INSTANCE.returnToGame[this.#players[i].socket] = {notation: this.#board.notation + this.settingsNotation, povinnost: this.#board.povinnost, pn: i};
-            }
-        }
+        // TODO: Send to redis for game server to handle
+        
+        //for (let i in this.#players) {
+        //    if (this.#players[i].socket != -1) {
+        //        GameManager.INSTANCE.returnToGame[this.#players[i].socket] = {notation: this.#board.notation + this.settingsNotation, povinnost: this.#board.povinnost, pn: i};
+        //    }
+        //}
     }
 
     resetAutoAction() {
@@ -276,19 +301,19 @@ export default class Room {
     }
 
     informSettings() {
-        SERVER.debug(`Sending settings ${JSON.stringify(this.#settings.object)} to players`, this.#name);
-        this.sendAllPlayers('returnSettings', this.#settings.object);
+        SERVER.debug(`Sending settings ${JSON.stringify(this.#settings)} to players`, RoomManager.ROOM_NAME);
+        this.sendAllPlayers('returnSettings', this.#settings);
     }
 
     informActionTaken() {
         this.sendAudience('returnRoundInfo', this.#board.importantInfo);
 
         for (let i in this.#players) {
-            if (this.#players[i].messenger) {
-                this.#board.importantInfo.pn = (+i+1);
+            if (this.#players[i] instanceof HumanPlayer) {
+                this.#board.importantInfo.pn = (+i+1) as t_seat_c;
                 this.#players[i].messenger.emit('returnHand', Deck.sortCards(this.#players[i].hand, this.#settings.aceHigh), false);
                 this.#players[i].messenger.emit('returnRoundInfo', this.#board.importantInfo);
-                this.#board.importantInfo.pn = null;
+                delete this.#board.importantInfo.pn;
             }
         }
     }
@@ -306,10 +331,10 @@ export default class Room {
             action.info.possiblePartners = this.#board.nextStep.info.possiblePartners;
         }
 
-        if (SENSITIVE#ACTIONS[action.action]) {
+        if (SENSITIVE_ACTIONS[action.action]) {
             const pn = action.player;
-            if (this.#players[pn].messenger) {
-                this.#players[pn].messenger.emit('nextAction', action);
+            if (this.#players[pn] instanceof HumanPlayer) {
+                this.#players[pn].socket.emit('nextAction', action);
             }
             
             return;
@@ -319,65 +344,65 @@ export default class Room {
         this.sendAudience('nextAction', action);
     }
 
-    informCutChoice(pn, cutType) {
-        SERVER.debug('Cut choice: ' + cutType, this.#name, this.#name);
-        this.informPlayers('cut by ' + cutType, MESSAGE#TYPE.CUT, { pn: pn }, pn);
+    informCutChoice(pn: t_seat, cutType: string) {
+        SERVER.debug('Cut choice: ' + cutType, RoomManager.ROOM_NAME);
+        this.informPlayers('cut by ' + cutType, MESSAGE_TYPE.CUT, { pn: pn }, pn);
     }
 
     informPovinnost() {
-        SERVER.debug('Povinnost is ' + this.#board.povinnost, this.#name, this.#name);
-        this.informPlayers('is povinnost', MESSAGE#TYPE.POVINNOST, { 'pn': this.#board.povinnost }, this.#board.povinnost);
+        SERVER.debug('Povinnost is ' + this.#board.povinnost, RoomManager.ROOM_NAME);
+        this.informPlayers('is povinnost', MESSAGE_TYPE.POVINNOST, { 'pn': this.#board.povinnost }, this.#board.povinnost);
     }
 
-    informDrawTalon(pn, numCards) {
-        this.informPlayer(pn, '', MESSAGE#TYPE.DRAW, {'cards': this.#board.talon.slice(0,numCards)});
+    informDrawTalon(pn: t_seat, numCards: number) {
+        this.informPlayer(pn, '', MESSAGE_TYPE.DRAW, {'cards': this.#board.talon.slice(0,numCards)});
     }
 
-    informPreverTalon(pn, step) {
-        this.informPlayer(pn, '', MESSAGE#TYPE.PREVER#TALON,{'cards': this.#players[pn].tempHand,'step':step});
+    informPreverTalon(pn: t_seat, step: number) {
+        this.informPlayer(pn, '', MESSAGE_TYPE.PREVER_TALON,{'cards': this.#players[pn]?.tempHand,'step':step});
     }
 
     informPreverKeptFirst() {
-        this.informPlayers('kept the first set of cards',MESSAGE#TYPE.PREVER#TALON,{'pn':this.#board.prever,'step':3},this.#board.prever);
+        this.informPlayers('kept the first set of cards',MESSAGE_TYPE.PREVER_TALON,{'pn':this.#board.prever,'step':3},this.#board.prever);
     }
 
     informPreverRejectedFirst() {
-        this.informPlayers('rejected the first set of cards',MESSAGE#TYPE.PREVER#TALON,{'cards':this.#board.publicPreverTalon,'pn':this.#board.prever,'step':1},this.#board.prever);
+        this.informPlayers('rejected the first set of cards',MESSAGE_TYPE.PREVER_TALON,{'cards':this.#board.publicPreverTalon,'pn':this.#board.prever,'step':1},this.#board.prever);
     }
 
     informPreverKeptSecond() {
-        this.informPlayers('kept the second set of cards',MESSAGE#TYPE.PREVER#TALON,{'pn':this.#board.prever,'step':3},this.#board.prever);
+        this.informPlayers('kept the second set of cards',MESSAGE_TYPE.PREVER_TALON,{'pn':this.#board.prever,'step':3},this.#board.prever);
     }
 
     informPreverRejectedSecond() {
-        this.informPlayers('rejected the second of cards',MESSAGE#TYPE.PREVER#TALON,{'cards':this.#board.publicPreverTalon.slice(3,6),'pn':this.#board.prever,'step':1},this.#board.prever);
+        this.informPlayers('rejected the second of cards',MESSAGE_TYPE.PREVER_TALON,{'cards':this.#board.publicPreverTalon.slice(3,6),'pn':this.#board.prever,'step':1},this.#board.prever);
     }
 
-    informFailedDiscard(pn, card) {
-        if (this.#players[pn].messenger) {
-            this.#players[pn].messenger.emit('failedDiscard', card);
+    informFailedDiscard(pn: t_seat, card: card) {
+        if (this.#players[pn] instanceof HumanPlayer) {
+            this.#players[pn].socket.emit('failedDiscard', card);
         }
         if (card) {
-            SERVER.warn('Player ' + pn + ' failed to discard the ' + card.value + ' of ' + card.suit, this.#name);
+            SERVER.warn('Player ' + pn + ' failed to discard the ' + card.value + ' of ' + card.suit, RoomManager.ROOM_NAME);
         }
-        SERVER.warn('Failed to discard. Cards in hand: ' + JSON.stringify(this.#players[pn].hand), this.#name);
+        SERVER.warn('Failed to discard. Cards in hand: ' + JSON.stringify(this.#players[pn]?.hand), RoomManager.ROOM_NAME);
     }
 
-    informTrumpDiscarded(pn, card) {
-        this.informPlayers('discarded the ' + card.value, MESSAGE#TYPE.TRUMP#DISCARD, {pn: pn, card: card}, pn);
+    informTrumpDiscarded(pn: t_seat, card: card) {
+        this.informPlayers('discarded the ' + card.value, MESSAGE_TYPE.TRUMP_DISCARD, {pn: pn, card: card}, pn);
         
         // I'm not really sure what this code does :)
         if (this.#board.prever != -1) {
-            this.#board.trumpDiscarded[0].push({suit:card.suit, value:card.value});
+            this.#board.trumpDiscarded[0]?.push({suit:card.suit, value:card.value});
         } else {
-            this.#board.trumpDiscarded[playerOffset(this.#board.povinnost, pn)].push({suit:card.suit, value:card.value});
+            this.#board.trumpDiscarded[playerOffset(this.#board.povinnost, pn)]?.push({suit:card.suit, value:card.value});
         }
 
         // Mark it as played for the bots
         this.#board.cardsPlayed[Deck.cardId(card, this.#settings.aceHigh)] = true;
     }
 
-    informMoneyCards(pn, moneyCards) {
+    informMoneyCards(pn: t_seat, moneyCards: string[]) {
         let theMessage = 'is calling ';
         let yourMoneyCards = 'You are calling ';
         let numCalled = 0;
@@ -390,19 +415,19 @@ export default class Room {
             theMessage += 'nothing';
             yourMoneyCards += 'nothing';
         }
-        this.informPlayers(theMessage, MESSAGE#TYPE.MONEY#CARDS, {youMessage: yourMoneyCards, pn: pn}, pn);
+        this.informPlayers(theMessage, MESSAGE_TYPE.MONEY_CARDS, {youMessage: yourMoneyCards, pn: pn}, pn);
     }
 
-    informCalledValat(pn) {
-        this.informPlayers('called valat', MESSAGE#TYPE.VALAT, {pn: pn},pn);
+    informCalledValat(pn: t_seat) {
+        this.informPlayers('called valat', MESSAGE_TYPE.VALAT, {pn: pn},pn);
     }
 
-    informIOTECalled(pn) {
-        this.informPlayers('called the I on the end', MESSAGE#TYPE.IOTE, {pn: pn},pn);
+    informIOTECalled(pn: t_seat) {
+        this.informPlayers('called the I on the end', MESSAGE_TYPE.IOTE, {pn: pn},pn);
     }
 
-    informCalledContra(pn) {
-        this.informPlayers('called contra', MESSAGE#TYPE.CONTRA, {pn: pn}, pn);
+    informCalledContra(pn: t_seat) {
+        this.informPlayers('called contra', MESSAGE_TYPE.CONTRA, {pn: pn}, pn);
     }
 
     informTable() {
@@ -411,30 +436,32 @@ export default class Room {
     }
 
     informPartnerCard() {
-        this.informPlayers('(Povinnost) is playing with the ' + this.#board.partnerCard, MESSAGE#TYPE.PARTNER, 
+        this.informPlayers('(Povinnost) is playing with the ' + this.#board.partnerCard, MESSAGE_TYPE.PARTNER, 
             {youMessage: 'You are playing with the ' + this.#board.partnerCard, pn: this.#board.nextStep.player}, this.#board.nextStep.player);
     }
 
-    informCardLead(pn, card) {
-        this.informPlayers('lead the ' + card.value + ' of ' + card.suit, MESSAGE#TYPE.LEAD, {pn: pn, card: card}, pn);
+    informCardLead(pn: t_seat, card: card) {
+        this.informPlayers('lead the ' + card.value + ' of ' + card.suit, MESSAGE_TYPE.LEAD, {pn: pn, card: card}, pn);
     }
 
-    informCardPlayed(pn, card) {
-        this.informPlayers('played the ' + card.value + ' of ' + card.suit, MESSAGE#TYPE.PLAY, {pn: pn, card: card}, pn);
+    informCardPlayed(pn: t_seat, card: card) {
+        this.informPlayers('played the ' + card.value + ' of ' + card.suit, MESSAGE_TYPE.PLAY, {pn: pn, card: card}, pn);
     }
 
-    informWonTrick(trickWinner) {
-        this.informPlayers( 'won the trick', MESSAGE#TYPE.WINNER, {pn: trickWinner},trickWinner );
+    informWonTrick(trickWinner: t_seat) {
+        this.informPlayers( 'won the trick', MESSAGE_TYPE.WINNER, {pn: trickWinner},trickWinner );
     }
 
-    informFinalPoints(team1Players, team2Players, chipsOwed, pointCountMessageTable) {
+    informFinalPoints(team1Players: Player[], team2Players: Player[], chipsOwed: number, pointCountMessageTable: string[]) {
         for (let i in team1Players) {
             let tempChipsOwed = chipsOwed;
             if (team1Players.length == 1) { tempChipsOwed *= 3; }
             if (tempChipsOwed < 0) {
-                this.informPlayer(team1Players[i].pn, 'Your team lost ' + (-tempChipsOwed) + ' chips', MESSAGE#TYPE.PAY, pointCountMessageTable);
+                if (team1Players[i] instanceof HumanPlayer)
+                    this.informPlayer(team1Players[i].pn, 'Your team lost ' + (-tempChipsOwed) + ' chips', MESSAGE_TYPE.PAY, pointCountMessageTable);
             } else {
-                this.informPlayer(team1Players[i].pn, 'Your team won ' + tempChipsOwed + ' chips', MESSAGE#TYPE.PAY, pointCountMessageTable);
+                if (team1Players[i] instanceof HumanPlayer)
+                    this.informPlayer(team1Players[i].pn, 'Your team won ' + tempChipsOwed + ' chips', MESSAGE_TYPE.PAY, pointCountMessageTable);
             }
         }
 
@@ -442,26 +469,28 @@ export default class Room {
             let tempChipsOwed = chipsOwed;
             if (team2Players.length == 1) { tempChipsOwed *= 3; }
             if (tempChipsOwed < 0) {
-                this.informPlayer(team2Players[i].pn, 'Your team won ' + (-tempChipsOwed) + ' chips', MESSAGE#TYPE.PAY, pointCountMessageTable);
+                if (team2Players[i] instanceof HumanPlayer)
+                    this.informPlayer(team2Players[i].pn, 'Your team won ' + (-tempChipsOwed) + ' chips', MESSAGE_TYPE.PAY, pointCountMessageTable);
             } else {
-                this.informPlayer(team2Players[i].pn, 'Your team lost ' + tempChipsOwed + ' chips', MESSAGE#TYPE.PAY, pointCountMessageTable);
+                if (team2Players[i] instanceof HumanPlayer)
+                    this.informPlayer(team2Players[i].pn, 'Your team lost ' + tempChipsOwed + ' chips', MESSAGE_TYPE.PAY, pointCountMessageTable);
             }
         }
     }
 
     informGameNotation() {
-        this.informPlayers(this.#board.notation + this.settingsNotation, MESSAGE#TYPE.NOTATION, {povinnost: this.#board.povinnost});
+        this.informPlayers(this.#board.notation + this.settingsNotation, MESSAGE_TYPE.NOTATION, {povinnost: this.#board.povinnost});
     }
 
-    sendChatMessage(username, message) {
+    sendChatMessage(username: string, message: string) {
         for (let i in this.#players) {
-            if (this.#players[i].messenger && this.#players[i].username !== username) {
-                this.#players[i].messenger.emit('chatMessage', username, message);
+            if (this.#players[i] instanceof HumanPlayer && this.#players[i].username !== username) {
+                this.#players[i].socket.emit('chatMessage', username, message);
             } 
         }
         for (let i in this.#audience) {
-            if (this.#audience[i].messenger && this.#audience[i].username !== username) {
-                this.#audience[i].messenger.emit('chatMessage', username, message);
+            if (this.#audience[i]?.username !== username) {
+                this.#audience[i]?.socket.emit('chatMessage', username, message);
             } 
         }
     }
@@ -470,84 +499,89 @@ export default class Room {
         if (this.#board.povinnost === this.#board.prever) {
             // Povinnost called prever. Everyone is against povinnost
             for (let i=0; i<4; i++) {
+                if (this.#players[i] === undefined) {continue;}
+
                 this.#players[i].isTeamPovinnost = false;
                 this.#players[i].publicTeam = -1;
             }
-            this.#players[this.#board.prever].isTeamPovinnost = true;
-            this.#players[this.#board.prever].publicTeam = 1;
+            if (this.#players[this.#board.prever] !== undefined) {
+                this.#players[this.#board.prever].isTeamPovinnost = true;
+                this.#players[this.#board.prever].publicTeam = 1;
+            }
         } else {
             // Someone besides povinnost called prever. Everyone is team povinnost
             for (let i=0; i<4; i++) {
+                if (this.#players[i] === undefined) {continue;}
+
                 this.#players[i].isTeamPovinnost = true;
                 this.#players[i].publicTeam = 1;
             }
-            this.#players[this.#board.prever].isTeamPovinnost = false;
-            this.#players[this.#board.prever].publicTeam = -1;
+            if (this.#players[this.#board.prever] !== undefined) {
+                this.#players[this.#board.prever].isTeamPovinnost = false;
+                this.#players[this.#board.prever].publicTeam = -1;
+            }
         }
     }
 
-    markCardsAsPlayed(listOfCards) {
+    markCardsAsPlayed(listOfCards: card[]) {
         for (let i in listOfCards) {
+            if (!listOfCards[i]) continue;
             this.#board.cardsPlayed[Deck.cardId(listOfCards[i], this.#settings.aceHigh)] = true;
         }
     }
 
     ejectAudience() {
         for (let i in this.#audience) {
-            this.#audience[i].messenger.emit('gameEnded');
+            this.#audience[i]?.socket.emit('gameEnded');
         }
     }
 
     ejectPlayers() {
         for (let i in this.#players) {
-            if (this.#players[i].client) {
-                this.#players[i].client.ejectFromGame();
-            } else if (this.#players[i].timeout) {
+            if (this.#players[i] instanceof HumanPlayer) {
+                    this.#players[i].client.ejectFromGame();
+            } else if (this.#players[i] instanceof RobotPlayer) {
                 this.#players[i].clearTimeout();
             }
         }
     }
 
-    removeFromAudience(socketId) {
+    removeFromAudience(socketId: number) {
         if (this.#audience[socketId]) {
-            this.#audience.ejectFromGame();
+            //this.#audience[socketId].ejectFromGame(); // TODO
             delete this.#audience[socketId];
             this.audienceCount--;
         }
     }
 
-    removeFromGame(pn) {
-        if (this.#players[pn].type !== PLAYER#TYPE.HUMAN) {
+    removeFromGame(pn : t_seat) {
+        if (!(this.#players[pn] instanceof HumanPlayer)) {
             return;
         }
 
         const wasHost = this.#host == this.#players[pn].socketId;
 
-        this.#players[pn] = new RobotPlayer( { room: this, old: this.#players[pn] } );
+        this.#players[pn] = new RobotPlayer( this.#players[pn] );
         this.#playerCount--;
 
         if (wasHost) {
             this.newHost();
         }
 
-        this.informPlayers('left the room',MESSAGE#TYPE.DISCONNECT,{},pn);
+        this.informPlayers('left the room',MESSAGE_TYPE.DISCONNECT,{},pn);
         this.informPlayersInGame();
         if (this.#board.nextStep.player === pn) {
             this.gameplay.autoAction();
         }
     }
 
-    fillSlot(client, pn) {
+    fillSlot(client: Client, pn: t_seat) {
         client.pn = pn;
 
         this.#players[pn] = new HumanPlayer( { old: this.#players[pn], client: client } );
         this.#playerCount++;
 
-        this.informPlayers('joined the game', MESSAGE#TYPE.CONNECT, {}, pn);
-
-        if (this.debug) {
-            client.socket.emit('debugRoomJoin');
-        }
+        this.informPlayers('joined the game', MESSAGE_TYPE.CONNECT, {}, pn);
 
         this.informPlayersInGame();
 
@@ -557,7 +591,7 @@ export default class Room {
         }
     }
 
-    addToGame(client) {
+    addToGame(client: Client) {
         const pn = this.findOpenSlot();
 
         this.fillSlot(client, pn);
@@ -565,8 +599,8 @@ export default class Room {
 
     findOpenSlot() {
         for (let i in this.#players) {
-            if (this.#players[i].type !== PLAYER#TYPE.HUMAN) {
-                return i;
+            if (!(this.#players[i] instanceof HumanPlayer)) {
+                return +i as t_seat;
             }
         }
         return -1;
@@ -575,16 +609,16 @@ export default class Room {
     newHost() {
         // Find a HUMAN, and designate that player as the host
         for (let i in this.#players) {
-            if (this.#players[i].type === PLAYER#TYPE.HUMAN) {
+            if (this.#players[i] instanceof HumanPlayer) {
                 this.#host = this.#players[i].socketId;
-                this.#hostPN = i;
+                this.#hostPN = +i as t_seat;
                 this.#players[i].socket.emit('roomHost');
                 break;
             }
         }
     }
 
-    addToAudience( client ) {
+    addToAudience( client: Client ) {
         this.#audience[client.socketId] = client;
         this.#audienceCount++;
     }
@@ -593,15 +627,15 @@ export default class Room {
         this.#settings.setSettingsNotation();
     }
 
-    settingsUpdate(message) {
+    settingsUpdate(message: string) {
         if (!message) {return;}
 
-        SERVER.debug(message, this.#name);
-        this.informPlayers(message, MESSAGE#TYPE.SETTING);
+        SERVER.debug(message, RoomManager.ROOM_NAME);
+        this.informPlayers(message, MESSAGE_TYPE.SETTING, null);
     }
 
     promptAction() {
-        this.#players[this.#board.nextStep.player].next();
+        this.#players[this.#board.nextStep.player]?.next();
     }
 
     static createJoinCode() {
@@ -616,14 +650,6 @@ export default class Room {
         return newCode;
     }
 
-    static settingsToNotation(settings) {
-        let settingNotation = '';
-        for (let i in settings) {
-            settingNotation += i + '=' + settings[i] + ';';
-        }
-        return settingNotation.substring(0,settingNotation.length - 1);
-    }
-
     // Getters
     get gameplay() {
         return this.#gameplay;
@@ -634,7 +660,7 @@ export default class Room {
     }
 
     get name() {
-        return this.#name;
+        return RoomManager.ROOM_NAME;
     }
 
     get joinCode() {
@@ -669,16 +695,8 @@ export default class Room {
         return this.#autoAction;
     }
 
-    get debug() {
-        return this.#debug;
-    }
-
     get settingsNotation() {
-        return this.#settings.settingsNotation;
-    }
-
-    get logLevel() {
-        return this.#logLevel;
+        return this.#settings.notation;
     }
 
     get audience() {
@@ -689,59 +707,51 @@ export default class Room {
         return this.#audienceCount;
     }
 
-    get trainingRoom() {
-        return this.#trainingRoom;
-    }
-
-    get trainingGoal() {
-        return this.#trainingGoal;
-    }
-
     get winner() {
-        //Returns the player with the most chips. If tie, ignore it
+        //Returns the Player with the most chips. If tie, ignore it
         let highestChipsCount = 0;
         for (let i in this.#players) {
-            if (this.#players[i].chips > this.#players[highestChipsCount].chips) {
-                highestChipsCount = i;
+            if ((this.#players[i]?.chips as number) > (this.#players[highestChipsCount]?.chips as number)) {
+                highestChipsCount = +i;
             }
         }
         return this.#players[highestChipsCount];
     }
 
     get winnerNum() {
-        //Returns the player with the most chips. If tie, ignore it
+        //Returns the player number with the most chips. If tie, ignore it
         let highestChipsCount = 0;
         for (let i in this.#players) {
-            if (this.#players[i].chips > this.#players[highestChipsCount].chips) {
-                highestChipsCount = i;
+            if ((this.#players[i]?.chips as number) > (this.#players[highestChipsCount]?.chips as number)) {
+                highestChipsCount = +i;
             }
         }
         return highestChipsCount;
     }
 
     get bestHandNum() {
-        //Returns the player with the highest hand ranking. If tie, ignore it
+        //Returns the player number with the highest hand ranking. If tie, ignore it
         let highestHand = 0;
         for (let i in this.#players) {
-            if (this.#players[i].handRank > this.#players[highestHand].handRank) {
-                highestHand = i;
+            if ((this.#players[i]?.handRank as number) > (this.#players[highestHand]?.handRank as number)) {
+                highestHand = +i;
             }
         }
         return highestHand;
     }
 
     get playersInGame() {
-        let playersInGameArr = [];
+        let playersInGameArr: {name: string, avatar: number}[] = [];
         for (let i in this.#players) {
-            if (this.#players[i].type == PLAYER#TYPE.HUMAN) {
+            if (this.#players[i] instanceof HumanPlayer) {
                 playersInGameArr[i] = {
-                    'name':  this.#players[i].username,
-                    'avatar': this.#players[i].avatar
+                    name:  this.#players[i].username,
+                    avatar: this.#players[i].avatar
                 };
             } else {
                 playersInGameArr[i] = {
-                    'name':  this.#players[i].type == PLAYER#TYPE.ROBOT ? 'Robot' : 'AI',
-                    'avatar': this.#players[i].avatar
+                    name:  this.#players[i]?.type == PLAYER_TYPE.ROBOT ? 'Robot' : 'AI',
+                    avatar: this.#players[i]?.avatar || 0
                 };
             }
         }
@@ -773,7 +783,7 @@ export default class Room {
     }
 
     set name(name) {
-        this.#name = name;
+        RoomManager.ROOM_NAME = name;
     }
 
     set host(host) {
@@ -800,31 +810,11 @@ export default class Room {
         this.#autoAction = autoAction;
     }
 
-    set debug(debug) {
-        this.#debug = debug;
-    }
-
-    set settingsNotation(sn) {
-        this.#settingsNotation = sn;
-    }
-
-    set logLevel(ll) {
-        this.#logLevel = ll;
-    }
-
     set audience(audience) {
         this.#audience = audience;
     }
 
     set audienceCount(audienceCount) {
         this.#audienceCount = audienceCount;
-    }
-
-    set trainingRoom(trainingRoom) {
-        this.#trainingRoom = trainingRoom;
-    }
-
-    set trainingGoal(trainingGoal) {
-        this.#trainingGoal = trainingGoal;
     }
 }

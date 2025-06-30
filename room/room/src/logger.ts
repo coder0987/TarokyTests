@@ -73,7 +73,7 @@ function updateDateAndDirectory() {
   previousDay = day;
 }
 
-export const SERVER = {
+const SERVER = {
   /*
     Why use SERVER instead of console.log()? For future additions. Eventually I want to write console logs to a file for debugging
     SERVER system should make that easier
@@ -122,7 +122,7 @@ export const SERVER = {
     );
   },
   logLevel: 3,
-  error: (info: string, rn: string) => {
+  error: (info: string, rn?: string) => {
     if (typeof rn !== "undefined") {
       console.warn("ERROR IN ROOM " + rn + ": " + info);
       SERVER.logToFile(info);
@@ -131,7 +131,7 @@ export const SERVER = {
       SERVER.logToFile(info);
     }
   },
-  errorTrace: (info: string, rn: string) => {
+  errorTrace: (info: string, rn?: string) => {
     if (typeof rn !== "undefined") {
       console.trace("ERROR - STACK TRACE FOR ROOM " + rn + ": " + info);
       SERVER.logToFile(info);
@@ -140,7 +140,7 @@ export const SERVER = {
       SERVER.logToFile(info);
     }
   },
-  warn: (info: string, rn: string) => {
+  warn: (info: string, rn?: string) => {
     if (typeof rn !== "undefined") {
       console.trace("Warning - Room " + rn + ": " + info);
       SERVER.logToFile(info);
@@ -149,7 +149,7 @@ export const SERVER = {
       SERVER.logToFile(info);
     }
   },
-  log: (info: string, rn: string) => {
+  log: (info: string, rn?: string) => {
     if (typeof rn !== "undefined") {
       console.log("Room " + rn + ": " + info);
       SERVER.logToFile(info);
@@ -158,7 +158,7 @@ export const SERVER = {
       SERVER.logToFile(info);
     }
   },
-  debug: (info: string, rn: string) => {
+  debug: (info: string, rn?: string) => {
     if (typeof rn !== "undefined") {
       console.log("(Debug) Room " + rn + ": " + info);
       SERVER.logToFile(info);
@@ -167,7 +167,7 @@ export const SERVER = {
       SERVER.logToFile(info);
     }
   },
-  trace: (info: string, rn: string) => {
+  trace: (info: string, rn?: string) => {
     if (typeof rn !== "undefined") {
       console.trace("Trace - Room " + rn + ": " + info);
       SERVER.logToFile(info);
@@ -194,3 +194,5 @@ export const SERVER = {
 };
 
 SERVER.initLogFile();
+
+export default SERVER;

@@ -4,7 +4,7 @@ import {
   VALUE_REVERSE,
   VALUE_REVERSE_ACE_HIGH,
 } from "./enums";
-import { Deck } from "./Deck";
+import Deck from "./Deck";
 import { card } from "./types";
 
 export function nextPlayer(pn: number): number {
@@ -197,4 +197,11 @@ export function shuffleArraySeeded<T>(array: T[], randFn: () => number): void {
         array[j] = temp;
     }
   }
+}
+
+// Generates a random integer from min to max, inclusive
+export function random(min: number, max: number) {
+  return Math.floor(
+    Math.random() * (max - min + 1) + min
+  );
 }

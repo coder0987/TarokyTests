@@ -2,10 +2,11 @@ const { ACTION } = require("../enums");
 const SERVER = require("../logger");
 import { PLAYER_TYPE } from '../enums';
 import RoomManager from '../RoomManager';
+import { t_seat } from '../types';
 
 export default abstract class Player {
     #type = PLAYER_TYPE.ROBOT;
-    #pid = -1;
+    #pn : t_seat = -1;
     #chips = 100;
     #discard = [];
     #hand = [];
@@ -19,7 +20,7 @@ export default abstract class Player {
 
     // Meant only to be called by super()
     constructor(args?: Player) {
-        this.#pid = args?.pid ?? -1;
+        this.#pn = args?.pn ?? -1;
         this.#chips = args?.chips ?? 100;
         this.#discard = args?.discard ?? [];
         this.#hand = args?.hand ?? [];
@@ -156,8 +157,8 @@ export default abstract class Player {
         this.#type = type;
     }
 
-    set pid(pid) {
-        this.#pid = pid;
+    set pn(pn) {
+        this.#pn = pn;
     }
 
     set chips(chips) {
@@ -205,8 +206,8 @@ export default abstract class Player {
         return this.#type;
     }
 
-    get pid() {
-        return this.#pid;
+    get pn() {
+        return this.#pn;
     }
 
     get chips() {

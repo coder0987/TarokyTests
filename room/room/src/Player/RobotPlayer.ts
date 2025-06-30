@@ -1,33 +1,35 @@
-const { PLAYER_TYPE, NUM_AVATARS, SHUFFLE_TYPE, CUT_TYPE, ACTION, DIFFICULTY } = require('../enums');
-const Player = require('./Player');
+import { PLAYER_TYPE, NUM_AVATARS, SHUFFLE_TYPE, CUT_TYPE, ACTION, DIFFICULTY } from '../enums';
+
 const RobotAuto = require('./RobotAuto');
 const RobotBeginner = require('./RobotBeginner');
 const RobotEasy = require('./RobotEasy');
 const RobotNormal = require('./RobotNormal');
 const RobotHard = require('./RobotHard');
 const RobotRuthless = require('./RobotRuthless');
-const Deck = require('../deck');
 
-class RobotPlayer extends Player {
+import Player from './Player';
+import Deck from '../Deck';
+import { random } from '../utils';
+
+export default class RobotPlayer extends Player {
     //ROBOT DIFFICULTY LAYOUT: go from hardest -> easiest so the more difficult algorithms fall back onto the less difficult ones while we haven't yet finished
     //BEGINNER: 0, EASY: 1, NORMAL: 2, HARD: 3, RUTHLESS: 4, AI: 5
 
-    #difficulty;
-    #logic;
+    #difficulty: number;
+    #logic: any;
 
-    #timeout;
+    #timeout : NodeJS.Timeout | undefined;
 
-    constructor( args = {} ) {
-        if (args.old) {
-            super( args.old );
-        } else {
-            super(args);
-        }
+    // TODO: remove old from any constructor that calls this
+    constructor( args: any ) {
+        super(args);
 
         this.type = PLAYER_TYPE.ROBOT;
         this.avatar = Math.floor(Math.random() * NUM_AVATARS + 1);
 
         this.room = args.room;
+
+        this.#difficulty = DIFFICULTY.RUTHLESS as number;
 
         this.updateDifficulty();
     }
@@ -84,11 +86,11 @@ class RobotPlayer extends Player {
     }
 
     shuffle() {
-        this.info.type = Math.random(1,3);
-        this.info.again = Math.random(0,10) > 8;
+        this.info.type = random(1, 3);
+        this.info.again = random(0,10) > 8;
 
         if (this.info.type === SHUFFLE_TYPE.CUT) {
-            this.info.location = Math.random(7,47);
+            this.info.location = random(7,47);
         }
 
         this.submit();
@@ -204,5 +206,3 @@ class RobotPlayer extends Player {
         this.submit();
     }
 }
-
-module.exports = RobotPlayer;

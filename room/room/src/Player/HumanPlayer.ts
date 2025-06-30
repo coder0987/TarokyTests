@@ -1,16 +1,13 @@
-const Deck = require('../deck');
-const { PLAYER_TYPE } = require('../enums');
-const Player = require('./Player');
+import Deck from '../Deck';
+import { PLAYER_TYPE } from '../enums';
+import Player from './Player';
 
-class HumanPlayer extends Player {
+export default class HumanPlayer extends Player {
     #client;
 
-    constructor( args = {} ) {
-        if (args.old) {
-            super(args.old);
-        } else {
-            super(args);
-        }
+    // TODO: No longer pass 'old' and fix constructor
+    constructor( args: any ) {
+        super(args);
 
         this.type = PLAYER_TYPE.HUMAN;
         this.#client = args.client;
@@ -23,11 +20,9 @@ class HumanPlayer extends Player {
     deal() {}
 
     twelves() {
-        let tempChoiceArray = {};
+        let tempChoiceArray: Record<string, number> = {};
         for (let i in this.room.board.hands) {
-            if (typeof this.room.board.hands[i] == 'undefined' || !this.room.board.hands[i]) {
-                delete tempChoiceArray[i];
-            } else {
+            if (typeof this.room.board.hands[i] !== 'undefined' || this.room.board.hands[i]) {
                 tempChoiceArray[i] = +i + 1;
             }
         }
@@ -98,5 +93,3 @@ class HumanPlayer extends Player {
         return this.#client.username;
     }
 }
-
-module.exports = HumanPlayer;

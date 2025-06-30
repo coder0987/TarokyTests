@@ -15,7 +15,7 @@ export interface table {
 };
 
 export interface nextStep { 
-    player: number;
+    player: t_seat;
     action: t_action;
     time: number;
     info: any;
@@ -24,7 +24,7 @@ export interface nextStep {
 export interface card {
     suit: t_suit;
     value: t_value;
-    grayed: boolean | undefined;
+    grayed?: boolean;
 };
 
 export interface importantInfo {
@@ -38,15 +38,14 @@ export interface importantInfo {
     preverMultiplier?: number;
     moneyCards?: string[][];
     usernames?: {
-        0: string,
-        1: string,
-        2: string,
-        3: string
+        [idx: number]: string | null
     };
     partnerCard?: t_value;
     valat?: t_seat_c;
     iote?: t_seat_c;
     contra?: number;
+    povinnost?: t_seat_c;
+    pn?: t_seat_c;
 };
 
 export interface trick {
