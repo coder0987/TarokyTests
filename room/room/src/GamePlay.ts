@@ -2,6 +2,8 @@
  * GamePlay contains the game logic for the game - it's methods are called by the server and it calls Player methods
  */
 
+import { card } from "./types";
+
 const GameManager = require('./GameManager');
 const gm = GameManager.INSTANCE;
 
@@ -630,7 +632,7 @@ class GamePlay {
 
     partner() {
         const possiblePartners = Deck.possiblePartners(this.currentPlayer.hand);
-        if (possiblePartners.some(p => p.value === this.info.partnerCard)) {
+        if (possiblePartners.some((p: card) => p.value === this.info.partnerCard)) {
             this.board.partnerCard = this.info.partnerCard;
         } else {
             this.board.partnerCard = "XIX";
@@ -1112,8 +1114,8 @@ class GamePlay {
         const pointCountMessageTable = [];
         let chipsOwed = 0;
 
-        let povinnostTeamDiscard = [];
-        let opposingTeamDiscard = [];
+        let povinnostTeamDiscard: card[] = [];
+        let opposingTeamDiscard: card[] = [];
         for (let i in this.players) {
             if (this.players[i].isTeamPovinnost) {
                 povinnostTeamDiscard = povinnostTeamDiscard.concat(this.players[i].discard);
@@ -1281,7 +1283,7 @@ class GamePlay {
         return true;
     }
 
-    payChips(messageTable, chipsOwed) {
+    payChips(messageTable, chipsOwed: number) {
         let team1Players = [];
         let team2Players = [];
         for (let i in this.players) {
@@ -1339,7 +1341,7 @@ class GamePlay {
         return true;
     }
 
-    trackCards(card) {
+    trackCards(card: card) {
         this.board.cardsPlayed[Deck.cardId(card, this.#room.settings.aceHigh)] = true;
 
         if (card.value === this.board.partnerCard) {
@@ -1389,7 +1391,7 @@ class GamePlay {
             case ACTION.POVINNOST_BIDA_UNI_CHOICE:
                 fakeMoneyCards = true;
                 this.action = ACTION.MONEY_CARDS;
-                room.board.buc = false;
+                this.board.buc = false;
                 break;
             case ACTION.PARTNER:
                 this.info.partner = RobotAuto.robotPartner(this.currentPlayer.hand);
