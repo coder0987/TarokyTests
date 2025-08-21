@@ -2,13 +2,58 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { GameState } from "@/types";
 import { useSocket } from './SocketContext';
 
-type IContextType = GameState;
-
-const INITIAL_GAMESTATE = {
-    
+const INITIAL_GAMESTATE: GameState = {
+    client: {
+        startTime: Date.now(),
+        ticker: null,
+        players: null,
+        deck: null,
+        hand: null,
+        numCardsSelected: 0,
+        partners: null,
+        handChoices: null,
+        theSettings: null,
+        roomCode: null,
+        returnToGameAvailable: false,
+        availableRooms: {},
+        connectingToRoom: false,
+        inGame: false,
+        chipCount: 100,
+        playerNumber: -1,
+        povinnostNumber: -1,
+        hostNumber: -1,
+        currentAction: null,
+        baseDeck: null,//TODO generateBaseDeck(),
+        returnTableQueue: [],
+        currentTable: [],
+        drawnCards: [],
+        queued: false,
+        discardingOrPlaying: true,
+        timeOffset: 0,
+        activeUsernames: {
+            0: null,
+            1: null,
+            2: null,
+            3: null,
+        },
+        activeAvatars: {
+            0: 0,
+            1: 0,
+            2: 0,
+            3: 0,
+        },
+    },
+    ui: {
+        cardBackLoaded: false,
+        drawnRooms: null,
+        tableDrawnTime: 0,
+    },
+    server: {
+        // To be loaded in
+    }
 };
 
-const GameContext = createContext<IContextType>(INITIAL_GAMESTATE);
+const GameContext = createContext<GameState>(INITIAL_GAMESTATE);
 
 export function GameProvider({ children }: { children: React.ReactNode }) {
     const socket = useSocket().socket;
@@ -20,7 +65,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
         const handleAutoReconnect = (newGameState: GameState) => {
             // Fake some leaderboard scores
-            newGameState.leaderboard = [
+            newGameState.server.leaderboard = [
                 {
                     "name": "SkyzDodo",
                     "score": 190,

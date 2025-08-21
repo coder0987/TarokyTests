@@ -19,7 +19,7 @@ const getPrevChipStyle = (index: number) => {
 };
 
 export const Leaderboard: React.FC = () => {
-  const { leaderboard, dailyChallengeScore } = useGameContext();
+  const { leaderboard, dailyChallengeScore } = useGameContext().server;
   const showScores = typeof dailyChallengeScore !== 'undefined';
 
   if (!leaderboard || leaderboard.length === 0) {
