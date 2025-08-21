@@ -4,6 +4,8 @@ export type Account = {
   preferences: {};
 };
 
+export type GameState = any; // TODO: fill in details
+
 export enum PlayerStatus {
   Offline = "Offline",
   Online = "Online",

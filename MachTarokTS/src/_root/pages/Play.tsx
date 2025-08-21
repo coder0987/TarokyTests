@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useUserContext } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import Leaderboard from './Leaderboard';
 
 const Play = () => {
     const navigate = useNavigate();
@@ -115,6 +116,7 @@ const Play = () => {
                                 Join
                             </Button>
                         </div>
+                        <Leaderboard />
                     </div>
                 </div>
             </div>

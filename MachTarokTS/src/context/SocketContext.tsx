@@ -22,7 +22,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     // Create the socket connection with the socketId (persisted from previous sessions)
-    const newSocket = io("http://localhost:3000", { //!!CHANGE THIS BEFORE BUILDING!!
+    const newSocket = io("http://localhost:8448", { //!!CHANGE THIS BEFORE BUILDING!!
       auth: {
         token: socketId,
         username: account?.user || null,
@@ -35,6 +35,7 @@ export const SocketProvider = ({ children }) => {
     // Handle connection success or failure
     newSocket.on("connect", () => {
       console.log("Socket connected successfully");
+      newSocket.emit('reconnect');
     });
 
     newSocket.on("connect_error", (err) => {

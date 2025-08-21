@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         //REMOVE FOR PRODUCTION
-        handleLogin('Test', 'tOkEn');
+        //handleLogin('Test', 'tOkEn');
 
         setIsLoading(false);
     }, []);

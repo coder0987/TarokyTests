@@ -69,6 +69,7 @@ const SignIn = () => {
                                 ))}
                             </div>
                         </div>
+                        <button className='btn navy' onClick={handleSignOut}>Sign Out</button>
                         <div className="mb-20"></div>
                     </div>
                 </div>
