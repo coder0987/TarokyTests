@@ -4,6 +4,27 @@ export type PN = 0 | 1 | 2 | 3 | -1; //how the server sees it
 export type PlayerIndex = 0 | 1 | 2 | 3;
 export type dPN = 1 | 2 | 3 | 4 | -1; // offset for display
 
+export enum MESSAGE_TYPE {
+  POVINNOST = 0,
+  MONEY_CARDS = 1,
+  PARTNER = 2,
+  VALAT = 3,
+  CONTRA = 4,
+  IOTE = 5,
+  LEAD = 6,
+  PLAY = 7,
+  WINNER = 8,
+  PREVER_TALON = 9,
+  PAY = 10,
+  CONNECT = 11,
+  DISCONNECT = 12,
+  SETTING = 13,
+  TRUMP_DISCARD = 14,
+  NOTATION = 15,
+  DRAW = 16,
+  CUT = 17,
+}
+
 export interface Card {
   value: string;
   suit: string;
@@ -59,6 +80,7 @@ export type Room = {
   numComputers: number;
   availble: number;
 };
+
 //* // For the new server
 export type PlayerDefinition = {
   piles: string[];
@@ -93,24 +115,35 @@ export type StepsList = {
   [phase: string]: string[];
 };//*/
 
+// Chat types
+export type ChatMessage = {
+  author: string;
+  message: string;
+  timestamp: string;
+  bold?: boolean;
+};
+
 // GameState class, to handle all of the game-related data
 
 export class GamePlayer {
   username: string;
   avatar: number;
   seat: PlayerIndex;
-  chipCount: number;
+  chips: number;
+  moneycards: string[];
 
   constructor() {
     this.username = "Guest";
     this.avatar = 0;
     this.seat = 0;
-    this.chipCount = 100;
+    this.chips = 100;
+    this.moneycards = [];
   }
 }
 
 export class MyInfoInGame {
   hand: Card[] | null;
+  gray: boolean;
   partners: any;
   handChoices: any;
   playerNumber: PN;
@@ -122,6 +155,7 @@ export class MyInfoInGame {
     this.handChoices = null;
     this.playerNumber = -1;
     this.drawnCards = [];
+    this.gray = false;
   }
 }
 
@@ -131,9 +165,16 @@ export class ClientGameState {
   roomName: string;
   gamePlayers: GamePlayer[];// always of length 4
   settings: GameSettings;
-  povinnostNumber: PN;
   hostNumber: PN;
   currentAction: string | null;
+
+  povinnost?: PlayerIndex;
+  prever?: PN;
+  preverMultiplier?: number;
+  valat?: PN;
+  iote?: PN;
+  contra?: number;
+  partnerCard?: string;
 
   myInfo: MyInfoInGame;
 
@@ -145,7 +186,7 @@ export class ClientGameState {
     this.roomCode = null;
     this.gamePlayers = [new GamePlayer(), new GamePlayer(), new GamePlayer(), new GamePlayer()];
     this.settings = null;
-    this.povinnostNumber = -1;
+    this.povinnost = 0;
     this.hostNumber = -1;
     this.currentAction = null;
     this.myInfo = new MyInfoInGame();
@@ -159,11 +200,13 @@ export class ClientState {
   ticker: number | null;
   inGame: boolean;
   connectedPlayers: Player[]; // all players on the server. Used for invite list
+  numPlayers: number; // for "X players online"
   returnToGameAvailable: boolean; // will adjust this later to offer multiple "continue" games
   availableRooms: Record<string, any>;
   connectingToRoom: boolean;
   leaderboard: any[] | null;
   dailyChallengeScore: number | null;
+  invites: { roomName: string; joinCode: string; playerName: string }[];
 
   gameState: ClientGameState | null;
 
@@ -173,11 +216,13 @@ export class ClientState {
     this.inGame = false;
     this.gameState = null; // set when a game is joined
     this.connectedPlayers = [];
+    this.numPlayers = 0;
     this.returnToGameAvailable = false;
     this.availableRooms = {};
     this.connectingToRoom = false;
     this.leaderboard = null;
     this.dailyChallengeScore = null;
+    this.invites = [];
   }
 }
 
