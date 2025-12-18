@@ -39,6 +39,15 @@ export interface GameSettings {
   botThinkTime: number;
 }
 
+export const DEFAULT_SETTINGS: GameSettings = {
+  timeout: 15,
+  difficulty: 3,
+  aceHigh: false,
+  locked: false,
+  botPlayTime: 1500,
+  botThinkTime: 1000,
+};
+
 export type Account = {
   user: string | null;
   authToken: string | null;
@@ -47,6 +56,7 @@ export type Account = {
     elo: number;
     admin: boolean;
     avatar: number;
+    deck: string;
     displayChat: boolean;
     dailyScore: number;
     defaultSettings: GameSettings;

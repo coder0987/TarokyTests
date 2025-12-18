@@ -1,5 +1,5 @@
 // src/controllers/AuthController.ts
-import { Account } from "@/types";
+import { Account, DEFAULT_SETTINGS } from "@/types";
 import { EventEmitter } from "events"; // simple pub/sub for React to listen
 
 export const INITIAL_ACCOUNT: Account = {
@@ -7,6 +7,16 @@ export const INITIAL_ACCOUNT: Account = {
   authToken: null,
   preferences: null,
   wins: null,
+};
+
+const DEFAULT_PREFERENCES = {
+    deck: "industrie-und-gluck",
+    elo: 300,
+    admin: false,
+    avatar: 0,
+    displayChat: true,
+    dailyScore: null,
+    defaultSettings: DEFAULT_SETTINGS
 };
 
 export class AuthController {
@@ -41,7 +51,7 @@ export class AuthController {
   }
 
   login(username: string, token: string) {
-    this.account = { user: username, authToken: token, preferences: null, wins: null };
+    this.account = { user: username, authToken: token, preferences: DEFAULT_PREFERENCES, wins: null };
     document.cookie = `username=${username};secure`;
     document.cookie = `token=${token};secure`;
     this.isAuthenticated = true;

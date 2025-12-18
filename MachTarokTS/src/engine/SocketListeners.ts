@@ -1,5 +1,6 @@
-import { Card, ClientGameState, MESSAGE_TYPE, Player, PlayerIndex, PN } from "@/types";
+import { Card, ClientGameState, GameSettings, MESSAGE_TYPE, Player, PlayerIndex, PN } from "@/types";
 import { gameStore } from "./GameStore";
+import { authController } from './AuthEngine';
 import { addErrorMessage, addPlayerMessage, addServerMessage } from "./ChatEngine";
 import { DIFFICULTY_TABLE } from "@/constants";
 import { playerPerspective } from "@/utils";
@@ -14,6 +15,10 @@ export function timeSync(serverTime: number) {
 export function reload() {
     addErrorMessage("Reloading...");
     window.location.reload();
+}
+
+export function broadcast(theBroadcast: string) {
+  addServerMessage(theBroadcast);
 }
 
 // Game joining
@@ -68,6 +73,20 @@ export function audienceNotConnected(audienceRoom: string) {
   addServerMessage(`Failed to join audience in room ${audienceRoom}`);
 }
 
+export function startingGame(hostPN: PN, playerPN: PN, gameNumber: number, returnSettings: GameSettings) {
+  const state = gameStore.game.gameState!;
+  state.hostNumber = hostPN;
+  state.myInfo.playerNumber = playerPN;
+  state.settings = returnSettings;
+
+  addServerMessage(`Game ${gameNumber} Beginning.`);
+  addServerMessage(`You are player ${playerPN + 1}`);
+  addServerMessage(
+    `Playing on difficulty ${DIFFICULTY_TABLE[returnSettings.difficulty]} with timeout ${returnSettings.timeout / 1000}s with ace high ${returnSettings.aceHigh ? "enabled" : "disabled"}`
+  );
+
+  gameStore.notify();
+}
 
 // Lobby
 
@@ -248,6 +267,31 @@ export function returnRoundInfo(theRoundInfo: {
   gameStore.notify();
 }
 
+export function autoAction() {
+  addServerMessage("Your play timed out and was automatically completed for you");
+  gameStore.notify();
+}
+
+export function nextAction(action: any) {
+  gameStore.game.gameState!.currentAction = action;
+  gameStore.notify();
+}
+
+export function failedDiscard(toDiscard: { value: string; suit: string }) {
+  addServerMessage(`Failed to discard the ${toDiscard.value} of ${toDiscard.suit}`);
+  gameStore.notify();
+}
+
+export function failedPlayCard() {
+  addServerMessage("Failed to play the card");
+  gameStore.notify();
+}
+
+export function gameEnded() {
+  gameStore.game.inGame = false;
+  gameStore.notify();
+}
+
 // ----- GAME MESSAGES -----
 type GameMessageHandler = (message: string, extraInfo?: any) => void;
 
@@ -367,3 +411,53 @@ export function handleGameMessage(message: string, type: MESSAGE_TYPE, extraInfo
 
 // ----- END GAME MESSAGES -----
 
+// Player preferences and settings
+
+export function elo(returnElo: number) {
+  authController.account.preferences = {
+    ...authController.account.preferences,
+    elo: returnElo,
+  };
+  authController.notify();
+}
+
+export function avatar(returnAvatar: number) {
+  authController.account.preferences = {
+    ...authController.account.preferences,
+    avatar: returnAvatar,
+  };
+  authController.notify();
+}
+
+export function chat(returnChat: boolean) {
+  authController.account.preferences = {
+    ...authController.account.preferences,
+    displayChat: returnChat,
+  };
+  authController.notify();
+}
+
+export function deckChoice(returnDeckChoice: string) {
+  authController.account.preferences = {
+    ...authController.account.preferences,
+    deck: returnDeckChoice,
+  };
+  authController.notify();
+}
+
+export function admin(returnAdmin: boolean) {
+  authController.account.preferences = {
+    ...authController.account.preferences,
+    admin: returnAdmin,
+  };
+  authController.notify();
+}
+
+export function defaultSettings(returnSettings: GameSettings) {
+  authController.account.preferences = {
+    ...authController.account.preferences,
+    defaultSettings: returnSettings,
+  };
+  addServerMessage("Settings loaded");
+  authController.notify();
+}
