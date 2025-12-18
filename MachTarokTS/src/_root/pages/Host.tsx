@@ -1,13 +1,13 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { useUserContext } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { Difficulty } from '@/types';
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { InviteDialog, OpponentSelect, SettingsMenu } from '@/components/shared';
+import { useGameSlice } from '@/hooks/useGameSlice';
 
 const timeoutMin = 15;
 const timeoutDefault = 30;
@@ -18,14 +18,31 @@ const Host = () => {
     const { account } = useUserContext();
     const { showToast } = useToast();
 
-    const [gameType, setGameType] = useState("Taroky");
-    const [roomNumeral, setRoomNumeral] = useState<string>("II");
-    const [joinCode, setJoinCode] = useState<string>("GKPRD");
+    const gameType = "Taroky";
+    const roomNumeral = useGameSlice((game) => game.gameState?.roomName || "I");
+    const joinCode = useGameSlice((game) => game.gameState?.roomCode || "");
 
+    // "front-end" state, which will be sent to server on change
     const [roomVisibility, setRoomVisibility] = useState<"Public" | "Private">("Private");
     const [difficulty, setDifficulty] = useState<Difficulty>(Difficulty.Normal);
     const [timeout, setTimeout] = useState<number | string>(timeoutDefault);
     const [isAceHigh, setIsAceHigh] = useState(false);
+    const [botPlayTime, setBotPlayTime] = useState<number>(15);
+    const [botThinkingTime, setBotThinkingTime] = useState<number>(5);
+
+
+    const settings = useGameSlice((game) => game.gameState?.settings);
+    useEffect(() => {
+        if (settings) {
+            // back-end state updated, update front-end state
+            setDifficulty(Difficulty[settings.difficulty]);
+            setTimeout(settings.timeout);
+            setIsAceHigh(settings.aceHigh);
+            setBotPlayTime(settings.botPlayTime / 1000);
+            setBotThinkingTime(settings.botThinkTime / 1000);
+            setRoomVisibility(settings.locked ? "Private" : "Public");
+        }
+    }, [settings]);
 
     const [isHostReady, setIsHostReady] = useState(false);
     const [settingsLocked, setSettingsLocked] = useState(false);
@@ -58,6 +75,9 @@ const Host = () => {
             setSettingsLocked(false);
         }
     }, [isHostReady]);
+
+    // Send updates to server when settings change
+    
 
     return (
         <div className="bg-gray-100 min-h-screen w-full">

@@ -1,4 +1,4 @@
-import { BasicRules, DeckType } from "@/types";
+//import { BasicRules, DeckType } from "@/types";
 
 import {
   Accordion,
@@ -11,7 +11,11 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { AOESelector, CountersCreator, FlagsCreator, PilesCreator } from "@/components/shared";
 
-/*
+//*
+export enum DeckType {
+  Standard = "Standard",
+  Tarok = "Tarok",
+}
 export type BasicRules = {
   deck: DeckType;
   numDecks: number;
@@ -21,7 +25,7 @@ export type BasicRules = {
   type: number;
   start: string;
 };
-*/
+//*/
 
 interface GeneralProps {
   basic: BasicRules;

@@ -59,7 +59,7 @@ export type Room = {
   numComputers: number;
   availble: number;
 };
-/* // For the new server
+//* // For the new server
 export type PlayerDefinition = {
   piles: string[];
   counters: string[];
@@ -91,47 +91,104 @@ export enum DeckType {
 
 export type StepsList = {
   [phase: string]: string[];
-};*/
+};//*/
 
-export interface ClientGameState {
-  startTime: number;
-  ticker: number | null;
-  players: Player[];
-  deck: Card[] | null;
+// GameState class, to handle all of the game-related data
+
+export class GamePlayer {
+  username: string;
+  avatar: number;
+  seat: PlayerIndex;
+  chipCount: number;
+
+  constructor() {
+    this.username = "Guest";
+    this.avatar = 0;
+    this.seat = 0;
+    this.chipCount = 100;
+  }
+}
+
+export class MyInfoInGame {
   hand: Card[] | null;
-  numCardsSelected: number;
   partners: any;
   handChoices: any;
-  theSettings: GameSettings;
-  roomCode: string | null;
-  returnToGameAvailable: boolean;
-  availableRooms: Record<string, any>;
-  connectingToRoom: boolean;
-  inGame: boolean;
-  chipCount: number;
   playerNumber: PN;
+  drawnCards: Card[];
+
+  constructor() {
+    this.hand = null;
+    this.partners = null;
+    this.handChoices = null;
+    this.playerNumber = -1;
+    this.drawnCards = [];
+  }
+}
+
+export class ClientGameState {
+  // Data related to the specific game that the client is in
+  roomCode: string | null;
+  roomName: string;
+  gamePlayers: GamePlayer[];// always of length 4
+  settings: GameSettings;
   povinnostNumber: PN;
   hostNumber: PN;
   currentAction: string | null;
-  baseDeck: Card[];
+
+  myInfo: MyInfoInGame;
+
   returnTableQueue: any[];
   currentTable: any[];
-  drawnCards: Card[];
-  queued: boolean;
-  discardingOrPlaying: boolean;
-  timeOffset: number;
-  activeUsernames: Record<PlayerIndex, string | null>;
-  activeAvatars: Record<PlayerIndex, number>;
+
+  constructor(roomName: string) {
+    this.roomName = roomName;
+    this.roomCode = null;
+    this.gamePlayers = [new GamePlayer(), new GamePlayer(), new GamePlayer(), new GamePlayer()];
+    this.settings = null;
+    this.povinnostNumber = -1;
+    this.hostNumber = -1;
+    this.currentAction = null;
+    this.myInfo = new MyInfoInGame();
+    this.returnTableQueue = [];
+    this.currentTable = [];
+  }
 }
 
-export interface UIGameState {
+export class ClientState {
+  startTime: number;
+  ticker: number | null;
+  inGame: boolean;
+  connectedPlayers: Player[]; // all players on the server. Used for invite list
+  returnToGameAvailable: boolean; // will adjust this later to offer multiple "continue" games
+  availableRooms: Record<string, any>;
+  connectingToRoom: boolean;
+  leaderboard: any[] | null;
+  dailyChallengeScore: number | null;
+
+  gameState: ClientGameState | null;
+
+  constructor() {
+    this.startTime = Date.now();
+    this.ticker = null;
+    this.inGame = false;
+    this.gameState = null; // set when a game is joined
+    this.connectedPlayers = [];
+    this.returnToGameAvailable = false;
+    this.availableRooms = {};
+    this.connectingToRoom = false;
+    this.leaderboard = null;
+    this.dailyChallengeScore = null;
+  }
+}
+
+export class UIGameState {
   cardBackLoaded: boolean;
   drawnRooms: string[];
   tableDrawnTime: number;
-}
 
-export type GameState = {
-  client: ClientGameState;
-  ui: UIGameState;
-  server: any;
-}; // TODO: fill in details
+  constructor() {
+    this.cardBackLoaded = false;
+    this.drawnRooms = [];
+    this.tableDrawnTime = 0;
+  }
+}

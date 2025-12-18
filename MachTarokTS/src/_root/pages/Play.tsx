@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { useUserContext } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import Leaderboard from './Leaderboard';
+import { emitNewRoom } from '@/engine/SocketEmitter';
 
 const Play = () => {
     const navigate = useNavigate();
@@ -50,7 +51,7 @@ const Play = () => {
                             <div className="grid grid-cols-2 gap-4">
                                 <Card
                                     className="bg-navy hover:bg-blue-800 text-white transition-all transform hover:scale-105 shadow-md hover:shadow-lg cursor-pointer"
-                                    onClick={() => navigate("/host")}
+                                    onClick={() => emitNewRoom()}
                                 >
                                     <CardContent className="flex justify-center items-center py-5">
                                         <span className="text-xl font-semibold">Host</span>
