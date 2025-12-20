@@ -500,8 +500,25 @@ export function autoReconnect(data: AutoReconnectPayload) {
     gameStore.game.dailyChallengeScore = data.dailyChallengeScore;
   }
 
+  
 
-  const gs = gameStore.game.gameState;
+  if (data.roomConnected !== undefined) {
+    gameStore.game.inGame = true;
+    gameStore.game.connectingToRoom = false;
+  }
+
+  if (data.audienceConnected !== undefined) {
+    gameStore.game.inGame = true;
+    gameStore.game.connectingToRoom = false;
+  }
+
+
+  let gs = gameStore.game.gameState;
+
+  if (!gs && gameStore.game.inGame) {
+    gs = new ClientGameState(data.audienceConnected ? data.audienceConnected : data.roomConnected);
+    gameStore.game.gameState = gs;
+  }
 
   if (gs) {
     if (data.povinnost !== undefined) {
@@ -535,21 +552,13 @@ export function autoReconnect(data: AutoReconnectPayload) {
 
   if (data.pn !== undefined) {
     gameStore.game.gameState.myInfo.playerNumber = data.pn;
-    addServerMessage(`You are player ${data.pn + 1}`);
+    addServerMessage(`You are player ${+data.pn + 1}`);
   }
 
   if (data.host !== undefined) {
     gameStore.game.gameState.hostNumber = data.host.number;
-  }
-
-  if (data.roomConnected !== undefined) {
-    gameStore.game.inGame = true;
-    gameStore.game.connectingToRoom = false;
-  }
-
-  if (data.audienceConnected !== undefined) {
-    gameStore.game.inGame = true;
-    gameStore.game.connectingToRoom = false;
+    gameStore.game.gameState.roomCode = data.host.joinCode;
+    // In the future, this may also have room.name. Not sure how that differs from roomConnected
   }
 
   if (data.playersInGame !== undefined) {

@@ -4,12 +4,6 @@ import { EventEmitter } from "events"; // simple pub/sub for React to listen
 import { signInUser } from "./SocketEngine";
 import { addServerMessage } from "./ChatEngine";
 
-export const INITIAL_ACCOUNT: Account = {
-  user: "Guest",
-  authToken: null,
-  preferences: null,
-  wins: null,
-};
 
 const DEFAULT_PREFERENCES = {
     deck: "industrie-und-gluck",
@@ -19,6 +13,13 @@ const DEFAULT_PREFERENCES = {
     displayChat: true,
     dailyScore: null,
     defaultSettings: DEFAULT_SETTINGS
+};
+
+export const INITIAL_ACCOUNT: Account = {
+  user: "Guest",
+  authToken: null,
+  preferences: DEFAULT_PREFERENCES,
+  wins: null,
 };
 
 export class AuthController {

@@ -2,32 +2,29 @@ import { useState } from 'react';
 
 interface SettingsScrollerProps {
     list: string[];
-    initialValue?: string;
-    onChange?: (value: string) => void;
+    value: string;
+    onChange: (value: string) => void;
     disabled?: boolean;
 }
 
 const SettingsScroller: React.FC<SettingsScrollerProps> = ({
     list,
-    initialValue,
+    value,
     onChange,
     disabled
 }) => {
-    const initialIndex = initialValue ? list.indexOf(initialValue) : 0;
-    const [currentItem, setCurrentItem] = useState(initialIndex >= 0 ? initialIndex : 0);
+    const index = value ? list.indexOf(value) : 0;
 
     const right = () => {
         if (disabled) return;
-        const newIndex = (currentItem + 1) % list.length;
-        setCurrentItem(newIndex);
-        if (onChange) onChange(list[newIndex]);
+        const newIndex = (index + 1) % list.length;
+        onChange(list[newIndex]);
     };
 
     const left = () => {
         if (disabled) return;
-        const newIndex = (currentItem - 1 < 0) ? list.length - 1 : currentItem - 1;
-        setCurrentItem(newIndex);
-        if (onChange) onChange(list[newIndex]);
+        const newIndex = (index - 1 < 0) ? list.length - 1 : index - 1;
+        onChange(list[newIndex]);
     };
 
     return (
@@ -41,7 +38,7 @@ const SettingsScroller: React.FC<SettingsScrollerProps> = ({
             >
                 {"<"}
             </div>
-            <div className={`font-medium select-none text-navy ${disabled ? "cursor-not-allowed" : ""}`}>{list[currentItem]}</div>
+            <div className={`font-medium select-none text-navy ${disabled ? "cursor-not-allowed" : ""}`}>{list[index]}</div>
             <div
                 onClick={right}
                 className={`cursor-pointer h-full flex items-center justify-center px-3 select-none hover:bg-gray-100 text-gray-500 ${disabled ? "cursor-not-allowed" : ""}`}

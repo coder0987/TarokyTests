@@ -124,6 +124,15 @@ export enum Difficulty {
   AI = "AI",
 }
 
+export enum DifficultyReverse {
+  "Beginner" = 0,
+  "Easy" = 1,
+  "Normal" = 2,
+  "Hard" = 3,
+  "Ruthless" = 4,
+  "AI" = 5,
+}
+
 export type Room = {
   numeral: string;
   numPlayers: number;

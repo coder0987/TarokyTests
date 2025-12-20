@@ -19,6 +19,8 @@ export function addServerMessage(message: string): void {
     chatStore.ledgerMessages.push({author: serverName, message: sanitizedMessage, timestamp: time});
     trimExcessMessages();
     chatStore.notify();
+
+    console.log(`${serverName}: ${sanitizedMessage}`);
 }
 
 export function addErrorMessage(message: string): void {
@@ -27,6 +29,8 @@ export function addErrorMessage(message: string): void {
     chatStore.ledgerMessages.push({author: serverName, message: sanitizedMessage, timestamp: time, bold: true});
     trimExcessMessages();
     chatStore.notify();
+
+    console.error(`${serverName}: ${sanitizedMessage}`);
 }
 
 export function addPlayerMessage(author: string, message: string): void {
@@ -35,6 +39,8 @@ export function addPlayerMessage(author: string, message: string): void {
     chatStore.chatMessages.push({author, message: sanitizedMessage, timestamp: time});
     trimExcessMessages();
     chatStore.notify();
+
+    console.log(`${author}: ${sanitizedMessage}`);
 }
 
 export function clearAllMessages(): void {
