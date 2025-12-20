@@ -5,6 +5,11 @@ export function emitNewRoom(): void {
   socket.emit("newRoom");
 }
 
+export function emitJoinRoomByCode(code: string): void {
+  const socket = getSocket();
+  socket.emit("roomConnect", code, true);
+}
+
 export function emitSettings(type: string, value: any): void {
   const socket = getSocket();
   socket.emit("settings", type, value);
@@ -15,4 +20,14 @@ export function emitSettings(type: string, value: any): void {
 export function emitSaveSettings(): void {
   const socket = getSocket();
   socket.emit("saveSettings");
+}
+
+export function emitStartGame(): void {
+  const socket = getSocket();
+  socket.emit("startGame");
+}
+
+export function emitLeaveGame(): void {
+  const socket = getSocket();
+  socket.emit("exitRoom");
 }

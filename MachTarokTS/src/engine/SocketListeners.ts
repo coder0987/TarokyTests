@@ -1,4 +1,4 @@
-import { AutoReconnectPayload, Card, ClientGameState, GameSettings, MESSAGE_TYPE, Player, PlayerIndex, PN } from "@/types";
+import { Action, AutoReconnectPayload, Card, ClientGameState, GameSettings, MESSAGE_TYPE, Player, PlayerIndex, PN } from "@/types";
 import { gameStore } from "./GameStore";
 import { authController } from './AuthEngine';
 import { addErrorMessage, addPlayerMessage, addServerMessage } from "./ChatEngine";
@@ -80,7 +80,7 @@ export function startingGame(hostPN: PN, playerPN: PN, gameNumber: number, retur
   state.settings = returnSettings;
 
   addServerMessage(`Game ${gameNumber} Beginning.`);
-  addServerMessage(`You are player ${playerPN + 1}`);
+  addServerMessage(`You are player ${+playerPN + 1}`);
   addServerMessage(
     `Playing on difficulty ${DIFFICULTY_TABLE[returnSettings.difficulty]} with timeout ${returnSettings.timeout / 1000}s with ace high ${returnSettings.aceHigh ? "enabled" : "disabled"}`
   );
@@ -240,9 +240,6 @@ export function returnRoundInfo(theRoundInfo: {
   state.contra = theRoundInfo.contra ?? state.contra;
   state.iote = theRoundInfo.iote ?? state.iote;
   state.partnerCard = theRoundInfo.partnerCard ?? state.partnerCard;
-  
-
-  state.currentAction = null; // could be set elsewhere
 
   // Update per-player info
   for (let i = 0; i < state.gamePlayers.length; i++) {
@@ -272,8 +269,9 @@ export function autoAction() {
   gameStore.notify();
 }
 
-export function nextAction(action: any) {
+export function nextAction(action: Action) {
   gameStore.game.gameState!.currentAction = action;
+  console.log("Next action:", action);
   gameStore.notify();
 }
 
@@ -536,33 +534,37 @@ export function autoReconnect(data: AutoReconnectPayload) {
     if (data.table !== undefined) {
       gs.returnTableQueue.push(data.table);
     }
-  }
 
-  if (data.hand !== undefined) {
-    gameStore.game.gameState.myInfo.hand = data.hand;
-    gameStore.game.gameState.myInfo.gray = !!data.withGray;
-  }
-
-  if (data.chips !== undefined && gs) {
-    const pn = gs.myInfo.playerNumber;
-    if (pn >= 0) {
-      gs.gamePlayers[pn].chips = data.chips;
+    if (data.hand !== undefined) {
+      gameStore.game.gameState.myInfo.hand = data.hand;
+      gameStore.game.gameState.myInfo.gray = !!data.withGray;
     }
-  }
 
-  if (data.pn !== undefined) {
-    gameStore.game.gameState.myInfo.playerNumber = data.pn;
-    addServerMessage(`You are player ${+data.pn + 1}`);
-  }
+    if (data.chips !== undefined && gs) {
+      const pn = gs.myInfo.playerNumber;
+      if (pn >= 0) {
+        gs.gamePlayers[pn].chips = data.chips;
+      }
+    }
 
-  if (data.host !== undefined) {
-    gameStore.game.gameState.hostNumber = data.host.number;
-    gameStore.game.gameState.roomCode = data.host.joinCode;
-    // In the future, this may also have room.name. Not sure how that differs from roomConnected
-  }
+    if (data.pn !== undefined) {
+      gameStore.game.gameState.myInfo.playerNumber = data.pn;
+      addServerMessage(`You are player ${+data.pn + 1}`);
+    }
 
-  if (data.playersInGame !== undefined) {
-    gameStore.game.connectedPlayers = data.playersInGame;
+    if (data.host !== undefined) {
+      gameStore.game.gameState.hostNumber = data.host.number;
+      gameStore.game.gameState.roomCode = data.host.joinCode;
+      // In the future, this may also have room.name. Not sure how that differs from roomConnected
+    }
+
+    if (data.playersInGame !== undefined) {
+      gameStore.game.connectedPlayers = data.playersInGame;
+    }
+
+    if (data.nextAction !== undefined) {
+      gameStore.game.gameState.currentAction = data.nextAction;
+    }
   }
 
   gameStore.notify();

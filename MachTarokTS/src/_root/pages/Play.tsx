@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { useUserContext } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import Leaderboard from './Leaderboard';
-import { emitNewRoom } from '@/engine/SocketEmitter';
+import { emitJoinRoomByCode, emitNewRoom } from '@/engine/SocketEmitter';
 
 const Play = () => {
     const navigate = useNavigate();
@@ -22,6 +22,7 @@ const Play = () => {
     const handleJoinClicked = () => {
         // is valid room code?
         // if so join room
+        emitJoinRoomByCode(roomCode);
     }
 
     return (

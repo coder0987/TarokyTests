@@ -4,6 +4,7 @@ export { default as Donate } from "./Donate";
 export { default as Daily } from "./Daily";
 export { default as Home } from "./Home";
 export { default as Host } from "./Host";
+export { default as Game } from "./Game";
 export { default as Learn } from "./Learn";
 export { default as NotFound } from "./NotFound";
 export { default as Play } from "./Play";

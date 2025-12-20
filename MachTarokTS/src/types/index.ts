@@ -140,6 +140,13 @@ export type Room = {
   availble: number;
 };
 
+export type Action = {
+  action: string;
+  player: PlayerIndex;
+  time: number;
+  info: any;
+}
+
 //* // For the new server
 export type PlayerDefinition = {
   piles: string[];
@@ -225,7 +232,7 @@ export class ClientGameState {
   gamePlayers: GamePlayer[];// always of length 4
   settings: GameSettings;
   hostNumber: PN;
-  currentAction: string | null;
+  currentAction: Action;
 
   povinnost?: PlayerIndex;
   prever?: PN;
@@ -247,7 +254,7 @@ export class ClientGameState {
     this.settings = null;
     this.povinnost = 0;
     this.hostNumber = -1;
-    this.currentAction = null;
+    this.currentAction = { action: "start", player: 0, time: 0, info: {} };
     this.myInfo = new MyInfoInGame();
     this.returnTableQueue = [];
     this.currentTable = [];

@@ -8,10 +8,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { InviteDialog, OpponentSelect, SettingsMenu } from '@/components/shared';
 import { useGameSlice } from '@/hooks/useGameSlice';
-
-const timeoutMin = 15;
-const timeoutDefault = 30;
-const timeoutMax = 90;
+import { emitStartGame } from '@/engine/SocketEmitter';
 
 const Host = () => {
     const navigate = useNavigate();
@@ -22,27 +19,7 @@ const Host = () => {
     const roomNumeral = useGameSlice((game) => game.gameState?.roomName || "I");
     const joinCode = useGameSlice((game) => game.gameState?.roomCode || "");
 
-    // "front-end" state, which will be sent to server on change
-    const [roomVisibility, setRoomVisibility] = useState<"Public" | "Private">("Private");
-    const [difficulty, setDifficulty] = useState<Difficulty>(Difficulty.Normal);
-    const [timeout, setTimeout] = useState<number | string>(timeoutDefault);
-    const [isAceHigh, setIsAceHigh] = useState(false);
-    const [botPlayTime, setBotPlayTime] = useState<number>(15);
-    const [botThinkingTime, setBotThinkingTime] = useState<number>(5);
-
-
-    const settings = useGameSlice((game) => game.gameState?.settings);
-    useEffect(() => {
-        if (settings) {
-            // back-end state updated, update front-end state
-            setDifficulty(Difficulty[settings.difficulty]);
-            setTimeout(settings.timeout);
-            setIsAceHigh(settings.aceHigh);
-            setBotPlayTime(settings.botPlayTime / 1000);
-            setBotThinkingTime(settings.botThinkTime / 1000);
-            setRoomVisibility(settings.locked ? "Private" : "Public");
-        }
-    }, [settings]);
+    
 
     const [isHostReady, setIsHostReady] = useState(false);
     const [settingsLocked, setSettingsLocked] = useState(false);
@@ -59,11 +36,6 @@ const Host = () => {
             console.error('Failed to copy room code: ', err);
             showToast('Failed to copy room code', 'error');
         }
-    }
-
-    const toggleRoomVisibility = () => {
-        if (roomVisibility === "Private") setRoomVisibility("Public");
-        else setRoomVisibility("Private");
     }
 
     useEffect(() => {
@@ -125,6 +97,7 @@ const Host = () => {
                                         <div className="font-medium">{account.user}</div>
                                         <div className="text-xs text-gray-500">Host</div>
                                     </div>
+                                    {/* Ready checkbox
                                     <div className="flex items-center space-x-2">
                                         <Checkbox
                                             checked={isHostReady}
@@ -135,7 +108,7 @@ const Host = () => {
                                         <Label htmlFor="ready" className={isHostReady ? "text-green-600" : "text-gray-500"}>
                                             {readyText}
                                         </Label>
-                                    </div>
+                                    </div> */}
                                 </div>
 
                                 {/* Player slots */}
@@ -160,7 +133,8 @@ const Host = () => {
                                 </Button>
                                 <Button
                                     className="bg-red transition-all transform hover:scale-105 text-white"
-                                    disabled={!isHostReady}
+                                    disabled={/*!isHostReady*/false}
+                                    onClick={emitStartGame}
                                 >
                                     Start Game
                                 </Button>
