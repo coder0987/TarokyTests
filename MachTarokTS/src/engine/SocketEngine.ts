@@ -5,8 +5,7 @@ const SOCKET_URL = "http://localhost:8448"; // !! CHANGE BEFORE BUILD !!
 
 let socket: Socket | null = null;
 
-import { ClientGameState } from "@/types";
-import { roomConnected, youStart } from "./SocketListeners";
+import { admin, audienceConnected, audienceNotConnected, autoAction, autoReconnect, avatar, broadcast, challengeComplete, chat, chatMessage, dailyChallengeScore, deckChoice, defaultSettings, elo, failedDiscard, failedPlayCard, gameEnded, handleGameMessage, invite, message, nextAction, reload, returnChips, returnHand, returnPlayerCount, returnPlayerList, returnPlayersInGame, returnPN, returnPossiblePartners, returnPovinnost, returnRooms, returnRoundInfo, returnSettings, returnTable, returnToGame, roomConnected, roomNotConnected, startingGame, timeSync, twelveChoice, youStart } from "./SocketListeners";
 
 // Socket listeners (which all must update either the gamestate or the ui state)
 
@@ -15,8 +14,52 @@ function attachListeners(socket: Socket) {
     console.log("Connected to server with ID:", socket.id);
   });
 
-  socket.on("roomConnected", roomConnected);
+  socket.on('timeSync', timeSync);
+  socket.on('reload', reload);
+  socket.on('broadcast', broadcast);
   socket.on('youStart', youStart);
+  socket.on("roomConnected", roomConnected);
+  socket.on('roomNotConnected', roomNotConnected);
+  socket.on('audienceConnected', audienceConnected);
+  socket.on('audienceNotConnected', audienceNotConnected);
+  socket.on('startingGame', startingGame);
+  socket.on('returnRooms', returnRooms);
+  socket.on('returnToGame', returnToGame);
+  socket.on('dailyChallengeScore', dailyChallengeScore);
+  socket.on('returnPlayerList', returnPlayerList);
+  socket.on('invite', invite);
+  socket.on('returnPlayerCount', returnPlayerCount);
+  socket.on('chatMessage', chatMessage);
+  socket.on('message', message);
+  socket.on('returnPovinnost', returnPovinnost);
+  socket.on('returnHand', returnHand);
+  socket.on('returnTable', returnTable);
+  socket.on('returnChips', returnChips);
+  socket.on('returnPossiblePartners', returnPossiblePartners);
+  socket.on('returnSettings', returnSettings);
+  socket.on('returnPlayersInGame', returnPlayersInGame);
+  socket.on('returnPN', returnPN);
+  socket.on('12Choice', twelveChoice);
+  socket.on('returnRoundInfo', returnRoundInfo);
+  socket.on('autoAction', autoAction);
+  socket.on('nextAction', nextAction);
+  socket.on('failedDiscard', failedDiscard);
+  socket.on('failedPlayCard', failedPlayCard);
+  socket.on('gameEnded', gameEnded);
+  socket.on('challengeComplete', challengeComplete);
+  socket.on('gameMessage', handleGameMessage);
+  socket.on('elo', elo);
+  socket.on('avatar', avatar);
+  socket.on('chat', chat);
+  socket.on('deckChoice', deckChoice);
+  socket.on('admin', admin);
+  socket.on('defaultSettings', defaultSettings);
+  socket.on('autoReconnect', autoReconnect);
+
+  socket.on('loginSuccess', authController.loginSuccess);
+  socket.on('loginFailed', authController.loginFailure);
+  socket.on('loginExpired', authController.loginFailure);
+  socket.on('logout', authController.loginFailure);
 }
 
 
@@ -62,13 +105,12 @@ export function createSocket(): Socket {
    Auth-related socket actions
 --------------------------------------- */
 
-export function signInUser(): void {
+export function signInUser(username: string, token: string): void {
   if (!socket) return;
-  if (!authController.isAuthenticated) return;
 
   socket.emit("signIn", {
-    username: authController.account!.user,
-    token: authController.account!.authToken,
+    username: username,
+    token: token,
   });
 }
 

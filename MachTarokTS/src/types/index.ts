@@ -63,6 +63,46 @@ export type Account = {
   };
 };
 
+export interface AutoReconnectPayload {
+  // account / auth
+  username?: string;
+  elo?: number;
+  avatar?: number;
+  admin?: boolean;
+  chat?: boolean;
+  deck?: string;
+  defaultSettings?: GameSettings;
+  dailyChallengeScore?: number;
+
+  // lobby / global
+  playerCount?: number;
+  leaderboard?: any[];
+
+  // game identity
+  pn?: PlayerIndex;
+  host?: {
+    number: PlayerIndex;
+    name: string;
+    joinCode: string;
+  };
+
+  // game state
+  povinnost?: PlayerIndex;
+  hand?: Card[];
+  withGray?: boolean;
+  table?: any[];
+  chips?: number;
+  settings?: GameSettings;
+  roundInfo?: any; // already decoded elsewhere
+  nextAction?: any;
+
+  // room state
+  roomConnected?: string;
+  audienceConnected?: string;
+  playersInGame?: any[];
+}
+
+
 export enum PlayerStatus {
   Offline = "Offline",
   Online = "Online",

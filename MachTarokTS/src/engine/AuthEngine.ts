@@ -1,6 +1,8 @@
 // src/controllers/AuthController.ts
 import { Account, DEFAULT_SETTINGS } from "@/types";
 import { EventEmitter } from "events"; // simple pub/sub for React to listen
+import { signInUser } from "./SocketEngine";
+import { addServerMessage } from "./ChatEngine";
 
 export const INITIAL_ACCOUNT: Account = {
   user: "Guest",
@@ -50,11 +52,31 @@ export class AuthController {
     this.notify();
   }
 
+  // Attempts login via server
   login(username: string, token: string) {
-    this.account = { user: username, authToken: token, preferences: DEFAULT_PREFERENCES, wins: null };
+    // Note: Not actually logged in yet, just forwarding to server for verification
+    //this.account = { user: username, authToken: token, preferences: DEFAULT_PREFERENCES, wins: null };
     document.cookie = `username=${username};secure`;
     document.cookie = `token=${token};secure`;
+    signInUser(username, token);
+  }
+
+  loginSuccess(username: string, avatar: number) {
+    this.account.user = username;
+    if (!this.account.preferences) this.account.preferences = DEFAULT_PREFERENCES;
+    this.account.preferences.avatar = avatar;
     this.isAuthenticated = true;
+    addServerMessage(`Welcome, ${username}!`);
+    this.notify();
+  }
+
+  loginFailure() {
+    this.isAuthenticated = false;
+    document.cookie =
+      "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "deck=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    addServerMessage("Login failed :(");
     this.notify();
   }
 

@@ -1,4 +1,4 @@
-import { Card, ClientGameState, GameSettings, MESSAGE_TYPE, Player, PlayerIndex, PN } from "@/types";
+import { AutoReconnectPayload, Card, ClientGameState, GameSettings, MESSAGE_TYPE, Player, PlayerIndex, PN } from "@/types";
 import { gameStore } from "./GameStore";
 import { authController } from './AuthEngine';
 import { addErrorMessage, addPlayerMessage, addServerMessage } from "./ChatEngine";
@@ -292,6 +292,11 @@ export function gameEnded() {
   gameStore.notify();
 }
 
+export function challengeComplete(score: number) {
+  gameStore.game.dailyChallengeScore = score;
+  gameStore.notify();
+}
+
 // ----- GAME MESSAGES -----
 type GameMessageHandler = (message: string, extraInfo?: any) => void;
 
@@ -460,4 +465,96 @@ export function defaultSettings(returnSettings: GameSettings) {
   };
   addServerMessage("Settings loaded");
   authController.notify();
+}
+
+export function autoReconnect(data: AutoReconnectPayload) {
+  if (data.username !== undefined) {
+    authController.account.user = data.username;
+    authController.isAuthenticated = true;
+
+    authController.account.preferences = {
+      ...authController.account.preferences,
+      elo: data.elo,
+      avatar: data.avatar,
+      displayChat: data.chat,
+      deck: data.deck,
+      admin: data.admin,
+      defaultSettings: data.defaultSettings,
+    };
+  } else {
+    authController.isAuthenticated = false;
+    authController.account.user = "Guest";
+  }
+
+  authController.notify();
+
+  if (data.playerCount !== undefined) {
+    gameStore.game.numPlayers = data.playerCount;
+  }
+
+  if (data.leaderboard !== undefined) {
+    gameStore.game.leaderboard = data.leaderboard;
+  }
+
+  if (data.dailyChallengeScore !== undefined) {
+    gameStore.game.dailyChallengeScore = data.dailyChallengeScore;
+  }
+
+
+  const gs = gameStore.game.gameState;
+
+  if (gs) {
+    if (data.povinnost !== undefined) {
+      gs.povinnost = data.povinnost;
+    }
+
+    if (data.settings !== undefined) {
+      gs.settings = data.settings;
+    }
+
+    if (data.roundInfo !== undefined) {
+      returnRoundInfo(data.roundInfo);
+    }
+
+    if (data.table !== undefined) {
+      gs.returnTableQueue.push(data.table);
+    }
+  }
+
+  if (data.hand !== undefined) {
+    gameStore.game.gameState.myInfo.hand = data.hand;
+    gameStore.game.gameState.myInfo.gray = !!data.withGray;
+  }
+
+  if (data.chips !== undefined && gs) {
+    const pn = gs.myInfo.playerNumber;
+    if (pn >= 0) {
+      gs.gamePlayers[pn].chips = data.chips;
+    }
+  }
+
+  if (data.pn !== undefined) {
+    gameStore.game.gameState.myInfo.playerNumber = data.pn;
+    addServerMessage(`You are player ${data.pn + 1}`);
+  }
+
+  if (data.host !== undefined) {
+    gameStore.game.gameState.hostNumber = data.host.number;
+  }
+
+  if (data.roomConnected !== undefined) {
+    gameStore.game.inGame = true;
+    gameStore.game.connectingToRoom = false;
+  }
+
+  if (data.audienceConnected !== undefined) {
+    gameStore.game.inGame = true;
+    gameStore.game.connectingToRoom = false;
+  }
+
+  if (data.playersInGame !== undefined) {
+    gameStore.game.connectedPlayers = data.playersInGame;
+  }
+
+  gameStore.notify();
 }
