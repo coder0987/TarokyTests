@@ -1,3 +1,4 @@
+export { default as Board } from "./Board";
 export { default as Browse } from "./Browse";
 export { default as Custom } from "./Custom";
 export { default as Donate } from "./Donate";

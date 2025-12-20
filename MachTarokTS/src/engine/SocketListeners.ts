@@ -287,6 +287,7 @@ export function failedPlayCard() {
 
 export function gameEnded() {
   gameStore.game.inGame = false;
+  gameStore.game.gameState = null;
   gameStore.notify();
 }
 

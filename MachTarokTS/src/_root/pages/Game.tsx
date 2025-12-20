@@ -2,17 +2,19 @@ import { gameStore } from "@/engine/GameStore";
 import { emitLeaveGame } from "@/engine/SocketEmitter";
 import { useGameSlice } from "@/hooks/useGameSlice"
 import { useEffect, useState } from "react";
+import Board from "./Board";
+import { ServerGameProvider } from "@/context/GameContext";
+
+// Game is the page. It displays the board, the chat/ledger, and higher-level game actions like leaving the game
 
 const Game = () => {
-    const action = useGameSlice((game) => game.gameState?.currentAction);
     
     return (
-        <>
+        <ServerGameProvider>
             <p>Game</p>
-            <p>{action?.action}</p>
-            {JSON.stringify(gameStore, null, 2)}
+            <Board />
             <button onClick={emitLeaveGame}>Leave Game</button>
-        </>
+        </ServerGameProvider>
     )
 }
 

@@ -31,3 +31,8 @@ export function emitLeaveGame(): void {
   const socket = getSocket();
   socket.emit("exitRoom");
 }
+
+export function emitShuffle(): void {
+  const socket = getSocket();
+  socket.emit("shuffle");
+}
