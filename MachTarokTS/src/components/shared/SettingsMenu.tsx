@@ -24,7 +24,14 @@ const SettingsMenu = ({ locked = false }: { locked?: boolean }) => {
     const defaultSettings = useAuthSlice((auth) => auth.preferences.defaultSettings);
 
     // "front-end" state, which will be sent to server on change
-    const [uiSettings, setUiSettings] = useState<GameSettings>(defaultSettings);
+    const [uiSettings, setUiSettings] = useState<GameSettings>({
+        locked: defaultSettings.locked,
+        difficulty: defaultSettings.difficulty,
+        timeout: defaultSettings.timeout / 1000,
+        aceHigh: defaultSettings.aceHigh,
+        botPlayTime: defaultSettings.botPlayTime / 1000,
+        botThinkTime: defaultSettings.botThinkTime / 1000,
+    });
 
     const settings = useGameSlice((game) => game.gameState?.settings);
 

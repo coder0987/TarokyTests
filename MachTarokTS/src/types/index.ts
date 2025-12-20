@@ -40,11 +40,11 @@ export interface GameSettings {
 }
 
 export const DEFAULT_SETTINGS: GameSettings = {
-  timeout: 15,
-  difficulty: 3,
+  timeout: 30,
+  difficulty: 2,
   aceHigh: false,
-  locked: false,
-  botPlayTime: 1500,
+  locked: true,
+  botPlayTime: 3000,
   botThinkTime: 1000,
 };
 
@@ -303,3 +303,9 @@ export class UIGameState {
     this.tableDrawnTime = 0;
   }
 }
+
+// Actions shared between tutorial and server-based game. 
+// Note that these will be linked to SocketEmitter's methods for server, and handled by client for tutorial
+export type GameActions = {
+  shuffle(): void;
+};
