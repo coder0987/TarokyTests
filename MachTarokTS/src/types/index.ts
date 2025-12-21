@@ -197,10 +197,10 @@ export class GamePlayer {
   chips: number;
   moneycards: string[];
 
-  constructor() {
+  constructor(seat: PlayerIndex) {
     this.username = "Guest";
     this.avatar = 0;
-    this.seat = 0;
+    this.seat = seat;
     this.chips = 100;
     this.moneycards = [];
   }
@@ -249,7 +249,7 @@ export class ClientGameState {
   constructor(roomName: string) {
     this.roomName = roomName;
     this.roomCode = null;
-    this.gamePlayers = [new GamePlayer(), new GamePlayer(), new GamePlayer(), new GamePlayer()];
+    this.gamePlayers = [new GamePlayer(0), new GamePlayer(1), new GamePlayer(2), new GamePlayer(3)];
     this.settings = null;
     this.povinnost = 0;
     this.hostNumber = -1;

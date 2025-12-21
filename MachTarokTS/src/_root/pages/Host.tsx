@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { InviteDialog, OpponentSelect, SettingsMenu } from '@/components/shared';
 import { useGameSlice } from '@/hooks/useGameSlice';
 import { emitGetPlayerList, emitLeaveGame, emitStartGame } from '@/engine/SocketEmitter';
+import { GamePlayer } from '@/types';
 
 const Host = () => {
     const navigate = useNavigate();
@@ -15,6 +16,9 @@ const Host = () => {
     const gameType = "Taroky";
     const roomNumeral = useGameSlice((game) => game.gameState?.roomName || "I");
     const joinCode = useGameSlice((game) => game.gameState?.roomCode || "");
+    const players = useGameSlice((game) => game.gameState?.gamePlayers || []);
+    const pn = useGameSlice((game) => game.gameState?.myInfo.playerNumber || 0); // should always be 0 if hosting
+    const host = useGameSlice((game) => game.gameState?.hostNumber || 0);
 
     
 
@@ -23,6 +27,14 @@ const Host = () => {
     const [readyText, setReadyText] = useState<"Ready" | "Not Ready">("Not Ready");
 
     const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+    const [renderPlayers, setRenderPlayers] = useState<GamePlayer[]>([]);
+
+    useEffect(() => {
+        // Render all players aside from the host. Use PN from MyInfo, because multiple players may be named 'Guest'
+        setRenderPlayers(
+            players.filter((player) => player.seat !== pn).map((player, index) => ({ ...player, id: index + 1 }))
+        );
+    }, [players, pn]);
 
     useEffect(() => {
         console.log('Rerender');
@@ -89,33 +101,17 @@ const Host = () => {
                             <h2 className="text-lg font-bold mb-4 text-navy border-b pb-2">Players</h2>
 
                             <div className="space-y-3 mb-6">
-                                {/* Host Player */}
-                                <div className="flex items-center bg-blue-50 p-3 rounded-md border border-blue-200">
-                                    <div className="w-8 h-8 bg-navy rounded-full flex items-center justify-center text-white font-bold">1</div>
-                                    <div className="ml-3 flex-grow">
-                                        <div className="font-medium">{account.user}</div>
-                                        <div className="text-xs text-gray-500">Host</div>
-                                    </div>
-                                    {/* Ready checkbox
-                                    <div className="flex items-center space-x-2">
-                                        <Checkbox
-                                            checked={isHostReady}
-                                            className="data-[state=checked]:bg-green-600"
-                                            id="ready"
-                                            onClick={() => setIsHostReady(!isHostReady)}
-                                        />
-                                        <Label htmlFor="ready" className={isHostReady ? "text-green-600" : "text-gray-500"}>
-                                            {readyText}
-                                        </Label>
-                                    </div> */}
-                                </div>
-
                                 {/* Player slots */}
-                                {[2, 3, 4].map(player => (
-                                    <div key={player} className="flex items-center bg-gray-50 p-3 rounded-md border border-gray-200">
-                                        <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center font-bold text-gray-600">{player}</div>
-                                        <div className="ml-3 flex-grow">
-                                            <OpponentSelect />
+                                {renderPlayers.map(player => (
+                                    <div key={player.seat} className="flex items-center bg-gray-50 p-3 rounded-md border border-gray-200">
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${player.seat == pn ? "bg-navy text-white" : "bg-gray-300 text-gray-600"}`}>{+player.seat + 1}</div>
+                                        <div className="ml-3 flex flex-grow items-center">
+                                            {/*<OpponentSelect />*/}
+                                            <img src={`https://machtarok.com/assets/profile-pictures/profile-${player.avatar}.png`} alt="avatar" height={50} width={50} className='rounded-full' />
+                                            <div className="ml-4 flex-grow">
+                                                <div className="font-medium">{player.username}</div>
+                                                {player.seat == host && <div className="text-sm text-gray-400">Host</div>}
+                                            </div>
                                         </div>
                                         <div className="text-sm text-gray-400">Waiting...</div>
                                     </div>
@@ -146,7 +142,7 @@ const Host = () => {
                         <div className="bg-white rounded-lg shadow-md p-6 w-full">
                             <h2 className="text-lg font-bold mb-4 text-navy border-b pb-2">Game Settings</h2>
                             <div className="space-y-4 w-full">
-                                <SettingsMenu locked={settingsLocked} />
+                                <SettingsMenu locked={host !== pn} />
                             </div>
                         </div>
                     </div>

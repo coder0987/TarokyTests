@@ -1,11 +1,12 @@
 import { SettingsScroller } from '@/components/shared'
 import { Label } from '@/components/ui/label';
-import { emitSettings } from '@/engine/SocketEmitter';
+import { emitSaveSettings, emitSettings } from '@/engine/SocketEmitter';
 import { useAuthSlice } from '@/hooks/useAuthSlice';
 import { useGameSlice } from '@/hooks/useGameSlice';
 import { Difficulty, DifficultyReverse, GameSettings } from '@/types';
 import { useCallback, useEffect, useState } from 'react';
 import { SettingsNumberInput } from './SettingsNumberInput';
+import { Button } from '../ui/button';
 
 enum SettingsTypes {
     Difficulty = 'difficulty',
@@ -20,6 +21,13 @@ const SettingsMenu = ({ locked = false }: { locked?: boolean }) => {
     const aceList = ['Ace High', 'Ace Low'];
     const publiciseList = ['Public', 'Private'];
     const difficultyList = Object.keys(Difficulty);
+
+    const username = useAuthSlice((auth) => auth.user);
+    const [authenticated, setAuthenticated] = useState(false);
+
+    useEffect(() => {
+        setAuthenticated(username !== 'Guest');
+    }, [username]);
 
     const defaultSettings = useAuthSlice((auth) => auth.preferences.defaultSettings);
 
@@ -151,6 +159,18 @@ const SettingsMenu = ({ locked = false }: { locked?: boolean }) => {
                     step={1}
                     disabled={locked}
                 />
+            </div>
+
+            <div className='setting-group'>
+                <Label className='text-sm text-gray-600 block mb-1'>
+                    Save These Settings as Default
+                </Label>
+                <Button disabled={authenticated} className={`flex flex-row border border-gray-200 w-full items-center justify-between bg-white rounded-md h-10 overflow-hidden transition-opacity ${!authenticated ? "opacity-50 cursor-not-allowed " : ""
+                }`} onClick={() => {
+                    emitSaveSettings();
+                }}>
+                    {authenticated ? "Save" : "Please sign in to save your default settings"}
+                </Button>
             </div>
 
         </div>
