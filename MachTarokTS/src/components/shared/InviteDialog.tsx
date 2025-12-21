@@ -12,7 +12,9 @@ import {
 import { Player, PlayerStatus } from '@/types';
 import { Button } from '../ui/button';
 import { getStatusColorClass } from '@/lib/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useGameSlice } from '@/hooks/useGameSlice';
+import { emitInvite } from '@/engine/SocketEmitter';
 
 interface InviteDialogProps {
     isOpen: boolean;
@@ -23,8 +25,30 @@ interface InviteDialogProps {
 const InviteDialog: React.FC<InviteDialogProps> = ({ isOpen, onClose, roomCode }) => {
 
     const { showToast } = useToast();
+    const playerList = useGameSlice((gameState) => gameState.connectedPlayers);
 
     const [joinLink, setJoinLink] = useState<string>(`https://machtarok.com/machtarok.com/?join=${roomCode}`);
+    const [inviteList, setInviteList] = useState<{player: Player, invited: boolean}[]>([]);
+
+    useEffect(() => {
+        console.log(JSON.stringify(playerList));
+        setInviteList(playerList.map((player: Player) => ({player, invited: false})));
+    }, [playerList]);
+
+    const handleInvite = (socketId: number) => {
+        console.log(`Inviting player with socketId: ${socketId}`);
+        showToast('Player invited', 'success');
+
+        setInviteList(inviteList.map((i: {player: Player, invited: boolean}) => {
+            if (i.player.socket === socketId) {
+                return {...i, invited: true};
+            } else {
+                return i;
+            }
+        }));
+
+        emitInvite(socketId);
+    };
 
     const copyJoinLink = async () => {
         try {
@@ -55,28 +79,45 @@ const InviteDialog: React.FC<InviteDialogProps> = ({ isOpen, onClose, roomCode }
                         </TableRow>
                     </TableHeader>
                     <TableBody className='overflow-visible'>
-                        {[{ user: "user1", status: PlayerStatus.Online }, { user: "user2", status: PlayerStatus.InGame }, { user: "user3", status: PlayerStatus.Idle }].map((player: Player) => {
-                            const textColorClass = getStatusColorClass(player.status);
+                        {inviteList.length > 0 ? inviteList.map((i: {player: Player, invited: boolean}) => {
+                            const textColorClass = getStatusColorClass(i.player.status);
                             return (
-                                <TableRow key={player.user}>
+                                <TableRow key={i.player.socket}>
                                     <TableCell className='py-2'>
                                         <div className="text-left">
-                                            {player.user}
+                                            {i.player.username}
                                         </div>
                                     </TableCell>
                                     <TableCell className='py-2'>
                                         <div className={"text-center " + textColorClass}>
-                                            {player.status.toString()}
+                                            {i.player.status.toString()}
                                         </div>
                                     </TableCell>
                                     <TableCell className='px-2 py-2'>
                                         <div className="flex flex-row items-end justify-end">
-                                            <Button className='button-navy py-1 text-xs h-8 transition-all transform hover:scale-105'>Invite</Button>
+                                            {
+                                                i.invited ? (
+                                                    <Button className='button-navy py-1 text-xs h-8 transition-all transform' disabled>
+                                                        Invited
+                                                    </Button>
+                                                ) : (
+                                                    <Button className='button-navy py-1 text-xs h-8 transition-all transform hover:scale-105' onClick={() => handleInvite(i.player.socket)}>
+                                                        Invite
+                                                    </Button>
+                                                )
+                                            }
+                                            
                                         </div>
                                     </TableCell>
                                 </TableRow>
                             )
-                        })}
+                        }) : (
+                            <TableRow>
+                                <TableCell colSpan={3} className='py-4 text-center'>
+                                    <p>No one else is online. Try sending them the invite link!</p>
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
                 <DialogFooter></DialogFooter>

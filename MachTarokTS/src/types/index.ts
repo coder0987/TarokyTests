@@ -1,5 +1,3 @@
-import { Socket } from "socket.io-client";
-
 export type PN = 0 | 1 | 2 | 3 | -1; //how the server sees it
 export type PlayerIndex = 0 | 1 | 2 | 3;
 export type dPN = 1 | 2 | 3 | 4 | -1; // offset for display
@@ -99,7 +97,7 @@ export interface AutoReconnectPayload {
   // room state
   roomConnected?: string;
   audienceConnected?: string;
-  playersInGame?: any[];
+  playersInGame?: {name: string, avatar: number}[];
 }
 
 
@@ -111,8 +109,9 @@ export enum PlayerStatus {
 }
 
 export type Player = {
-  user: string;
+  username: string;
   status: PlayerStatus;
+  socket: number;
 };
 
 export enum Difficulty {

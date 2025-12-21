@@ -1,14 +1,11 @@
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { useUserContext } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { Difficulty } from '@/types';
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { InviteDialog, OpponentSelect, SettingsMenu } from '@/components/shared';
 import { useGameSlice } from '@/hooks/useGameSlice';
-import { emitStartGame } from '@/engine/SocketEmitter';
+import { emitGetPlayerList, emitStartGame } from '@/engine/SocketEmitter';
 
 const Host = () => {
     const navigate = useNavigate();
@@ -26,6 +23,11 @@ const Host = () => {
     const [readyText, setReadyText] = useState<"Ready" | "Not Ready">("Not Ready");
 
     const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+
+    useEffect(() => {
+        console.log('Rerender');
+        emitGetPlayerList();
+    }, [isInviteDialogOpen]);
 
     const copyRoomCode = async () => {
         try {
@@ -47,9 +49,6 @@ const Host = () => {
             setSettingsLocked(false);
         }
     }, [isHostReady]);
-
-    // Send updates to server when settings change
-    
 
     return (
         <div className="bg-gray-100 min-h-screen w-full">
@@ -127,7 +126,7 @@ const Host = () => {
                             <div className="flex justify-between pt-4 border-t">
                                 <Button
                                     className="bg-navy transition-all transform hover:scale-105 text-white"
-                                    onClick={() => setIsInviteDialogOpen(true)}
+                                    onClick={() => {setIsInviteDialogOpen(true);}}
                                 >
                                     Invite Players
                                 </Button>

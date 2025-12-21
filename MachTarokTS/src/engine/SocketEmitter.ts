@@ -22,6 +22,16 @@ export function emitSaveSettings(): void {
   socket.emit("saveSettings");
 }
 
+export function emitGetPlayerList(): void {
+  const socket = getSocket();
+  socket.emit("getPlayerList");
+}
+
+export function emitInvite(socketId: number): void {
+  const socket = getSocket();
+  socket.emit("invite", socketId);
+}
+
 export function emitStartGame(): void {
   const socket = getSocket();
   socket.emit("startGame");

@@ -1,4 +1,4 @@
-import { Action, AutoReconnectPayload, Card, ClientGameState, GameSettings, MESSAGE_TYPE, Player, PlayerIndex, PN } from "@/types";
+import { Action, AutoReconnectPayload, Card, ClientGameState, GamePlayer, GameSettings, MESSAGE_TYPE, Player, PlayerIndex, PN } from "@/types";
 import { gameStore } from "./GameStore";
 import { authController } from './AuthEngine';
 import { addErrorMessage, addPlayerMessage, addServerMessage } from "./ChatEngine";
@@ -560,7 +560,12 @@ export function autoReconnect(data: AutoReconnectPayload) {
     }
 
     if (data.playersInGame !== undefined) {
-      gameStore.game.connectedPlayers = data.playersInGame;
+      gameStore.game.gameState.gamePlayers = gameStore.game.gameState.gamePlayers.map((player: GamePlayer, index: number) => {
+        const updatedPlayer = { ...player };
+        updatedPlayer.username = data.playersInGame[index].name;
+        updatedPlayer.avatar = data.playersInGame[index].avatar;
+        return updatedPlayer;
+      });
     }
 
     if (data.nextAction !== undefined) {
