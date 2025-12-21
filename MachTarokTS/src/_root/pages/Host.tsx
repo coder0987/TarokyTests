@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { InviteDialog, OpponentSelect, SettingsMenu } from '@/components/shared';
 import { useGameSlice } from '@/hooks/useGameSlice';
-import { emitGetPlayerList, emitStartGame } from '@/engine/SocketEmitter';
+import { emitGetPlayerList, emitLeaveGame, emitStartGame } from '@/engine/SocketEmitter';
 
 const Host = () => {
     const navigate = useNavigate();
@@ -56,7 +56,7 @@ const Host = () => {
             <div className="bg-navy text-white p-4 flex items-center justify-center shadow-md w-full relative">
                 <Button
                     className="absolute left-4 bg-transparent hover:bg-navy/80 text-white"
-                    onClick={() => navigate("/play")}
+                    onClick={() => emitLeaveGame()}
                 >
                     ← Back
                 </Button>

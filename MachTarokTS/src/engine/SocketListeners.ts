@@ -110,8 +110,9 @@ export function returnPlayerList(players: Player[]) {
     gameStore.notify();
 }
 
-export function invite(roomName, joinCode, playerName) {
-    gameStore.game.invites.push({ roomName, joinCode, playerName });
+export function invite(roomName: string, joinCode: string, playerName: string) {
+    addServerMessage(`You have been invited to join room ${roomName} by ${playerName}`);
+    gameStore.game.invites = gameStore.game.invites.concat({ roomName, joinCode, playerName });
     gameStore.notify();
 }
 
