@@ -190,10 +190,18 @@ export function returnSettings(settings: any) {
   gameStore.notify();
 }
 
-export function returnPlayersInGame(playersInGame: any[]) {
+export function returnPlayersInGame(playersInGame: { name: string, avatar: number}[]) {
   if (!gameStore.game.gameState) return;
 
-  gameStore.game.gameState.gamePlayers = playersInGame;
+  gameStore.game.gameState.gamePlayers = gameStore.game.gameState.gamePlayers.map((p: GamePlayer, i: number) => {
+    const updatedPlayer = { ...p };
+    updatedPlayer.avatar = playersInGame[i].avatar;
+    updatedPlayer.username = playersInGame[i].name;
+    return updatedPlayer;
+  });
+
+  addServerMessage(`Playing with${playersInGame.reduce((pv: string, cv): string => {return `${pv} ${cv.name}`;}, '')}`);
+
   gameStore.notify();
 }
 

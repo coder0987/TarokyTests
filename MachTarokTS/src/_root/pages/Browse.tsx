@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -12,13 +12,14 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Room } from '@/types';
+import { useGameSlice } from '@/hooks/useGameSlice';
 
 const Browse = () => {
     const navigate = useNavigate();
 
     const [gameType, setGameType] = useState("Taroky");
 
-    const [roomList, setRoomList] = useState<Room[]>([]);
+    const roomList = useGameSlice(useCallback(game => game.availableRooms, [])) ?? [];
 
     return (
         <div className='w-full h-full flex flex-col items-center'>

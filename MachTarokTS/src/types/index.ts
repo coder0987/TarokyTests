@@ -38,7 +38,7 @@ export interface GameSettings {
 }
 
 export const DEFAULT_SETTINGS: GameSettings = {
-  timeout: 30,
+  timeout: 30000,
   difficulty: 2,
   aceHigh: false,
   locked: true,

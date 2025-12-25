@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { useUserContext } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { InviteDialog, OpponentSelect, SettingsMenu } from '@/components/shared';
 import { useGameSlice } from '@/hooks/useGameSlice';
@@ -14,11 +14,11 @@ const Host = () => {
     const { showToast } = useToast();
 
     const gameType = "Taroky";
-    const roomNumeral = useGameSlice((game) => game.gameState?.roomName || "I");
-    const joinCode = useGameSlice((game) => game.gameState?.roomCode || "");
-    const players = useGameSlice((game) => game.gameState?.gamePlayers || []);
-    const pn = useGameSlice((game) => game.gameState?.myInfo.playerNumber || 0); // should always be 0 if hosting
-    const host = useGameSlice((game) => game.gameState?.hostNumber || 0);
+    const roomNumeral = useGameSlice(useCallback(game => game.gameState?.roomName, [])) ?? "I";
+    const joinCode = useGameSlice(useCallback(game => game.gameState?.roomCode, [])) ?? "";
+    const players = useGameSlice(useCallback(game => game.gameState?.gamePlayers, [])) ?? [];
+    const pn = useGameSlice(useCallback(game => game.gameState?.myInfo.playerNumber, [])) ?? 0; // should always be 0 if hosting
+    const host = useGameSlice(useCallback(game => game.gameState?.hostNumber, [])) ?? 0;
 
     
 
@@ -27,14 +27,6 @@ const Host = () => {
     const [readyText, setReadyText] = useState<"Ready" | "Not Ready">("Not Ready");
 
     const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
-    const [renderPlayers, setRenderPlayers] = useState<GamePlayer[]>([]);
-
-    useEffect(() => {
-        // Render all players aside from the host. Use PN from MyInfo, because multiple players may be named 'Guest'
-        setRenderPlayers(
-            players.filter((player) => player.seat !== pn).map((player, index) => ({ ...player, id: index + 1 }))
-        );
-    }, [players, pn]);
 
     useEffect(() => {
         console.log('Rerender');
@@ -102,8 +94,8 @@ const Host = () => {
 
                             <div className="space-y-3 mb-6">
                                 {/* Player slots */}
-                                {renderPlayers.map(player => (
-                                    <div key={player.seat} className="flex items-center bg-gray-50 p-3 rounded-md border border-gray-200">
+                                {players.map(player => {
+                                    return <div key={player.seat} className="flex items-center bg-gray-50 p-3 rounded-md border border-gray-200">
                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${player.seat == pn ? "bg-navy text-white" : "bg-gray-300 text-gray-600"}`}>{+player.seat + 1}</div>
                                         <div className="ml-3 flex flex-grow items-center">
                                             {/*<OpponentSelect />*/}
@@ -115,7 +107,7 @@ const Host = () => {
                                         </div>
                                         <div className="text-sm text-gray-400">Waiting...</div>
                                     </div>
-                                ))}
+                                })}
                             </div>
 
                             {/* Action buttons */}
