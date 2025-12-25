@@ -139,6 +139,12 @@ export type Room = {
   availble: number;
 };
 
+export type SimplifiedRoom = {
+  usernames: string[];
+  audienceCount: number;
+  count: number;
+};
+
 export type Action = {
   action: string;
   player: PlayerIndex;
@@ -264,10 +270,11 @@ export class ClientState {
   startTime: number;
   ticker: number | null;
   inGame: boolean;
+  inAudience: boolean;
   connectedPlayers: Player[]; // all players on the server. Used for invite list
   numPlayers: number; // for "X players online"
   returnToGameAvailable: boolean; // will adjust this later to offer multiple "continue" games
-  availableRooms: Record<string, any>;
+  availableRooms: { [idx: string]: SimplifiedRoom };
   connectingToRoom: boolean;
   leaderboard: any[] | null;
   dailyChallengeScore: number | null;
@@ -279,6 +286,7 @@ export class ClientState {
     this.startTime = Date.now();
     this.ticker = null;
     this.inGame = false;
+    this.inAudience = false;
     this.gameState = null; // set when a game is joined
     this.connectedPlayers = [];
     this.numPlayers = 0;

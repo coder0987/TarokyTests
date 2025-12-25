@@ -1,4 +1,4 @@
-import { Action, AutoReconnectPayload, Card, ClientGameState, GamePlayer, GameSettings, MESSAGE_TYPE, Player, PlayerIndex, PN } from "@/types";
+import { Action, AutoReconnectPayload, Card, ClientGameState, GamePlayer, GameSettings, MESSAGE_TYPE, Player, PlayerIndex, PN, SimplifiedRoom } from "@/types";
 import { gameStore } from "./GameStore";
 import { authController } from './AuthEngine';
 import { addErrorMessage, addPlayerMessage, addServerMessage } from "./ChatEngine";
@@ -59,6 +59,7 @@ export function audienceConnected(audienceInfo: string) {
   state.gameState = new ClientGameState(audienceInfo);
 
   state.inGame = true;
+  state.inAudience = true;
   state.connectingToRoom = false;
 
   gameStore.notify();
@@ -90,7 +91,7 @@ export function startingGame(hostPN: PN, playerPN: PN, gameNumber: number, retur
 
 // Lobby
 
-export function returnRooms(rooms) {
+export function returnRooms(rooms: { [idx: string]: SimplifiedRoom }) {
     gameStore.game.availableRooms = rooms;
     gameStore.notify();
 }
@@ -517,6 +518,7 @@ export function autoReconnect(data: AutoReconnectPayload) {
 
   if (data.audienceConnected !== undefined) {
     gameStore.game.inGame = true;
+    gameStore.game.inAudience = true;
     gameStore.game.connectingToRoom = false;
   }
 

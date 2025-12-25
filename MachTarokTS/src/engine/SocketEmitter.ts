@@ -5,6 +5,16 @@ export function emitNewRoom(): void {
   socket.emit("newRoom");
 }
 
+export function emitJoinAudience(roomId: string): void {
+  const socket = getSocket();
+  socket.emit("joinAudience", roomId);
+}
+
+export function emitJoinRoom(roomId: string): void {
+  const socket = getSocket();
+  socket.emit("roomConnect", roomId, false);
+}
+
 export function emitJoinRoomByCode(code: string): void {
   const socket = getSocket();
   socket.emit("roomConnect", code, true);
