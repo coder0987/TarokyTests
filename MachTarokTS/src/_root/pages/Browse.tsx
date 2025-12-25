@@ -11,7 +11,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Room } from '@/types';
+import { Room, SimplifiedRoom } from '@/types';
 import { useGameSlice } from '@/hooks/useGameSlice';
 import RoomBox from '@/components/shared/RoomBox';
 import { emitJoinAudience, emitJoinRoom, emitNewRoom } from '@/engine/SocketEmitter';
@@ -20,6 +20,7 @@ const Browse = () => {
     const navigate = useNavigate();
 
     const roomList = useGameSlice(useCallback(game => game.availableRooms, [])) ?? {};
+    const newRoom: SimplifiedRoom = { count: 0, usernames: [], audienceCount: 0 };
 
     const clickRoom = (roomId: string) => {
         emitJoinRoom(roomId);
@@ -48,13 +49,14 @@ const Browse = () => {
                         <RoomBox key={key} simplifiedRoom={room} roomId={key} onClick={() => clickRoom(key)} onJoinAudience={() => clickAudience(key)} />
                     );
                 })}
-                {!roomList ||
+                {Object.keys(roomList).length == 0 &&
                     <div>
-                        <p>No one to play with?</p>
-                        <p>Start a new game here:</p>
-                        <Button onClick={emitNewRoom}>New Game</Button>
+                        <p>It seems no one is playing Taroky for now</p>
+                        
                     </div>
                 }
+
+                <RoomBox simplifiedRoom={newRoom} roomId={'New Room'} onJoinAudience={() => {}} onClick={emitNewRoom} />
             </div>
         </div>
     )
