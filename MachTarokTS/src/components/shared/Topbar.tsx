@@ -22,8 +22,12 @@ const Topbar = () => {
                         return (
                             <li
                                 key={link.label}
-                                className={`flex text-center items-center justify-center text-gray text-sm  hover:text-white group ${isActive && "underline"}`}
-                            >
+                                className={`flex items-center justify-center text-center
+                                    text-sm
+                                    text-white/70 hover:text-white
+                                    transition-colors duration-200 delay-75
+                                    group
+                                    ${isActive ? "underline" : ""}`}>
                                 <NavLink
                                     to={link.route}
                                 >
