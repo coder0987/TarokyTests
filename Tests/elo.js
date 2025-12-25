@@ -39,7 +39,10 @@ function calculateElo(startElo, actualScores) {
     // Step 3: Adjust ELO scores to match actual performance more closely
     const finalElo = [];
     for (let i=0; i<4; i++) {
-        finalElo[i] = startElo[i] + k * (performance[i] - expected[i]);
+        finalElo[i] = startElo[i] + k * (performance[i] - expected[i]); // in the future: k value per user? to adjust more on the player's first tournament
+        if (finalElo[i] < 100) {
+            finalElo[i] = 100; // can cause elo inflation, but prevents negative elo
+        }
     }
 
     return finalElo;

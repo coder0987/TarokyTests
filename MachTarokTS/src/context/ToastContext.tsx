@@ -10,7 +10,7 @@ import {
 type ToastType = 'success' | 'error' | 'neutral';
 
 interface ToastContextProps {
-    showToast: (message: string, type: ToastType) => void;
+    showToast: (message: string, type?: ToastType, title?: string, clickHandler?: () => void) => void;
 }
 
 const ToastContext = createContext<ToastContextProps | undefined>(undefined);
@@ -27,15 +27,19 @@ export const ToastContextProvider: React.FC<{ children: ReactNode }> = ({ childr
     const [showToast, setShowToast] = useState<boolean>(false);
     const [toastMessage, setToastMessage] = useState<string>('');
     const [toastType, setToastType] = useState<ToastType>('neutral');
+    const [toastTitle, setToastTitle] = useState<string>('');
+    const [toastClickHandler, setToastClickHandler] = useState<() => void>();
 
-    const triggerToast = (message: string, type: ToastType) => {
+    const triggerToast = (message: string, type?: ToastType, title?: string, clickHandler?: () => void) => {
         setToastMessage(message);
-        setToastType(type);
+        setToastType(type || 'neutral');
+        setToastTitle(title || '');
+        setToastClickHandler(() => clickHandler);
         setShowToast(true);
     };
 
     return (
-        <ToastContext.Provider value={{ showToast: triggerToast }}>
+        <ToastContext.Provider value={{ showToast: triggerToast}}>
             <ToastProvider>
                 {children}
                 {showToast && (
@@ -43,8 +47,8 @@ export const ToastContextProvider: React.FC<{ children: ReactNode }> = ({ childr
                         toastType === 'success' ? 'toast-success' :
                             toastType === 'error' ? 'toast-error' :
                                 'toast-neutral'}>
-                        <ToastTitle>{toastType === 'success' ? 'Success' : toastType === 'error' ? 'Error' : 'Info'}</ToastTitle>
-                        <ToastDescription>
+                        <ToastTitle>{toastTitle ? toastTitle : (toastType === 'success' ? 'Success' : toastType === 'error' ? 'Error' : 'Info')}</ToastTitle>
+                        <ToastDescription onClick={toastClickHandler}>
                             {toastMessage}
                         </ToastDescription>
                     </Toast>

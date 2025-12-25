@@ -1,5 +1,5 @@
-import { ITEMS_REVERSE, ACTIONS_REVERSE, TARGETS_REVERSE } from "@/constants";
-
+/*import { ITEMS_REVERSE, ACTIONS_REVERSE, TARGETS_REVERSE } from "@/constants";
+*/
 interface InstructionProps {
     action : number;
     targets : number[];
@@ -8,7 +8,8 @@ interface InstructionProps {
   }
 
 const Instruction: React.FC<InstructionProps> = ({ action, targets, items, custom }) => {
-    return (
+    return (<>if only</>);
+    /*return (
         <div className="py-4">
             <p>Action: {ACTIONS_REVERSE[action] || action}</p>
             <p>Target: {targets && targets.map((target, index) => {
@@ -23,7 +24,7 @@ const Instruction: React.FC<InstructionProps> = ({ action, targets, items, custo
                 (custom ? 'Coming soon' : 'None')     
             }</p>
         </div>
-    )
+    )*/
 }
 
 export default Instruction;

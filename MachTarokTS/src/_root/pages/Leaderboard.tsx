@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { useGameContext } from '@/context/GameContext';
+import React from 'react';
+import { useGameSlice } from '@/hooks/useGameSlice';
 
 const chipColors = ['blue', 'red', 'white'];
 
@@ -19,7 +19,8 @@ const getPrevChipStyle = (index: number) => {
 };
 
 export const Leaderboard: React.FC = () => {
-  const { leaderboard, dailyChallengeScore } = useGameContext().server;
+  const leaderboard = useGameSlice((game) => game.leaderboard);
+  const dailyChallengeScore = useGameSlice((game) => game.dailyChallengeScore);
   const showScores = typeof dailyChallengeScore !== 'undefined';
 
   if (!leaderboard || leaderboard.length === 0) {
