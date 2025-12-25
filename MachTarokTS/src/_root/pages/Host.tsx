@@ -19,6 +19,7 @@ const Host = () => {
     const players = useGameSlice(useCallback(game => game.gameState?.gamePlayers, [])) ?? [];
     const pn = useGameSlice(useCallback(game => game.gameState?.myInfo.playerNumber, [])) ?? 0; // should always be 0 if hosting
     const host = useGameSlice(useCallback(game => game.gameState?.hostNumber, [])) ?? 0;
+    const inAudience = useGameSlice(useCallback(game => game.inAudience, [])) ?? false;
 
     
 
@@ -96,7 +97,7 @@ const Host = () => {
                                 {/* Player slots */}
                                 {players.map(player => {
                                     return <div key={player.seat} className="flex items-center bg-gray-50 p-3 rounded-md border border-gray-200">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${player.seat == pn ? "bg-navy text-white" : "bg-gray-300 text-gray-600"}`}>{+player.seat + 1}</div>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${(!inAudience && player.seat == pn) ? "bg-navy text-white" : "bg-gray-300 text-gray-600"}`}>{+player.seat + 1}</div>
                                         <div className="ml-3 flex flex-grow items-center">
                                             {/*<OpponentSelect />*/}
                                             <img src={`https://machtarok.com/assets/profile-pictures/profile-${player.avatar}.png`} alt="avatar" height={50} width={50} className='rounded-full' />
@@ -134,7 +135,7 @@ const Host = () => {
                         <div className="bg-white rounded-lg shadow-md p-6 w-full">
                             <h2 className="text-lg font-bold mb-4 text-navy border-b pb-2">Game Settings</h2>
                             <div className="space-y-4 w-full">
-                                <SettingsMenu locked={host !== pn} />
+                                <SettingsMenu locked={inAudience || host !== pn} />
                             </div>
                         </div>
                     </div>
