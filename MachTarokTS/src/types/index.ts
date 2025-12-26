@@ -283,6 +283,18 @@ export class ClientGameState {
   }
 }
 
+export class TutorialState {
+  scenes: Scene[];
+  gameState: ClientGameState;
+  currentScene: number;
+
+  constructor(scenes: Scene[]) {
+    this.scenes = scenes;
+    this.gameState = new ClientGameState('tutorial');
+    this.currentScene = 0;
+  }
+}
+
 export class ClientState {
   startTime: number;
   ticker: number | null;

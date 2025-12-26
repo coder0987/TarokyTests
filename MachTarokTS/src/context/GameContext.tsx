@@ -1,8 +1,9 @@
-import React, { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
-import { ClientGameState, GameActions } from "@/types";
+import React, { createContext, PropsWithChildren, ReactNode, useContext, useEffect, useState } from "react";
+import { ClientGameState, GameActions, Scene } from "@/types";
 import { emitShuffle } from "@/engine/SocketEmitter";
 import { gameStore } from "@/engine/GameStore";
 import { createSlicer } from "@/hooks/useGameStateSlice";
+import { startTutorial } from "@/engine/TutorialEngine";
 
 type GameContextType<T> = {
   useGameStateSlice: <S>(selector: (state: T) => S) => S;
@@ -25,6 +26,29 @@ export function ServerGameProvider({ children }: PropsWithChildren) {
   };
 
   const slicer = createSlicer(state, handler => gameStore.subscribe(handler));
+
+  return (
+    <GameContext.Provider value={{ actions, useGameStateSlice: slicer }}>
+      {children}
+    </GameContext.Provider>
+  );
+}
+
+type TutorialGameProviderProps = {
+  children: ReactNode;
+  scenes: Scene[];
+}
+
+export function TutorialGameProvider({ children, scenes }: TutorialGameProviderProps) {
+  const tutorialStore = startTutorial(scenes);
+
+  const slicer = createSlicer(tutorialStore.tutorialState.gameState, handler => tutorialStore.subscribe(handler));
+
+  
+  const actions: GameActions = {
+      shuffle: () => {},
+      // Will also have mappings for all of the other actions as calbacks to the scene
+  }
 
   return (
     <GameContext.Provider value={{ actions, useGameStateSlice: slicer }}>
