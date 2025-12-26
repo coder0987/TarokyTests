@@ -6,8 +6,24 @@ import { Article, articles } from './articles/articles'
 const Learn = () => {
     return (
         <div className='flex justify-center w-full h-full'>
-            <div className="mt-20 mb-40 w-4/5 xl:w-3/4">
-                <h2 className="h2-bold mb-10">Read the Strategies</h2>
+            <div className="mt-5 w-4/5 xl:w-3/4">
+                <h2 className="h2-bold mb-10">Read the Rules</h2>
+                <div className='flex flex-row gap-2 items-center justify-center'>
+                        <Card className='card hover:cursor-pointer'>
+                            <CardHeader>
+                                <a href="/assets/rules/westfest2012.pdf"><CardTitle>WestFest Tournament Rules</CardTitle></a>
+                                <a href="https://westfest.com/taroky-tournament"><CardDescription>WestFest Tournament Details</CardDescription></a>
+                            </CardHeader>
+                        </Card>
+                        <Card className='card hover:cursor-pointer'>
+                            <CardHeader>
+                                <a href="/assets/rules/spjst2013.pdf"><CardTitle>SPJST Tournament Rules</CardTitle></a>
+                                <a href="https://spjst.org/tournaments/"><CardDescription>SPJST Tournament Details</CardDescription></a>
+                            </CardHeader>
+                        </Card>
+                    
+                </div>
+                <h2 className="h2-bold mb-10">Learn the Strategies</h2>
                 <div className='flex flex-row gap-2 items-center justify-center'>
                     {articles.map((article: Article) => (
                         <Link key={article.slug} to={`/articles/${article.slug}`}>
