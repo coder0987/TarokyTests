@@ -1,5 +1,10 @@
 import { getSocket } from "./SocketEngine";
 
+export function emitSendMessage(message: string): void {
+  const socket = getSocket();
+  socket.emit("message", message);
+}
+
 export function emitNewRoom(): void {
   const socket = getSocket();
   socket.emit("newRoom");

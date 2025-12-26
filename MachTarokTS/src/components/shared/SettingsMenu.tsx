@@ -22,7 +22,7 @@ const SettingsMenu = ({ locked = false }: { locked?: boolean }) => {
     const publiciseList = ['Public', 'Private'];
     const difficultyList = Object.keys(Difficulty);
 
-    const username = useAuthSlice((auth) => auth.user);
+    const username = useAuthSlice(useCallback(auth => auth.user, [])) ?? "Guest";
     const [authenticated, setAuthenticated] = useState(false);
 
     useEffect(() => {
