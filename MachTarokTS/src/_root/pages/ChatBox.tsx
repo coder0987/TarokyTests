@@ -11,6 +11,7 @@ Chat TODO:
 - FAB background color
 - Test that it works :)
 - Display avatars, timestamps, usernames
+- Close when clicking off to the side
 
 */
 
