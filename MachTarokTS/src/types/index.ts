@@ -43,6 +43,11 @@ export type Scene = {
   board?: BoardAction;
 };
 
+export type Tutorial = {
+  scenes: Scene[];
+  startingConfiguration: ClientGameState;
+}
+
 // Settings
 
 export interface GameSettings {

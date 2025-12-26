@@ -1,8 +1,3 @@
-// src/articles/articles.ts
-import { authors } from "./author";
-
-// Markdown files imported
-
 export type Article = {
   slug: string;
   title: string;

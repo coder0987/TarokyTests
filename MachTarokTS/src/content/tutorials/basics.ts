@@ -1,9 +1,7 @@
-import { RED_VALUE, SUIT, VALUE } from "@/constants";
-import { Scene } from "@/types";
+import { SUIT, VALUE } from "@/constants";
+import { ClientGameState, Scene, Tutorial } from "@/types";
 
-// TODO: some starting state
-
-export const introTutorial: Scene[] = [
+const introTutorialScenes: Scene[] = [
   {
     trainer: true,
     text: "So you want to play Taroky?",
@@ -25,3 +23,10 @@ export const introTutorial: Scene[] = [
     },
   },
 ];
+
+const introTutorialStartingConfiguration: ClientGameState = new ClientGameState('introTutorial');
+
+export const introTutorial: Tutorial = {
+    scenes: introTutorialScenes,
+    startingConfiguration: introTutorialStartingConfiguration
+};

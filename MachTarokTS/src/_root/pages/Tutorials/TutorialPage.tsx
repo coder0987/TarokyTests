@@ -3,30 +3,36 @@ import { Scene } from "@/types";
 import TrainerOverlay from "./TrainerOverlay";
 import Board from "../Board";
 import { TutorialGameProvider } from "@/context/GameContext";
+import { useParams } from "react-router-dom";
+import { tutorials, tutorialsMeta } from "./tutorials";
 
-const TutorialPage = ({ scenes }: { scenes: Scene[] }) => {
-    // TODO: Actual scenes will instead come from grabbing the slug from the url, decoding that to a tutorial index, and using the corresponding tutorial
+const TutorialPage = () => {
+    const { slug } = useParams<{ slug: string }>();
+    const tutorialMeta = tutorialsMeta.find(a => a.slug === slug);
+    const tutorial = tutorials[tutorialMeta.index];
 
-  const tutorial = useTutorial(scenes);
+    if (!tutorial) return <div className="text-center py-20">Article not found</div>;
 
-  return (
-    <div className="relative w-full h-full">
-      {/*<TutorialGameBoard
-        scene={tutorial.scene}
-        onAdvance={tutorial.next}
-      />*/}
-      <TutorialGameProvider scenes={scenes}>
-        <Board />
-      </TutorialGameProvider>
+    const scenes = tutorial.scenes;
 
-      <TrainerOverlay
-        scene={tutorial.scene}
-        text={tutorial.typedText}
-        isTyping={tutorial.isTyping}
-        onNext={tutorial.next}
-      />
-    </div>
-  );
+    // TODO: use tutorial.startingConfiguration
+
+    const activeTutorial = useTutorial(scenes);
+
+    return (
+        <div className="relative w-full h-full">
+        <TutorialGameProvider scenes={scenes}>
+            <Board />
+        </TutorialGameProvider>
+
+        <TrainerOverlay
+            scene={activeTutorial.scene}
+            text={activeTutorial.typedText}
+            isTyping={activeTutorial.isTyping}
+            onNext={activeTutorial.next}
+        />
+        </div>
+    );
 };
 
 export default TutorialPage;

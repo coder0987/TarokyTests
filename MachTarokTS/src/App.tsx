@@ -6,6 +6,7 @@ import { Browse, Custom, Daily, Donate, Home, Host, Learn, NotFound, Play, Ranke
 import Test from './_root/pages/Rules/Test';
 import ArticlePage from './_root/pages/articles/ArticlePage';
 import ChatLayout from './_root/ChatLayout';
+import TutorialPage from './_root/pages/Tutorials/TutorialPage';
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
             <Route path="/rules" element={<Rules />} />
             <Route element={<RootLayout />}>
               <Route path="/articles/:slug" element={<ArticlePage />} />
+              <Route path="/tutorials/:slug" element={<TutorialPage />} />
               <Route path="/donate" element={<Donate />} />
               <Route path="/learn" element={<Learn />} />
               <Route path="*" element={<NotFound />} />

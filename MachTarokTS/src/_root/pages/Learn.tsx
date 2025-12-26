@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Article, articles } from './articles/articles'
+import { TutorialMeta, tutorialsMeta } from './Tutorials/tutorials'
 
 const Learn = () => {
     return (
@@ -38,7 +39,16 @@ const Learn = () => {
                 </div>
                 <h2 className="h2-bold mb-10">Try the Tutorials</h2>
                 <div className='flex flex-row gap-2 items-center justify-center'>
-                    <p>Coming soon...</p>
+                    {tutorialsMeta.map((tutorialMeta: TutorialMeta) => (
+                        <Link key={tutorialMeta.slug} to={`/tutorials/${tutorialMeta.slug}`}>
+                            <Card className='card hover:cursor-pointer'>
+                                <CardHeader>
+                                    <CardTitle>{tutorialMeta.title}</CardTitle>
+                                    <CardDescription>{tutorialMeta.description}</CardDescription>
+                                </CardHeader>
+                            </Card>
+                        </Link>
+                    ))}
                 </div>
             </div>
         </div>
