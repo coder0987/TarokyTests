@@ -28,6 +28,23 @@ export interface Card {
   suit: string;
 }
 
+// Tutorial types
+
+export type BoardAction = {
+  instruction?: string;
+  enableCards?: Card[];
+  shouldAdvance?: (condition: any) => boolean;
+};
+
+export type Scene = {
+  trainer?: boolean;
+  text?: string;
+  flip?: boolean;
+  board?: BoardAction;
+};
+
+// Settings
+
 export interface GameSettings {
   timeout: number;
   difficulty: number;

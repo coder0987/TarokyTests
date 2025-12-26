@@ -210,6 +210,52 @@ export const SUIT_SORT_ORDER: Record<string, number> = {
   Trump: 4,
 };
 
+export const SUIT: Record<string, string> = {
+  SPADES: "Spades",
+  DIAMONDS: "Diamonds",
+  HEARTS: "Hearts",
+  CLUBS: "Clubs"
+};
+
+export const VALUE: Record<string, string> = {
+  ACE: "Ace",
+  TWO: "Two",
+  THREE: "Three",
+  FOUR: "Four",
+  SEVEN: "Seven",
+  EIGHT: "Eight",
+  NINE: "Nine",
+  TEN: "Ten",
+  JACK: "Jack",
+  WALKER: "Jack",
+  RIDER: "Rider",
+  QUEEN: "Queen",
+  KING: "King",
+  I: "I",
+  II: "II",
+  III: "III",
+  IV: "IIII",
+  IIII: "IIII",
+  V: "V",
+  VI: "VI",
+  VII: "VII",
+  VIII: "VIII",
+  IX: "IX",
+  X: "X",
+  XI: "XI",
+  XII: "XII",
+  XIII: "XIII",
+  XIV: "XIV",
+  XV: "XV",
+  XVI: "XVI",
+  XVII: "XVII",
+  XVIII: "XVIII",
+  XIX: "XIX",
+  XX: "XX",
+  XXI: "XXI",
+  SKYZ: "Skyz",
+}
+
 /* // These are for the any-card-game backend, which is not happening any time soon :(
 export const GAME_TYPES = {
   TURN_BASED: 0,
