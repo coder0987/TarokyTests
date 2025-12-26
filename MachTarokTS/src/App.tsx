@@ -4,6 +4,7 @@ import '@/globals.css'
 import RootLayout from '@/_root/RootLayout'
 import { Browse, Custom, Daily, Donate, Home, Host, Learn, NotFound, Play, Ranked, Rules, SignIn, Updates, Game } from '@/_root/pages'
 import Test from './_root/pages/Rules/Test';
+import ArticlePage from './_root/pages/articles/ArticlePage';
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/ranked" element={<Ranked />} />
           <Route path="/rules" element={<Rules />} />
           <Route element={<RootLayout />}>
+            <Route path="/articles/:slug" element={<ArticlePage />} />
             <Route path="/donate" element={<Donate />} />
             <Route path="/learn" element={<Learn />} />
             <Route path="*" element={<NotFound />} />

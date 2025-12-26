@@ -3,10 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-  * {
-    @apply box-border list-none p-0 m-0 scroll-smooth;
-  }
-
   body {
     @apply bg-green text-navy min-h-screen font-inter;
   }
