@@ -1,7 +1,7 @@
 import { useTutorial } from "@/hooks/useTutorial";
 import { Scene } from "@/types";
 import TrainerOverlay from "./TrainerOverlay";
-import Board from "../Board";
+import Board from "../board/Board";
 import { TutorialGameProvider } from "@/context/GameContext";
 import { useParams } from "react-router-dom";
 import { tutorials, tutorialsMeta } from "./tutorials";

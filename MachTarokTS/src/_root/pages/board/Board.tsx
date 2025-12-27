@@ -5,14 +5,17 @@
 
 import { useGame } from "@/context/GameContext";
 import { Action, Card } from "@/types";
+import Hand from "./Hand";
 
 const Board = () => {
     const action = useGame().useGameStateSlice((game) => game?.currentAction);
+    const hand = useGame().useGameStateSlice((game) => game?.myInfo.hand || [] as Card[]);
 
     return (
         <>
             <div>Board</div>
             <p>Action: {action?.action}</p>
+            <Hand hand={hand} />
         </>
     );
 }
