@@ -93,7 +93,7 @@ const Play = () => {
 
                             <Card
                                 className="bg-navy hover:bg-blue-800 text-white transition-all transform hover:scale-105 shadow-md hover:shadow-lg cursor-pointer"
-                                onClick={() => navigate("/tutorial")}
+                                onClick={() => navigate("/tutorials/intro-tutorial")}
                             >
                                 <CardContent className="flex justify-center items-center py-6">
                                     <span className="text-2xl font-semibold">Tutorial</span>
