@@ -65,17 +65,6 @@ const Hand = () => {
     
     return (
         <div className="hand flex flex-col items-center relative">
-            <div className="text-white">
-                {JSON.stringify(hand)}<br />
-                {JSON.stringify(handState)}<br />
-                {pn}<br />
-                {JSON.stringify(Selectable)}<br />
-                {JSON.stringify(action)}<br />
-                Action requires hand: {['lead','discard','follow'].includes(action.action) ? 'true' : 'false'}<br />
-                Current player's turn: {(pn as PlayerIndex) === action.player ? 'true' : 'false'} <br />
-                {typeof pn}, {typeof action.player}
-            </div>
-            
             <div className="flex flex-row justify-center relative z-0">
                 {hand.map((card: Card, idx: number) => {
                         if (idx > hand.length / 2) return;
