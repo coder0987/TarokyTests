@@ -26,6 +26,15 @@ export enum MESSAGE_TYPE {
 export interface Card {
   value: string;
   suit: string;
+  grayed?: boolean;
+}
+
+// Display enum for cards in hand
+export enum Selectable {
+  STANDARD,
+  SELECTABLE,
+  SELECTED,
+  NOT_SELECTABLE,
 }
 
 // Tutorial types
@@ -114,7 +123,7 @@ export interface AutoReconnectPayload {
   chips?: number;
   settings?: GameSettings;
   roundInfo?: any; // already decoded elsewhere
-  nextAction?: any;
+  nextAction?: Action;
 
   // room state
   roomConnected?: string;
@@ -349,4 +358,13 @@ export class UIGameState {
 // Note that these will be linked to SocketEmitter's methods for server, and handled by client for tutorial
 export type GameActions = {
   shuffle(): void;
+  discard(card: Card): void;
+  play(card: Card): void;
+  moneyCards(): void;
+  winTrick(): void;
+  deal(): void;
+  goPrever(): void;
+  noPrever(): void;
+  goValat(): void;
+  noValat(): void;
 };

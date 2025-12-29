@@ -77,7 +77,7 @@ export function audienceNotConnected(audienceRoom: string) {
 export function startingGame(hostPN: PN, playerPN: PN, gameNumber: number, returnSettings: GameSettings) {
   const state = gameStore.game.gameState!;
   state.hostNumber = hostPN;
-  state.myInfo.playerNumber = playerPN;
+  state.myInfo.playerNumber = Number(playerPN) as PN;
   state.settings = returnSettings;
 
   addServerMessage(`Game ${gameNumber} Beginning.`);
@@ -159,7 +159,7 @@ export function returnTable(table) {
         console.error("Game state is null, cannot set table");
         return;
     }
-    gameStore.game.gameState.currentTable.push(table);
+    gameStore.game.gameState.currentTable = gameStore.game.gameState.currentTable.concat(table);
     gameStore.notify();
 }
 
@@ -280,7 +280,13 @@ export function autoAction() {
 }
 
 export function nextAction(action: Action) {
-  gameStore.game.gameState!.currentAction = action;
+  gameStore.game.gameState!.currentAction =
+        { 
+            action: action.action, 
+            player: Number(action.player) as PlayerIndex,
+            time: action.time,
+            info: action.info,
+        };
   console.log("Next action:", action);
   gameStore.notify();
 }
@@ -310,7 +316,7 @@ export function challengeComplete(score: number) {
 type GameMessageHandler = (message: string, extraInfo?: any) => void;
 
 // Helper to get my player number
-const myPN = () => gameStore.game.gameState?.myInfo.playerNumber ?? -1;
+const myPN = () => Number(gameStore.game.gameState?.myInfo.playerNumber) as PN ?? -1;
 
 // Helper for messages directed at the current player
 function forMe(extraInfo: any, defaultMessage: string) {
@@ -560,8 +566,8 @@ export function autoReconnect(data: AutoReconnectPayload) {
     }
 
     if (data.pn !== undefined) {
-      gameStore.game.gameState.myInfo.playerNumber = data.pn;
-      addServerMessage(`You are player ${+data.pn + 1}`);
+      gameStore.game.gameState.myInfo.playerNumber = Number(data.pn) as PN;
+      addServerMessage(`You are player ${data.pn + 1}`);
     }
 
     if (data.host !== undefined) {
@@ -580,7 +586,13 @@ export function autoReconnect(data: AutoReconnectPayload) {
     }
 
     if (data.nextAction !== undefined) {
-      gameStore.game.gameState.currentAction = data.nextAction;
+      gameStore.game.gameState.currentAction = 
+        { 
+            action: data.nextAction.action, 
+            player: Number(data.nextAction.player) as PlayerIndex,
+            time: data.nextAction.time,
+            info: data.nextAction.info,
+        }
     }
   }
 
