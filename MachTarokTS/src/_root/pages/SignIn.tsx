@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { useUserContext } from '@/context/AuthContext';
 import { getSocket } from '@/engine/SocketEngine';
 import React, { useState } from 'react'
+import AvatarBuilder from './AvatarBuilder';
 
 const SignIn = () => {
     const { isAuthenticated, account } = useUserContext();
@@ -50,17 +51,7 @@ const SignIn = () => {
                         </div>
                         <div className='paragraph-container flex flex-col justify-start'>
                             <p className='paragraph'>Avatar</p>
-                            <div className="avatar-container">
-                                {avatars.map((avatarIndex) => (
-                                    <div 
-                                        key={avatarIndex}
-                                        className={`avatar ${selectedAvatarIndex === avatarIndex ? 'selected-avatar' : ''}`}
-                                        onClick={() => handleAvatarClick(avatarIndex)}
-                                    >
-                                        <img src={`https://machtarok.com/assets/profile-pictures/profile-${avatarIndex-1}.png`} alt={`Avatar ${avatarIndex}`} />
-                                    </div>
-                                ))}
-                            </div>
+                            <AvatarBuilder />
                             <p className='paragraph'>Deck</p>
                             <div className="deck-container">
                                 {deckInfo.map((deckIndex) => (

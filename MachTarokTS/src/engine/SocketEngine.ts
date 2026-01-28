@@ -56,10 +56,10 @@ function attachListeners(socket: Socket) {
   socket.on('defaultSettings', defaultSettings);
   socket.on('autoReconnect', autoReconnect);
 
-  socket.on('loginSuccess', authController.loginSuccess);
-  socket.on('loginFailed', authController.loginFailure);
-  socket.on('loginExpired', authController.loginFailure);
-  socket.on('logout', authController.loginFailure);
+  socket.on('loginSuccess', (username: string, avatar: number) => authController.loginSuccess(username, avatar));
+  socket.on('loginFailed', () => authController.loginFailure);
+  socket.on('loginExpired', () => authController.loginFailure);
+  socket.on('logout', () => authController.loginFailure);
 }
 
 

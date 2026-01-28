@@ -227,6 +227,10 @@ export type ChatMessage = {
 
 // GameState class, to handle all of the game-related data
 
+export type PlayerAvatar = {
+  backgroundColor: string;
+}
+
 export class GamePlayer {
   username: string;
   avatar: number;
