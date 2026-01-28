@@ -63,6 +63,7 @@ export class AuthController {
   }
 
   loginSuccess(username: string, avatar: number) {
+    this.account = INITIAL_ACCOUNT;
     this.account.user = username;
     if (!this.account.preferences) this.account.preferences = DEFAULT_PREFERENCES;
     this.account.preferences.avatar = avatar;

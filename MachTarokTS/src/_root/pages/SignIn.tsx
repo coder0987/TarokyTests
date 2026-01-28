@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { useUserContext } from '@/context/AuthContext';
+import { getSocket } from '@/engine/SocketEngine';
 import React, { useState } from 'react'
 
 const SignIn = () => {
@@ -7,6 +8,13 @@ const SignIn = () => {
     const avatars = Array.from({ length: 58 }, (_, index) => index + 1);
     const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(null);
     const [selectedDeckIndex, setSelectedDeckIndex] = useState(null);
+
+    const socket = getSocket();
+    const adminSignIn = () => {
+        if (socket) {
+            socket.emit("adminSignIn", 'Admin');
+        }
+    };
 
     const deckInfo = [ 
         { key: 1, name: 'MachTarok custom deck', link: '/assets/mach-deck-thumb/trump-i-t.png' }, 
@@ -93,6 +101,21 @@ const SignIn = () => {
                             </div>
                             Log in with MachSSO
                         </Button>
+                        <Button
+                            className="flex big-play-button w-full max-w-[320px] py-8 text-xl md:text-2xl"
+                            onClick={adminSignIn}
+                        >
+                            <div className="w-[32px] h-[32px] bg-white rounded-full flex items-center justify-center">
+                                <img
+                                    src="https://sso.smach.us/favicon.ico"
+                                    alt="Favicon"
+                                    className="w-[16px] h-[16px]"
+                                />
+                            </div>
+                            Admin Sign In (Debug)
+                        </Button>
+                        
+
                     </div>
                 </div>
             }
