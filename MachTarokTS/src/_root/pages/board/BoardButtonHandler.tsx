@@ -17,12 +17,12 @@ const BoardButtonHandler = ({ action }: { action: string }) => {
             case 'prever': setButtons([{name:'Go Prever', callback: callbacks.goPrever},{name:'Pass Prever', callback: callbacks.noPrever}]); break;
             case 'valat': setButtons([{name:'Go Valat', callback: callbacks.goValat},{name:'Pass Valat', callback: callbacks.noValat}]); break;
             case 'contra': setButtons([{name:'Call Contra', callback: callbacks.callContra}, {name:'Pass Contra', callback: callbacks.passContra}]); break;
-            case 'povinnostBidaUniChoice': break;
-            case '12choice': break;
-            case 'choosePartner': break;
-            case 'preverTalon': break;
-            case 'drawTalon': break;
-            case 'iote': break;
+            case 'povinnostBidaUniChoice': setButtons([{name:'Call Bida or Uni', callback: callbacks.callPovinnostBidaUniChoice}, {name:'Pass Bida or Uni', callback: callbacks.passPovinnostBidaUniChoice}]); break;
+            case '12choice': setButtons([]); break; // Need numbers
+            case 'choosePartner': break; // Need choices
+            case 'preverTalon': setButtons([{name:'Pass Cards', callback: callbacks.passPreverTalon}, {name:'Keep Cards', callback: callbacks.drawPreverTalon}]); break;
+            case 'drawTalon': break; // Need info from server
+            case 'iote': setButtons([{name:'Call I on the End', callback: callbacks.callIote}, {name:'Pass I on the End', callback: callbacks.passIote}]); break;
             default: setButtons([]);
         }
     }, [action]);

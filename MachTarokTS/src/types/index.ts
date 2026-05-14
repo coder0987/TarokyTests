@@ -364,9 +364,15 @@ export type GameActions = {
   shuffle(): void;
   discard(card: Card): void;
   play(card: Card): void;
+  twelveChoice(hand: number): void;
   drawTalon(): void;
   passTalon(): void;
+  drawPreverTalon(): void;
+  passPreverTalon(): void;
+  callPovinnostBidaUniChoice(): void;
+  passPovinnostBidaUniChoice(): void;
   moneyCards(): void;
+  playWithPartner(card: string): void;
   callContra(): void;
   passContra(): void;
   winTrick(): void;
@@ -375,4 +381,6 @@ export type GameActions = {
   noPrever(): void;
   goValat(): void;
   noValat(): void;
+  callIote(): void;
+  passIote(): void;
 };

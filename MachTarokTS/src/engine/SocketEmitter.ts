@@ -83,6 +83,12 @@ export function emitShuffle(): void {
   socket.emit("shuffle");
 }
 
+export function emitTwelveChoice(hand: number): void {
+  const socket = getSocket();
+  log(`chooseHand ${hand}`);
+  socket.emit("chooseHand", hand);
+}
+
 export function emitDeal(): void {
   const socket = getSocket();
   log("deal");
@@ -99,6 +105,24 @@ export function emitNoPrever(): void {
   const socket = getSocket();
   log("noPrever");
   socket.emit("noPrever");
+}
+
+export function emitGoPreverTalon(): void {
+  const socket = getSocket();
+  log("goPreverTalon");
+  socket.emit("goPrever Talon");
+}
+
+export function emitNoPreverTalon(): void {
+  const socket = getSocket();
+  log("noPreverTalon");
+  socket.emit("noPrever Talon");
+}
+
+export function emitChoosePartner(partner: string): void {
+  const socket = getSocket();
+  log(`choosePartner ${partner}`);
+  socket.emit("choosePartner", partner);
 }
 
 export function emitGoValat(): void {
@@ -125,6 +149,18 @@ export function emitNoContra(): void {
   socket.emit("noContra");
 }
 
+export function emitGoIOTE(): void {
+  const socket = getSocket();
+  log("goIOTE");
+  socket.emit("goIOTE");
+}
+
+export function emitNoIOTE(): void {
+  const socket = getSocket();
+  log("noIOTE");
+  socket.emit("noIOTE");
+}
+
 export function emitPlayCard(card: Card): void {
   const socket = getSocket();
   log(`lead ${card.suit} ${card.value}`);
@@ -147,6 +183,18 @@ export function emitDiscardCard(card: Card): void {
   const socket = getSocket();
   log(`discard ${card.suit} ${card.value}`);
   socket.emit("discard", { suit: card.suit, value: card.value });
+}
+
+export function emitGoBidaUni(): void {
+  const socket = getSocket();
+  log("goBidaUni");
+  socket.emit("goBida or Uni");
+}
+
+export function emitNoBidaUni(): void {
+  const socket = getSocket();
+  log("noBidaUni");
+  socket.emit("noBida or Uni");
 }
 
 export function emitMoneyCards(): void {

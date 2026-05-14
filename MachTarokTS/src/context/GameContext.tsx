@@ -1,6 +1,6 @@
 import React, { createContext, PropsWithChildren, ReactNode, useContext, useEffect, useState } from "react";
 import { Card, ClientGameState, GameActions, Scene } from "@/types";
-import { emitDeal, emitDiscardCard, emitDrawTalon, emitGoContra, emitGoPrever, emitGoValat, emitMoneyCards, emitNoContra, emitNoPrever, emitNoValat, emitPassTalon, emitPlayCard, emitShuffle, emitWinTrick } from "@/engine/SocketEmitter";
+import { emitChoosePartner, emitDeal, emitDiscardCard, emitDrawTalon, emitGoBidaUni, emitGoContra, emitGoIOTE, emitGoPrever, emitGoPreverTalon, emitGoValat, emitMoneyCards, emitNoBidaUni, emitNoContra, emitNoIOTE, emitNoPrever, emitNoPreverTalon, emitNoValat, emitPassTalon, emitPlayCard, emitShuffle, emitTwelveChoice, emitWinTrick } from "@/engine/SocketEmitter";
 import { gameStore } from "@/engine/GameStore";
 import { createSlicer } from "@/hooks/useGameStateSlice";
 import { startTutorial } from "@/engine/TutorialEngine";
@@ -36,6 +36,14 @@ export function ServerGameProvider({ children }: PropsWithChildren) {
     noPrever: emitNoPrever,
     goValat: emitGoValat,
     noValat: emitNoValat,
+    twelveChoice: emitTwelveChoice,
+    drawPreverTalon: emitGoPreverTalon,
+    passPreverTalon: emitNoPreverTalon,
+    callPovinnostBidaUniChoice: emitGoBidaUni,
+    passPovinnostBidaUniChoice: emitNoBidaUni,
+    playWithPartner: emitChoosePartner,
+    callIote: emitGoIOTE,
+    passIote: emitNoIOTE,
   };
 
   const slicer = createSlicer(state, handler => gameStore.subscribe(handler));
@@ -59,21 +67,28 @@ export function TutorialGameProvider({ children, scenes }: TutorialGameProviderP
 
   
   const actions: GameActions = {
-      shuffle: () => {},
-      discard: (card: Card) => {},
-      play: (card: Card) => {},
-      drawTalon: () => {},
-      passTalon: () => {},
-      moneyCards: () => {},
-      callContra: () => {},
-      passContra: () => {},
-      winTrick: () => {},
-      deal: () => {},
-      goPrever: () => {},
-      noPrever: () => {},
-      goValat: () => {},
-      noValat: () => {},
-      // Will also have mappings for all of the other actions as calbacks to the scene
+    shuffle: () => { },
+    discard: (card: Card) => { },
+    play: (card: Card) => { },
+    drawTalon: () => { },
+    passTalon: () => { },
+    moneyCards: () => { },
+    callContra: () => { },
+    passContra: () => { },
+    winTrick: () => { },
+    deal: () => { },
+    goPrever: () => { },
+    noPrever: () => { },
+    goValat: () => { },
+    noValat: () => { },
+    twelveChoice: () => { },
+    drawPreverTalon: () => { },
+    passPreverTalon: () => { },
+    callPovinnostBidaUniChoice: () => { },
+    passPovinnostBidaUniChoice: () => { },
+    playWithPartner: () => { },
+    callIote: () => { },
+    passIote: () => { },
   }
 
   return (
