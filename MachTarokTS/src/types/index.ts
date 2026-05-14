@@ -362,7 +362,7 @@ export class UIGameState {
 // Note that these will be linked to SocketEmitter's methods for server, and handled by client for tutorial
 export type GameActions = {
   shuffle(): void;
-  discard(card: Card): void;
+  discard(cards: Card[]): void;
   play(card: Card): void;
   twelveChoice(hand: number): void;
   drawTalon(): void;

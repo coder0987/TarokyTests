@@ -24,9 +24,11 @@ const CardComponent = ({ card, className, angle = true, selectable = Selectable.
             ? `
             transition-transform duration-200
             scale-105
-            ring-4 ring-yellow-400 ring-offset-2
+            ring-4 ring-yellow
+            ring-offset-2 ring-offset-transparent
+            rounded-2xl
             shadow-lg
-            hover:scale-115
+            hover:scale-110
             cursor-pointer
             `
             : '';

@@ -1,6 +1,6 @@
 import React, { createContext, PropsWithChildren, ReactNode, useContext, useEffect, useState } from "react";
 import { Card, ClientGameState, GameActions, Scene } from "@/types";
-import { emitChoosePartner, emitDeal, emitDiscardCard, emitDrawTalon, emitGoBidaUni, emitGoContra, emitGoIOTE, emitGoPrever, emitGoPreverTalon, emitGoValat, emitMoneyCards, emitNoBidaUni, emitNoContra, emitNoIOTE, emitNoPrever, emitNoPreverTalon, emitNoValat, emitPassTalon, emitPlayCard, emitShuffle, emitTwelveChoice, emitWinTrick } from "@/engine/SocketEmitter";
+import { emitChoosePartner, emitDeal, emitDiscardCards, emitDrawTalon, emitGoBidaUni, emitGoContra, emitGoIOTE, emitGoPrever, emitGoPreverTalon, emitGoValat, emitMoneyCards, emitNoBidaUni, emitNoContra, emitNoIOTE, emitNoPrever, emitNoPreverTalon, emitNoValat, emitPassTalon, emitPlayCard, emitShuffle, emitTwelveChoice, emitWinTrick } from "@/engine/SocketEmitter";
 import { gameStore } from "@/engine/GameStore";
 import { createSlicer } from "@/hooks/useGameStateSlice";
 import { startTutorial } from "@/engine/TutorialEngine";
@@ -23,7 +23,7 @@ export function ServerGameProvider({ children }: PropsWithChildren) {
 
   const actions: GameActions = {
     shuffle: emitShuffle,
-    discard: emitDiscardCard,
+    discard: emitDiscardCards,
     play: emitPlayCard,
     drawTalon: emitDrawTalon,
     passTalon: emitPassTalon,
@@ -68,7 +68,7 @@ export function TutorialGameProvider({ children, scenes }: TutorialGameProviderP
   
   const actions: GameActions = {
     shuffle: () => { },
-    discard: (card: Card) => { },
+    discard: (cards: Card[]) => { },
     play: (card: Card) => { },
     drawTalon: () => { },
     passTalon: () => { },

@@ -3,7 +3,10 @@ import CardComponent from "./CardComponent";
 import { useGame } from "@/context/GameContext";
 import { useEffect, useState } from "react";
 
-const Hand = () => {
+const Hand = ({selected, setSelected}: {
+    selected: Card[], 
+    setSelected: React.Dispatch<React.SetStateAction<Card[]>>
+}) => {
 
     // TODO: deck choice
 
@@ -14,7 +17,7 @@ const Hand = () => {
     const action = useGame().useGameStateSlice((game) => game?.currentAction);
     const pn = useGame().useGameStateSlice((game) => game.myInfo.playerNumber);
     const hand = useGame().useGameStateSlice((game) => game?.myInfo.hand || [] as Card[]);
-    const [selected, setSelected] = useState<Card[]>([] as Card[]);
+    const numToDiscard = hand.length - 12;
 
     const handState = (pn as PlayerIndex) === action.player ?
             ( ['lead','discard','follow'].includes(action.action) ? Selectable.SELECTABLE : Selectable.STANDARD )
@@ -24,16 +27,24 @@ const Hand = () => {
     const [cardClickCallback, setCardClickCallback] = useState<(card: Card) => void>(() => callbacks.play);
 
     const discardCallback = (card: Card) => {
-        // TODO: limit selection
+        console.log(`Discard callback ${pn} ${action.player} ${card.value}`);
         if (pn !== action.player || card.grayed) {
             return; // ignore
         }
 
-        if (!selected.includes(card)) {
-            setSelected(selected.concat(card));
-        } else {
-            setSelected(selected.filter((value: Card) => value !== card));
-        }
+        setSelected(prevSelected => {
+            const alreadySelected = prevSelected.includes(card);
+
+            if (!alreadySelected && prevSelected.length < numToDiscard) {
+                console.log("Adding to selected");
+
+                return [...prevSelected, card];
+            }
+
+            console.log("Removing from selected");
+
+            return prevSelected.filter(value => value !== card) as Card[];
+        });
     }
 
     useEffect( () => {

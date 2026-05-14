@@ -179,10 +179,12 @@ export function emitPassTalon(): void {
   socket.emit("noTalon");
 }
 
-export function emitDiscardCard(card: Card): void {
+export function emitDiscardCards(cards: Card[]): void {
   const socket = getSocket();
-  log(`discard ${card.suit} ${card.value}`);
-  socket.emit("discard", { suit: card.suit, value: card.value });
+  for (let card of cards) {
+    log(`discard ${card.suit} ${card.value}`);
+    socket.emit("discard", { suit: card.suit, value: card.value });
+  }
 }
 
 export function emitGoBidaUni(): void {

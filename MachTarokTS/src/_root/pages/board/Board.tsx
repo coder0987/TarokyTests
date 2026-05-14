@@ -7,8 +7,8 @@ import { useGame } from "@/context/GameContext";
 import Hand from "./Hand";
 import CardBack from "./CardBack";
 import { useEffect, useState } from "react";
-import BoardButton from "./BoardButton";
 import BoardButtonHandler from "./BoardButtonHandler";
+import { Card } from "@/types";
 
 const Board = () => {
     const inGame = useGame().useGameStateSlice((game) => game);
@@ -20,10 +20,21 @@ const Board = () => {
 
     // Actions
     const callbacks = useGame().actions;
-
     const action = useGame().useGameStateSlice((game) => game?.currentAction);
 
-    const buttonActions = ['prever','valat','contra','povinnostBidaUniChoice','12choice','choosePartner','preverTalon','drawTalon', 'iote'];
+    const buttonActions = ['prever','valat','contra','povinnostBidaUniChoice','12choice','choosePartner','drawPreverTalon','drawTalon', 'iote','discard'];
+
+    // Selected cards for hand class. Here because "Button" has submit
+    const [selectedCards, setSelectedCards] = useState<Card[]>([] as Card[]);
+    const handSize = useGame().useGameStateSlice((game) => game?.myInfo.hand).length;
+    const canDiscard = handSize - selectedCards.length === 12;
+    function handleDiscard() {
+        callbacks.discard(selectedCards);
+    }
+
+    useEffect(() => {
+        console.log("selectedCards changed:", selectedCards.length);
+    }, [selectedCards]);
 
     useEffect(() => {
         switch (action.action) {
@@ -52,12 +63,19 @@ const Board = () => {
                             <CardBack onClick={callbacks.shuffle} />
                         </div>
                     }
+                    <p className="text-white">{`${handSize}, ${selectedCards.length}, ${canDiscard}`}</p>
                     {buttonActions.includes(action.action) && 
-                        <BoardButtonHandler action={action.action} canPass={action?.info?.canPass} hands={action?.info?.choices ?? undefined} partners={action?.info?.possiblePartners ?? undefined} />
+                        <BoardButtonHandler action={action.action}
+                            canPass={action?.info?.canPass}
+                            hands={action?.info?.choices ?? undefined}
+                            partners={action?.info?.possiblePartners ?? undefined}
+                            canDiscard={canDiscard}
+                            submitDiscard={handleDiscard}
+                         />
                     }
 
                     <div className="mt-auto mb-[-5px] flex justify-center pointer-events-auto">
-                        <Hand />
+                        <Hand selected={selectedCards} setSelected={setSelectedCards} />
                     </div>
                 </div>
             </div>

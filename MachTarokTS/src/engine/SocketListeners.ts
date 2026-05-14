@@ -357,23 +357,23 @@ function handleWinner(_: string, info?: any) {
 
 function handlePreverTalon(_: string, info?: any) {
   if (!info) return;
-  const queue = gameStore.game.gameState!.returnTableQueue;
+  const queue = gameStore.game.gameState?.returnTableQueue;
   switch (info.step) {
     case 0:
       addServerMessage("Would you like to keep these cards?");
-      queue.push(info.cards);
+      queue?.push(info.cards);
       break;
     case 1:
     case 2:
       if (_ === "") {
         addServerMessage("Would you like to keep these cards?");
-        queue.push(info.cards);
+        queue?.push(info.cards);
       } else if (info.pn === myPN() && info.youMessage) {
         addServerMessage(info.youMessage);
-        if (info.step === 2) queue.push([]);
+        if (info.step === 2) queue?.push([]);
       } else {
         addServerMessage(_);
-        queue.push(info.cards);
+        queue?.push(info.cards);
       }
       break;
     case 3:
