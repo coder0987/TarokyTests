@@ -1,6 +1,6 @@
 import React, { createContext, PropsWithChildren, ReactNode, useContext, useEffect, useState } from "react";
 import { Card, ClientGameState, GameActions, Scene } from "@/types";
-import { emitDeal, emitDiscardCard, emitGoPrever, emitGoValat, emitMoneyCards, emitNoPrever, emitNoValat, emitPlayCard, emitShuffle, emitWinTrick } from "@/engine/SocketEmitter";
+import { emitDeal, emitDiscardCard, emitDrawTalon, emitGoPrever, emitGoValat, emitMoneyCards, emitNoPrever, emitNoValat, emitPassTalon, emitPlayCard, emitShuffle, emitWinTrick } from "@/engine/SocketEmitter";
 import { gameStore } from "@/engine/GameStore";
 import { createSlicer } from "@/hooks/useGameStateSlice";
 import { startTutorial } from "@/engine/TutorialEngine";
@@ -25,6 +25,8 @@ export function ServerGameProvider({ children }: PropsWithChildren) {
     shuffle: emitShuffle,
     discard: emitDiscardCard,
     play: emitPlayCard,
+    drawTalon: emitDrawTalon,
+    passTalon: emitPassTalon,
     moneyCards: emitMoneyCards,
     winTrick: emitWinTrick,
     deal: emitDeal,
@@ -58,6 +60,8 @@ export function TutorialGameProvider({ children, scenes }: TutorialGameProviderP
       shuffle: () => {},
       discard: (card: Card) => {},
       play: (card: Card) => {},
+      drawTalon: () => {},
+      passTalon: () => {},
       moneyCards: () => {},
       winTrick: () => {},
       deal: () => {},

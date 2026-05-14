@@ -125,6 +125,18 @@ export function emitPlayCard(card: Card): void {
   socket.emit("lead", { suit: card.suit, value: card.value });
 }
 
+export function emitDrawTalon(): void {
+  const socket = getSocket();
+  log("goTalon");
+  socket.emit("goTalon");
+}
+
+export function emitPassTalon(): void {
+  const socket = getSocket();
+  log("noTalon");
+  socket.emit("noTalon");
+}
+
 export function emitDiscardCard(card: Card): void {
   const socket = getSocket();
   log(`discard ${card.suit} ${card.value}`);

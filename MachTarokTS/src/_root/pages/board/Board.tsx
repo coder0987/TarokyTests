@@ -23,11 +23,12 @@ const Board = () => {
 
     const action = useGame().useGameStateSlice((game) => game?.currentAction);
 
-    const buttonActions = ['prever','valat','contra','povinnostBidaUniChoice','12choice','choosePartner','preverTalon','drawTalon'];
+    const buttonActions = ['prever','valat','contra','povinnostBidaUniChoice','12choice','choosePartner','preverTalon'/*,'drawTalon'*/];
 
     useEffect(() => {
         switch (action.action) {
             case 'deal': callbacks.deal(); break;
+            case 'drawTalon': callbacks.drawTalon(); break; // TODO: handle talon passing (needs server-side change)
             case 'moneyCards': callbacks.moneyCards(); break;
             case 'winTrick': callbacks.winTrick(); break;
         }

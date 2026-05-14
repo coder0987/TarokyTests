@@ -364,6 +364,8 @@ export type GameActions = {
   shuffle(): void;
   discard(card: Card): void;
   play(card: Card): void;
+  drawTalon(): void;
+  passTalon(): void;
   moneyCards(): void;
   winTrick(): void;
   deal(): void;
