@@ -23,12 +23,12 @@ const Board = () => {
 
     const action = useGame().useGameStateSlice((game) => game?.currentAction);
 
-    const buttonActions = ['prever','valat','contra','povinnostBidaUniChoice','12choice','choosePartner','preverTalon'/*,'drawTalon'*/, 'iote'];
+    const buttonActions = ['prever','valat','contra','povinnostBidaUniChoice','12choice','choosePartner','preverTalon','drawTalon', 'iote'];
 
     useEffect(() => {
         switch (action.action) {
             case 'deal': callbacks.deal(); break;
-            case 'drawTalon': callbacks.drawTalon(); break; // TODO: handle talon passing (needs server-side change)
+            case 'drawTalon': if (!action.info?.canPass){callbacks.drawTalon()}; break;
             case 'moneyCards': callbacks.moneyCards(); break;
             case 'winTrick': callbacks.winTrick(); break;
         }
@@ -53,7 +53,7 @@ const Board = () => {
                         </div>
                     }
                     {buttonActions.includes(action.action) && 
-                        <BoardButtonHandler action={action.action} />
+                        <BoardButtonHandler action={action.action} canPass={action?.info?.canPass} hands={action?.info?.choices ?? undefined} partners={action?.info?.possiblePartners ?? undefined} />
                     }
 
                     <div className="mt-auto mb-[-5px] flex justify-center pointer-events-auto">
