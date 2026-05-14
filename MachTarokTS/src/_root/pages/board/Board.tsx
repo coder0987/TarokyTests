@@ -9,6 +9,7 @@ import CardBack from "./CardBack";
 import { useEffect, useState } from "react";
 import BoardButtonHandler from "./BoardButtonHandler";
 import { Card } from "@/types";
+import Table from "./Table";
 
 const Board = () => {
     const inGame = useGame().useGameStateSlice((game) => game);
@@ -32,10 +33,14 @@ const Board = () => {
         callbacks.discard(selectedCards);
     }
 
+    // Table
+    const table = useGame().useGameStateSlice((game) => game?.returnTableQueue);
+
     useEffect(() => {
         console.log("selectedCards changed:", selectedCards.length);
     }, [selectedCards]);
 
+    // Auto-actions
     useEffect(() => {
         switch (action.action) {
             case 'deal': callbacks.deal(); break;
@@ -63,7 +68,7 @@ const Board = () => {
                             <CardBack onClick={callbacks.shuffle} />
                         </div>
                     }
-                    <p className="text-white">{`${handSize}, ${selectedCards.length}, ${canDiscard}`}</p>
+                    {table && <Table tableQueue={table} />}
                     {buttonActions.includes(action.action) && 
                         <BoardButtonHandler action={action.action}
                             canPass={action?.info?.canPass}
