@@ -35,6 +35,12 @@ export function emitJoinRoomByCode(code: string): void {
   socket.emit("roomConnect", code, true);
 }
 
+export function emitGetPlayersInGame(): void {
+  const socket = getSocket();
+  log("getPlayersInGame");
+  socket.emit("getPlayersInGame");
+}
+
 export function emitSettings(type: string, value: any): void {
   const socket = getSocket();
   log(`settings ${type} ${value}`);

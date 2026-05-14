@@ -367,6 +367,8 @@ export type GameActions = {
   drawTalon(): void;
   passTalon(): void;
   moneyCards(): void;
+  callContra(): void;
+  passContra(): void;
   winTrick(): void;
   deal(): void;
   goPrever(): void;

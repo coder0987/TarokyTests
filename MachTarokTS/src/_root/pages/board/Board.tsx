@@ -23,7 +23,7 @@ const Board = () => {
 
     const action = useGame().useGameStateSlice((game) => game?.currentAction);
 
-    const buttonActions = ['prever','valat','contra','povinnostBidaUniChoice','12choice','choosePartner','preverTalon'/*,'drawTalon'*/];
+    const buttonActions = ['prever','valat','contra','povinnostBidaUniChoice','12choice','choosePartner','preverTalon'/*,'drawTalon'*/, 'iote'];
 
     useEffect(() => {
         switch (action.action) {

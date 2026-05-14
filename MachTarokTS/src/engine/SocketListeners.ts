@@ -206,13 +206,14 @@ export function returnPlayersInGame(playersInGame: { name: string, avatar: numbe
   gameStore.notify();
 }
 
-export function returnPN(playerNumber: PN, hostNumber: PN) {
+export function returnPN(playerNumber: string, hostNumber: PN) {
   if (!gameStore.game.gameState || !gameStore.game.gameState.myInfo) return;
+  const pn: PN = +playerNumber as PN;
 
-  gameStore.game.gameState.myInfo.playerNumber = playerNumber;
+  gameStore.game.gameState.myInfo.playerNumber = pn;
   gameStore.game.gameState.hostNumber = hostNumber;
 
-  addServerMessage(`You are player ${playerNumber + 1}`);
+  addServerMessage(`You are player ${pn + 1}`);
   gameStore.notify();
 }
 
@@ -567,7 +568,7 @@ export function autoReconnect(data: AutoReconnectPayload) {
 
     if (data.pn !== undefined) {
       gameStore.game.gameState.myInfo.playerNumber = Number(data.pn) as PN;
-      addServerMessage(`You are player ${data.pn + 1}`);
+      addServerMessage(`You are player ${Number(data.pn) + 1}`);
     }
 
     if (data.host !== undefined) {

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { InviteDialog, OpponentSelect, SettingsMenu } from '@/components/shared';
 import { useGameSlice } from '@/hooks/useGameSlice';
-import { emitGetPlayerList, emitLeaveGame, emitStartGame } from '@/engine/SocketEmitter';
+import { emitGetPlayerList, emitGetPlayersInGame, emitLeaveGame, emitStartGame } from '@/engine/SocketEmitter';
 import { GamePlayer } from '@/types';
 
 const Host = () => {
@@ -28,6 +28,10 @@ const Host = () => {
     const [readyText, setReadyText] = useState<"Ready" | "Not Ready">("Not Ready");
 
     const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+
+    useEffect(() => {
+        emitGetPlayersInGame(); // call it once
+    }, [])
 
     useEffect(() => {
         console.log('Rerender');

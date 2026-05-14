@@ -16,12 +16,13 @@ const BoardButtonHandler = ({ action }: { action: string }) => {
         switch (action) {
             case 'prever': setButtons([{name:'Go Prever', callback: callbacks.goPrever},{name:'Pass Prever', callback: callbacks.noPrever}]); break;
             case 'valat': setButtons([{name:'Go Valat', callback: callbacks.goValat},{name:'Pass Valat', callback: callbacks.noValat}]); break;
-            case 'contra': break;
+            case 'contra': setButtons([{name:'Call Contra', callback: callbacks.callContra}, {name:'Pass Contra', callback: callbacks.passContra}]); break;
             case 'povinnostBidaUniChoice': break;
             case '12choice': break;
             case 'choosePartner': break;
             case 'preverTalon': break;
             case 'drawTalon': break;
+            case 'iote': break;
             default: setButtons([]);
         }
     }, [action]);
