@@ -2,29 +2,28 @@ import { useCallback, useEffect, useState } from 'react';
 import { useChat } from '@/hooks/useChatSlice';
 import { emitSendMessage } from '@/engine/SocketEmitter';
 import { useAuthSlice } from '@/hooks/useAuthSlice';
+import { useUserContext } from '@/context/AuthContext';
 
 /*
 
 Chat TODO:
 - Mobile friendly
 - Chatbox grows with message length
-- FAB background color
 - Test that it works :)
 - Display avatars, timestamps, usernames
 - Close when clicking off to the side
 
 */
 
-const ChatBox = () => {
-    const [activeTab, setActiveTab] = useState<'game' | 'system'>('game');
+const ChatBox = ({activeTab, setActiveTab, scrollRef}: {activeTab : 'game' | 'system', setActiveTab: React.Dispatch<React.SetStateAction<"game" | "system">>, scrollRef: React.MutableRefObject<any>}) => {
     const { ledger, chat } = useChat();
 
-    const username = useAuthSlice(useCallback(auth => auth.user, [])) ?? "Guest";
-    const [authenticated, setAuthenticated] = useState(false);
+    const displayGameChat = activeTab === 'game';
 
-    useEffect(() => {
-        setAuthenticated(username !== 'Guest');
-    }, [username]);
+    // username is used to differentiate which messages are "yours"
+    const username = useAuthSlice(useCallback(auth => auth.user, [])) ?? "Guest";
+    
+    const authenticated = useUserContext().isAuthenticated;
 
     const [messageInput, setMessageInput] = useState('');
 
@@ -35,14 +34,16 @@ const ChatBox = () => {
     };
 
     return (
-        <div className="fixed bottom-20 right-5 w-80 h-96 bg-white rounded-lg shadow-xl flex flex-col overflow-hidden border border-gray-300">
+        <div className="chat-card fixed bottom-20 right-5 w-80 h-96 bg-white rounded-lg shadow-xl flex flex-col overflow-hidden">
+        <div className="chat-header">Chat - Room I - ABC123</div>
+        
         {/* Tabs */}
         <div className="flex border-b border-gray-200">
             <button
             className={`flex-1 py-2 text-center ${
                 activeTab === 'game'
-                ? 'border-b-2 border-blue-600 font-semibold'
-                : 'text-gray-500'
+                ? 'border-b-2 border-blue-600 font-semibold text-white'
+                : 'text-gray-200'
             }`}
             onClick={() => setActiveTab('game')}
             >
@@ -51,8 +52,8 @@ const ChatBox = () => {
             <button
             className={`flex-1 py-2 text-center ${
                 activeTab === 'system'
-                ? 'border-b-2 border-blue-600 font-semibold'
-                : 'text-gray-500'
+                ? 'border-b-2 border-blue-600 font-semibold text-white'
+                : 'text-gray-200'
             }`}
             onClick={() => setActiveTab('system')}
             >
@@ -61,17 +62,36 @@ const ChatBox = () => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 p-2 overflow-y-auto space-y-2 bg-gray-50">
-            {(activeTab === 'game' ? chat : ledger).map((msg, idx) => (
-            <div
-                key={idx}
-                className={`p-2 rounded ${
-                activeTab === 'game' ? 'bg-blue-100 text-gray-800' : 'bg-gray-200 text-gray-700'
-                }`}
-            >
-                {msg.message}
-            </div>
-            ))}
+        <div className="chatbox-body flex-1 p-2 overflow-y-auto space-y-2" ref={scrollRef}>
+            <ul className="chat-list">
+                {(displayGameChat ? chat : ledger).map((msg, idx) => {
+                    const style = `chat-message ${
+                                displayGameChat ? 'game-chat-message' : 'system-chat-message'
+                            } ${
+                                msg.author === username ? 'chat-left' : 'chat-right'
+                            }`;
+
+                    const avatar = false;
+                    const avatarsrc = "/assets/profile-pictures/profile-17.png";
+
+                    return (
+                        <>
+                            {/*Avatar goes here*/}
+                            {
+                                avatar && 
+                                <li key={`${idx}-avatar`} className="chat-avatar chat-left">
+                                    <div className="chat-img">
+                                        <img alt="avatar" src={avatarsrc} />
+                                    </div>
+                                </li>
+                            }
+                            <li key={idx} className={style}>
+                                {msg.message}
+                            </li>
+                        </>
+                    );
+                })}
+            </ul>
         </div>
 
         {/* Input (only game tab) */}

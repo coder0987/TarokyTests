@@ -417,3 +417,133 @@
 .check-box {
   @apply bg-white text-online border border-navy;
 }
+
+
+/* ------------- CHAT ------------------ */
+
+
+.chat-list {
+  @apply p-0;
+  font-size: .8rem;
+}
+
+.chat-img {
+  @apply bg-white rounded-full;
+}
+
+.chat-list li {
+  @apply text-black;
+    margin-bottom: 10px;
+    overflow: auto;
+}
+
+.chat-list .chat-img {
+    float: left;
+    width: 48px;
+}
+
+.chat-list .chat-img img {
+  @apply rounded-lg w-full;
+}
+
+.chat-list .chat-message {
+  @apply rounded-lg bg-white;
+  display: inline-block;
+  padding: 10px 20px;
+  position: relative;
+}
+
+.chat-list .chat-message h5 {
+  margin: 0 0 5px 0;
+  font-weight: 600;
+  line-height: 100%;
+  font-size: .9rem;
+}
+
+.chat-list .chat-message p {
+  line-height: 18px;
+  margin: 0;
+  padding: 0;
+}
+
+.chat-list .chat-body {
+  margin-left: 20px;
+  float: left;
+  width: 70%;
+}
+
+.chat-list .chat-left .chat-message:before {
+  left: -12px;
+  border-bottom: 20px solid transparent;
+  border-right: 20px solid var(--white);
+}
+
+.chat-list .chat-left .chat-message {
+  border-radius: 5px 30px 30px 30px;
+}
+
+.chat-list .chat-right .chat-img {
+  float: right;
+}
+
+.chat-list .chat-right .chat-body {
+  float: right;
+  margin-right: 0;
+  text-align: right;
+}
+
+.chat-list .chat-right .chat-message {
+  @apply bg-green;
+  border-radius: 30px 5px 30px 30px;
+}
+
+.chat-list .right .chat-message:before {
+  right: -12px;
+  border-bottom: 20px solid transparent;
+  border-left: 20px solid var(--green);
+}
+
+.chat-card .chat-header:first-child {
+  -webkit-border-radius: 0.3rem 0.3rem 0 0;
+  -moz-border-radius: 0.3rem 0.3rem 0 0;
+  border-radius: 0.3rem 0.3rem 0 0;
+}
+.chat-card .chat-header {
+  @apply text-white;
+  background: #17202b;
+  border: 0;
+  font-size: 1rem;
+  padding: .65rem 1rem;
+  position: relative;
+  font-weight: 600;
+}
+
+.chat-card {
+  @apply bg-navy;
+  box-shadow: 0 4px 8px 0 var(--black);
+  float: right;
+}
+
+.content{
+  margin-top:40px; 
+}
+
+.chat-box {
+  padding-top:1rem;
+}
+
+.chat-bubble {
+  @apply bg-black text-white rounded-full;
+  width: 3rem;
+  height: 3rem;
+  text-align: center;
+  box-shadow: 0 4px 8px 0 var(--black);
+}
+
+.chat-bubble .btn {
+  @apply text-white;
+}
+
+.report {
+  float: right;
+}

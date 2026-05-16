@@ -26,6 +26,7 @@ const BoardButtonHandler = ({ action, canPass, hands, partners, canDiscard, subm
         switch (action) {
             case 'prever': setButtons([{name:'Go Prever', callback: callbacks.goPrever},{name:'Pass Prever', callback: callbacks.noPrever}]); break;
             case 'valat': setButtons([{name:'Go Valat', callback: callbacks.goValat},{name:'Pass Valat', callback: callbacks.noValat}]); break;
+            case 'preverContra':
             case 'contra': setButtons([{name:'Call Contra', callback: callbacks.callContra}, {name:'Pass Contra', callback: callbacks.passContra}]); break;
             case 'povinnostBidaUniChoice': setButtons([{name:'Call Bida or Uni', callback: callbacks.callPovinnostBidaUniChoice}, {name:'Pass Bida or Uni', callback: callbacks.passPovinnostBidaUniChoice}]); break;
             case '12choice': setButtons(hands ? hands.map((hand) => {return {name: `Choose Hand ${hand}`, callback: () => {callbacks.twelveChoice(hand)}}}) : []); break;

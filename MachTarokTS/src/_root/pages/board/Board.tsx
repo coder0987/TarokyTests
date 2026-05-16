@@ -23,7 +23,7 @@ const Board = () => {
     const callbacks = useGame().actions;
     const action = useGame().useGameStateSlice((game) => game?.currentAction);
 
-    const buttonActions = ['prever','valat','contra','povinnostBidaUniChoice','12choice','choosePartner','drawPreverTalon','drawTalon', 'iote','discard'];
+    const buttonActions = ['prever','valat','contra','preverContra','povinnostBidaUniChoice','12choice','choosePartner','drawPreverTalon','drawTalon', 'iote','discard'];
 
     // Selected cards for hand class. Here because "Button" has submit
     const [selectedCards, setSelectedCards] = useState<Card[]>([] as Card[]);
