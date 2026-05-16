@@ -33,9 +33,6 @@ const Board = () => {
         callbacks.discard(selectedCards);
     }
 
-    // Table
-    const table = useGame().useGameStateSlice((game) => game?.returnTableQueue);
-
     useEffect(() => {
         console.log("selectedCards changed:", selectedCards.length);
     }, [selectedCards]);
@@ -68,7 +65,7 @@ const Board = () => {
                             <CardBack onClick={callbacks.shuffle} />
                         </div>
                     }
-                    {table && <Table tableQueue={table} />}
+                    <Table />
                     {buttonActions.includes(action.action) && 
                         <BoardButtonHandler action={action.action}
                             canPass={action?.info?.canPass}

@@ -29,6 +29,12 @@ export interface Card {
   grayed?: boolean;
 }
 
+export interface TableCard {
+  card: Card,
+  pn: PlayerIndex,
+  lead: boolean
+}
+
 // Display enum for cards in hand
 export enum Selectable {
   STANDARD,
@@ -284,8 +290,12 @@ export class ClientGameState {
 
   myInfo: MyInfoInGame;
 
-  returnTableQueue: any[];
-  currentTable: any[];
+  preverTalon?: Card[]; // length 3
+  rejectedPreverTalon?: Card[]; // length 3
+  trumpDiscard?: Card[];
+
+  tableQueue: TableCard[][];
+  currentTable: TableCard[];
 
   constructor(roomName: string) {
     this.roomName = roomName;
@@ -296,7 +306,7 @@ export class ClientGameState {
     this.hostNumber = -1;
     this.currentAction = { action: "start", player: 0, time: 0, info: {} };
     this.myInfo = new MyInfoInGame();
-    this.returnTableQueue = [];
+    this.tableQueue = [];
     this.currentTable = [];
   }
 }

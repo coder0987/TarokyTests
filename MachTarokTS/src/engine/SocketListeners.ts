@@ -1,4 +1,4 @@
-import { Action, AutoReconnectPayload, Card, ClientGameState, GamePlayer, GameSettings, MESSAGE_TYPE, Player, PlayerIndex, PN, SimplifiedRoom } from "@/types";
+import { Action, AutoReconnectPayload, Card, ClientGameState, GamePlayer, GameSettings, MESSAGE_TYPE, Player, PlayerIndex, PN, SimplifiedRoom, TableCard } from "@/types";
 import { gameStore } from "./GameStore";
 import { authController } from './AuthEngine';
 import { addErrorMessage, addPlayerMessage, addServerMessage } from "./ChatEngine";
@@ -154,12 +154,12 @@ export function returnHand(hand: Card[], withGray: boolean) {
     gameStore.notify();
 }
 
-export function returnTable(table) {
+export function returnTable(table: TableCard[]) {
     if (!gameStore.game.gameState) {
         console.error("Game state is null, cannot set table");
         return;
     }
-    gameStore.game.gameState.currentTable = gameStore.game.gameState.currentTable.concat(table);
+    gameStore.game.gameState.tableQueue = gameStore.game.gameState.tableQueue.concat(table);
     gameStore.notify();
 }
 
@@ -342,7 +342,7 @@ function handlePartner(_: string, info?: any) {
 }
 
 function handleTrumpDiscard(_: string, info?: any) {
-  if (info?.card) gameStore.game.gameState!.returnTableQueue.push([info.card]);
+  if (info?.card) gameStore.game.gameState!.trumpDiscard = [info.card];
   addServerMessage(forMe(info, _));
 }
 
@@ -357,23 +357,23 @@ function handleWinner(_: string, info?: any) {
 
 function handlePreverTalon(_: string, info?: any) {
   if (!info) return;
-  const queue = gameStore.game.gameState?.returnTableQueue;
+  const queue = gameStore.game.gameState.preverTalon ?? [];
   switch (info.step) {
     case 0:
       addServerMessage("Would you like to keep these cards?");
-      queue?.push(info.cards);
+      gameStore.game.gameState.preverTalon = info.cards;
       break;
     case 1:
     case 2:
       if (_ === "") {
         addServerMessage("Would you like to keep these cards?");
-        queue?.push(info.cards);
+        gameStore.game.gameState.preverTalon = info.cards;
       } else if (info.pn === myPN() && info.youMessage) {
         addServerMessage(info.youMessage);
-        if (info.step === 2) queue?.push([]);
+        if (info.step === 2) gameStore.game.gameState.rejectedPreverTalon = info.cards;
       } else {
         addServerMessage(_);
-        queue?.push(info.cards);
+        gameStore.game.gameState.rejectedPreverTalon = info.cards;
       }
       break;
     case 3:
@@ -538,6 +538,10 @@ export function autoReconnect(data: AutoReconnectPayload) {
   }
 
   if (gs) {
+    delete gs.trumpDiscard;
+    delete gs.preverTalon;
+    delete gs.rejectedPreverTalon;
+
     if (data.povinnost !== undefined) {
       gs.povinnost = data.povinnost;
     }
@@ -551,7 +555,7 @@ export function autoReconnect(data: AutoReconnectPayload) {
     }
 
     if (data.table !== undefined) {
-      gs.returnTableQueue.push(data.table);
+      gs.tableQueue = data.table;
     }
 
     if (data.hand !== undefined) {
